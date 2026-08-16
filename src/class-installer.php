@@ -11,6 +11,7 @@ use Throwable;
 use Vicu\Restaurante\Migrations\CreateMigrationLedger;
 use Vicu\Restaurante\Migrations\InitializeMenuCatalog;
 use Vicu\Restaurante\Migrations\CreateIngredientCatalog;
+use Vicu\Restaurante\Migrations\CreateCommerceRules;
 use Vicu\Restaurante\Migrations\Migration;
 
 /**
@@ -149,6 +150,7 @@ final class Installer {
 			new CreateMigrationLedger(),
 			new InitializeMenuCatalog(),
 			new CreateIngredientCatalog(),
+			new CreateCommerceRules(),
 		);
 	}
 

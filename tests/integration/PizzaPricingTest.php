@@ -224,8 +224,22 @@ final class PizzaPricingTest extends WP_UnitTestCase {
 	 */
 	public function test_currency_setting_is_strict(): void {
 		$this->assertSame( 'VES', RestaurantSettings::currency() );
-		$this->assertSame( array( 'currency' => 'USD' ), RestaurantSettings::sanitize( array( 'currency' => ' usd ' ) ) );
-		$this->assertSame( array( 'currency' => 'VES' ), RestaurantSettings::sanitize( array( 'currency' => 'US$' ) ) );
+		$this->assertSame(
+			array(
+				'currency'      => 'USD',
+				'tax_rate_bps'  => 800,
+				'tip_rates_bps' => array( 0, 1000, 1500, 2000 ),
+			),
+			RestaurantSettings::sanitize( array( 'currency' => ' usd ' ) )
+		);
+		$this->assertSame(
+			array(
+				'currency'      => 'VES',
+				'tax_rate_bps'  => 800,
+				'tip_rates_bps' => array( 0, 1000, 1500, 2000 ),
+			),
+			RestaurantSettings::sanitize( array( 'currency' => 'US$' ) )
+		);
 	}
 
 	/**

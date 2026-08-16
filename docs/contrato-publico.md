@@ -1,9 +1,9 @@
 # Contrato público de `vicunav-restaurante`
 
-Estado: contrato 1.0.0 aprobado; REST-02F implementa carga, compatibilidad,
-instalación fundacional, menú, catálogo, disponibilidad y quote autoritativo de
-pizzas. Las demás superficies se habilitan por los issues indicados en la matriz, sin
-considerarse operativas antes de ellos.
+Estado: contrato 1.0.0 aprobado; REST-02G implementa carga, compatibilidad,
+instalación, menú, catálogo, pricing de pizzas, zonas, descuentos y totales. Las demás
+superficies se habilitan por los issues indicados en la matriz, sin considerarse
+operativas antes de ellos.
 
 ## Responsabilidad y límites
 
@@ -18,14 +18,14 @@ internas de otro paquete.
 
 ## Estado de implementación
 
-| Superficie | Issue propietario | Estado después de REST-02F |
+| Superficie | Issue propietario | Estado después de REST-02G |
 | --- | --- | --- |
 | Versiones, autoload, dependencias y hook de carga | REST-02B | Implementado |
 | Capabilities, migraciones e instalación | REST-02C | Implementado |
 | Menú estructurado | REST-02D | Implementado |
 | Ingredientes y opciones de pizza | REST-02E | Implementado |
 | Pricing de pizzas | REST-02F | Implementado |
-| Totales, descuentos y delivery | REST-02G | Planificado |
+| Totales, descuentos y delivery | REST-02G | Implementado |
 | Carrito, pedidos e integración con pagos | REST-02H a REST-02J | Planificado |
 | Reservas y pizzas guardadas | REST-02K y REST-02L | Planificado |
 | Bloques públicos | REST-02M a REST-02Q | Planificado |
@@ -79,11 +79,11 @@ archivo del plugin.
 ## Instalación y migraciones
 
 La activación ejecuta migraciones pendientes y solo después concede capabilities al
-rol administrador. REST-02E eleva el schema a versión `3`: conserva
+rol administrador. REST-02G eleva el schema a versión `4`: conserva
 `${prefix}vicu_rest_migrations`, un ledger InnoDB; mantiene la revisión del menú e
-incorpora tres tablas InnoDB vacías para ingredientes, relaciones y opciones de pizza.
-También inicializa `vicu_restaurante_availability_revision` en `1`, sin crear contenido
-ni datos de demostración.
+incorpora tablas InnoDB vacías para ingredientes, relaciones, opciones de pizza, zonas
+de entrega y descuentos. Inicializa las revisiones de disponibilidad y pricing en
+`1`, sin crear contenido, zonas, códigos ni datos de demostración.
 
 Cada migración tiene versión monotónica, comprobación de aplicación, operación `up()`
 y compensación `down()`. El instalador:
@@ -219,6 +219,27 @@ total = net_merchandise + tax_total + tip_total + delivery_total
 Delivery y propina no forman parte de la base fiscal en v1. El pedido congela el
 desglose y la solicitud de pago usa exactamente su `total` y `currency`. Un total debe
 ser positivo para crear una solicitud en pagos.
+
+REST-02G implementa esta fórmula en `TotalsService` sin persistir carrito ni pedido.
+El subtotal recibido debe provenir de líneas ya cotizadas por servidor. El servicio
+resuelve código y zona por ID, usa la moneda y tasas vigentes, y no acepta importes de
+descuento, impuesto, propina, delivery o total del cliente.
+
+Las tasas se guardan en puntos base. El impuesto inicial es 800 puntos base y las
+opciones iniciales de propina son 0, 1000, 1500 y 2000. Los operadores pueden
+cambiarlas mediante Settings API; la lista siempre debe incluir cero. No existe una
+propina no nula preseleccionada en el dominio.
+
+Los descuentos son `fixed` en unidad menor o `percent` en puntos base. Pueden exigir
+subtotal mínimo, vigencia UTC, estado activo y máximo de usos. Resolver un código no
+lo consume. El checkout futuro consumirá el uso bajo bloqueo `SELECT ... FOR UPDATE`;
+la verificación y el incremento ocurren en la misma transacción. Un descuento nunca
+reduce `net_merchandise` por debajo de cero.
+
+Las zonas de delivery se eligen explícitamente por UUID. Cada una congela nombre,
+tarifa y ETA; no usa texto de dirección, geocoding ni mapas como autoridad. Pickup
+exige tarifa cero y no acepta una zona. Una zona inactiva devuelve
+`vicu_restaurante_unavailable` para selecciones nuevas.
 
 ## Estados del pedido v1
 
@@ -381,14 +402,27 @@ La respuesta incluye configuración normalizada, revisión, moneda, componentes,
 `unit_total_minor`, cantidad y `total_minor`. Todos los importes provienen del
 catálogo vigente y usan enteros; cualquier precio adicional del request se ignora. La
 moneda proviene del option propio `vicu_restaurante_settings`, administrado en la
-pestaña Restaurante de Vicunav mediante Settings API. El valor inicial es `USD` y solo
-se aceptan tres letras mayúsculas.
+pestaña Restaurante de Vicunav mediante Settings API junto con impuesto y propinas.
+El valor inicial es `USD` y solo se aceptan tres letras mayúsculas.
 
 La ruta es pública para el constructor, devuelve `Cache-Control: no-store, max-age=0`
 y expone el filtro `vicu_restaurante_allow_public_quote` para conectar la política de
 rate limit de la instalación. Si el filtro deniega, devuelve
 `vicu_restaurante_rate_limited` con HTTP 429. Un quote no reserva inventario, no crea
 carrito y debe revalidarse en cada mutación posterior.
+
+### Zonas de entrega implementadas
+
+`GET /delivery-zones` devuelve `revision`, `currency` y zonas activas ordenadas. Cada
+zona incluye UUID, nombre, tarifa en unidad menor, ETA mínimo y máximo, orden y
+revisión de fila. No expone zonas inactivas, IDs internos, direcciones ni mapas.
+
+Las respuestas 200 incluyen `Cache-Control: public, max-age=60,
+stale-while-revalidate=300` y un `ETag` ligado a
+`vicu_restaurante_pricing_revision`; un `If-None-Match` vigente devuelve 304. Cambiar
+zonas, descuentos, tasas, propinas o moneda incrementa esa revisión. Los descuentos
+no tienen endpoint público separado: REST-02H los aplicará dentro del carrito para no
+crear un oráculo enumerable de códigos.
 
 ### Errores estables
 
