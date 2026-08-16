@@ -5,8 +5,8 @@ delivery, pizzas y reservas.
 
 ## Estado y límites
 
-REST-02C añade capabilities, migraciones versionadas e instalación idempotente sobre
-el contrato 1.0.0. No añadas menú, pricing, carrito, pedidos, integración
+REST-02D añade el menú estructurado, administración nativa y lecturas REST cacheables
+sobre el contrato 1.0.0. No añadas ingredientes, pricing, carrito, pedidos, integración
 operativa con pagos, reservas, bloques ni contenido Bonasera antes del issue
 propietario definido en el plan del hub.
 

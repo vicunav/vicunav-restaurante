@@ -1,7 +1,7 @@
 # Contrato público de `vicunav-restaurante`
 
-Estado: contrato 1.0.0 aprobado; REST-02C implementa carga, compatibilidad,
-capabilities y migraciones fundacionales. Las superficies de dominio se habilitan por los
+Estado: contrato 1.0.0 aprobado; REST-02D implementa carga, compatibilidad,
+instalación fundacional y menú estructurado. Las demás superficies se habilitan por los
 issues indicados en la matriz, sin considerarse operativas antes de ellos.
 
 ## Responsabilidad y límites
@@ -17,11 +17,12 @@ internas de otro paquete.
 
 ## Estado de implementación
 
-| Superficie | Issue propietario | Estado después de REST-02C |
+| Superficie | Issue propietario | Estado después de REST-02D |
 | --- | --- | --- |
 | Versiones, autoload, dependencias y hook de carga | REST-02B | Implementado |
 | Capabilities, migraciones e instalación | REST-02C | Implementado |
-| Menú e ingredientes | REST-02D y REST-02E | Planificado |
+| Menú estructurado | REST-02D | Implementado |
+| Ingredientes y opciones de pizza | REST-02E | Planificado |
 | Pricing de pizzas y totales | REST-02F y REST-02G | Planificado |
 | Carrito, pedidos e integración con pagos | REST-02H a REST-02J | Planificado |
 | Reservas y pizzas guardadas | REST-02K y REST-02L | Planificado |
@@ -76,8 +77,9 @@ archivo del plugin.
 ## Instalación y migraciones
 
 La activación ejecuta migraciones pendientes y solo después concede capabilities al
-rol administrador. El schema fundacional tiene versión `1` y crea exclusivamente
-`${prefix}vicu_rest_migrations`, un ledger InnoDB sin datos de dominio.
+rol administrador. REST-02D eleva el schema a versión `2`: conserva
+`${prefix}vicu_rest_migrations`, un ledger InnoDB, e inicializa el option operativo de
+revisión del menú en `1`, sin crear contenido ni datos de demostración.
 
 Cada migración tiene versión monotónica, comprobación de aplicación, operación `up()`
 y compensación `down()`. El instalador:
@@ -110,6 +112,46 @@ El administrador recibe durante activación:
 No se conceden por defecto a otros roles. Una capability autoriza una categoría de
 operación, pero cada escritura debe verificar además nonce, ownership y revisión
 cuando correspondan.
+
+## Menú estructurado v1
+
+`vicu_menu_item` es un CPT público administrado bajo el menú Vicunav. Usa título,
+extracto, contenido, imagen destacada y `menu_order` para copy, historia, media y orden
+editoriales. La taxonomía jerárquica `vicu_menu_category` aporta slug estable, nombre,
+descripción, orden no negativo y visibilidad. La interfaz administrativa asigna una
+sola categoría por item.
+
+El controlador genérico `wp/v2/restaurant-menu-items` existe para el editor de bloques,
+pero exige `manage_vicu_restaurant_catalog` incluso en lecturas. Los clientes públicos
+usan únicamente la proyección validada bajo `/vicu/v1/restaurante/menu`.
+
+Los campos operativos registrados son privados a la persistencia:
+
+| Campo público | Tipo y regla | Persistencia v1 |
+| --- | --- | --- |
+| `public_id` | UUID v4 opaco e inmutable para consumidores | `_vicu_rest_public_id` |
+| `price_minor` | Entero no negativo en unidad menor | `_vicu_rest_price_minor` |
+| `currency` | Tres letras mayúsculas ISO 4217 | `_vicu_rest_currency` |
+| `available` | Booleano; `false` impide selecciones nuevas | `_vicu_rest_available` |
+| `calories_kcal` | Entero no negativo e informativo | `_vicu_rest_calories_kcal` |
+| `allergens` | Lista única de IDs controlados | `_vicu_rest_allergens` |
+| `dietary_tags` | Lista única de IDs controlados | `_vicu_rest_dietary_tags` |
+
+Los alérgenos iniciales son `celery`, `crustaceans`, `eggs`, `fish`, `gluten`,
+`lupin`, `milk`, `molluscs`, `mustard`, `nuts`, `peanuts`, `sesame`, `soy` y
+`sulphites`. Las etiquetas dietarias iniciales son `spicy`, `vegan` y `vegetarian`.
+No son texto libre. La información de alérgenos nunca elimina el riesgo de
+contaminación cruzada.
+
+Un item solo aparece en lecturas públicas cuando está publicado, tiene título, ID,
+precio, moneda y disponibilidad persistidos, y pertenece exactamente a una categoría
+visible. La ausencia o inconsistencia de un campo falla cerrada. Un item completo con
+`available = false` sí aparece para que el cliente muestre el estado agotado, pero no
+podrá añadirse a un carrito cuando REST-02H implemente esa escritura.
+
+La revisión global vive en `vicu_restaurante_menu_revision`, comienza en `1` y aumenta
+una vez por solicitud de escritura relevante. Sus valores invalidan las claves de
+object cache y forman parte del `ETag`.
 
 ## Principios de datos públicos v1
 
@@ -212,6 +254,44 @@ El namespace base es `/wp-json/vicu/v1/restaurante`. Las rutas se registran medi
 
 Los schemas exactos se incorporan con el issue que implementa cada grupo y permanecen
 compatibles durante el contrato mayor 1.
+
+### Lecturas de menú implementadas
+
+`GET /menu` acepta únicamente el filtro opcional `category` como slug normalizado y
+devuelve:
+
+```json
+{
+  "revision": 2,
+  "categories": [
+    { "slug": "pizzas", "name": "Pizzas", "description": "", "order": 1 }
+  ],
+  "items": [
+    {
+      "public_id": "00000000-0000-4000-8000-000000000000",
+      "name": "Nombre",
+      "description": "Copy breve",
+      "story": "<p>Historia editorial</p>",
+      "price_minor": 1250,
+      "currency": "USD",
+      "available": true,
+      "calories_kcal": 720,
+      "allergens": ["gluten", "milk"],
+      "dietary_tags": ["vegetarian"],
+      "category": "pizzas",
+      "order": 1,
+      "image": null
+    }
+  ]
+}
+```
+
+`GET /menu/{public_id}` devuelve `revision` e `item` con el mismo schema. Un UUID
+ausente o no publicable usa `vicu_restaurante_not_found`; una categoría desconocida u
+oculta usa `vicu_restaurante_invalid_request`. Las respuestas 200 incluyen `ETag` y
+`Cache-Control: public, max-age=60, stale-while-revalidate=300`; un
+`If-None-Match` exacto devuelve 304. El object cache interno usa TTL de 300 segundos y
+claves ligadas a revisión.
 
 ### Errores estables
 

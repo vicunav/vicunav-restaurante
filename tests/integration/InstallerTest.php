@@ -7,6 +7,7 @@
 
 use Vicu\Restaurante\Capabilities;
 use Vicu\Restaurante\Installer;
+use Vicu\Restaurante\Menu\CatalogRevision;
 use Vicu\Restaurante\Migrations\CreateMigrationLedger;
 use Vicu\Restaurante\Schema;
 use Vicu\Restaurante\Tests\CreateProbeTable;
@@ -30,6 +31,8 @@ final class InstallerTest extends WP_UnitTestCase {
 		remove_filter( 'query', array( $this, '_drop_temporary_tables' ) );
 		$this->drop_test_tables();
 		delete_option( 'vicu_restaurante_db_version' );
+		delete_option( CatalogRevision::OPTION_NAME );
+		CatalogRevision::reset_request();
 		$this->remove_restaurant_capabilities();
 	}
 
@@ -41,6 +44,8 @@ final class InstallerTest extends WP_UnitTestCase {
 	public function tearDown(): void {
 		$this->drop_test_tables();
 		delete_option( 'vicu_restaurante_db_version' );
+		delete_option( CatalogRevision::OPTION_NAME );
+		CatalogRevision::reset_request();
 		$this->remove_restaurant_capabilities();
 		parent::tearDown();
 	}
@@ -57,8 +62,9 @@ final class InstallerTest extends WP_UnitTestCase {
 		$table_name = Schema::migration_table_name();
 
 		$this->assertTrue( Schema::table_exists( $table_name ) );
-		$this->assertSame( '1', get_option( 'vicu_restaurante_db_version' ) );
-		$this->assertSame( 1, Installer::current_version() );
+		$this->assertSame( '2', get_option( 'vicu_restaurante_db_version' ) );
+		$this->assertSame( 2, Installer::current_version() );
+		$this->assertSame( '1', get_option( CatalogRevision::OPTION_NAME ) );
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$engine = $wpdb->get_var(
@@ -97,8 +103,8 @@ final class InstallerTest extends WP_UnitTestCase {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" );
 
-		$this->assertSame( 1, $count );
-		$this->assertSame( 1, Installer::current_version() );
+		$this->assertSame( 2, $count );
+		$this->assertSame( 2, Installer::current_version() );
 	}
 
 	/**
@@ -112,8 +118,37 @@ final class InstallerTest extends WP_UnitTestCase {
 
 		$this->assertSame( 0, Installer::current_version() );
 		$this->assertTrue( Installer::maybe_upgrade() );
-		$this->assertSame( '1', get_option( 'vicu_restaurante_db_version' ) );
+		$this->assertSame( '2', get_option( 'vicu_restaurante_db_version' ) );
+		$this->assertSame( 2, Installer::current_version() );
+	}
+
+	/**
+	 * Una instalación 0.3.0 aplica solo la migración nueva del catálogo.
+	 *
+	 * @return void
+	 */
+	public function test_upgrade_from_schema_one_initializes_menu_revision(): void {
+		$this->assertTrue( Installer::install( array( new CreateMigrationLedger() ) ) );
 		$this->assertSame( 1, Installer::current_version() );
+		$this->assertFalse( get_option( CatalogRevision::OPTION_NAME, false ) );
+
+		$this->assertTrue( Installer::install() );
+		$this->assertSame( 2, Installer::current_version() );
+		$this->assertSame( '1', get_option( CatalogRevision::OPTION_NAME ) );
+	}
+
+	/**
+	 * Un option ajeno o inválido bloquea la migración sin ser eliminado.
+	 *
+	 * @return void
+	 */
+	public function test_menu_migration_preserves_conflicting_option_on_failure(): void {
+		add_option( CatalogRevision::OPTION_NAME, '0', '', false );
+
+		$this->assertFalse( Installer::install() );
+		$this->assertSame( '0', get_option( CatalogRevision::OPTION_NAME ) );
+		$this->assertFalse( Schema::table_exists( Schema::migration_table_name() ) );
+		$this->assertFalse( get_option( 'vicu_restaurante_db_version', false ) );
 	}
 
 	/**

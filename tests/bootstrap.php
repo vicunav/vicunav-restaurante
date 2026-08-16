@@ -49,6 +49,19 @@ function add_action( string $hook, callable $callback, int $priority = 10, int $
 }
 
 /**
+ * Sustituto mínimo de add_filter(), equivalente para la inspección de hooks.
+ *
+ * @param string   $hook          Nombre del filtro.
+ * @param callable $callback      Callback registrado.
+ * @param int      $priority      Prioridad del callback.
+ * @param int      $accepted_args Cantidad de argumentos aceptados.
+ * @return void
+ */
+function add_filter( string $hook, callable $callback, int $priority = 10, int $accepted_args = 1 ): void {
+	add_action( $hook, $callback, $priority, $accepted_args );
+}
+
+/**
  * Sustituto del registro de activación para inspeccionar el entry point.
  *
  * @param string   $file     Archivo principal del plugin.

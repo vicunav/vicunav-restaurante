@@ -33,7 +33,6 @@ tests_add_filter(
 		define( 'VICU_PAGOS_CONTRACT_VERSION', '0.3.0' );
 
 		require dirname( __DIR__, 2 ) . '/vicunav-restaurante.php';
-		remove_action( 'plugins_loaded', 'Vicu\\Restaurante\\bootstrap', 20 );
 	}
 );
 
