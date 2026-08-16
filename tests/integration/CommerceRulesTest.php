@@ -250,10 +250,11 @@ final class CommerceRulesTest extends WP_UnitTestCase {
 		);
 		$this->assertSame(
 			array(
-				'currency'            => 'VES',
-				'tax_rate_bps'        => 800,
-				'tip_rates_bps'       => array( 0, 1000, 2000 ),
-				'cart_lifetime_hours' => 72,
+				'currency'                 => 'VES',
+				'tax_rate_bps'             => 800,
+				'tip_rates_bps'            => array( 0, 1000, 2000 ),
+				'cart_lifetime_hours'      => 72,
+				'payment_lifetime_minutes' => 30,
 			),
 			$sanitized
 		);

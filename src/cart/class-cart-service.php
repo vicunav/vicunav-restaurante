@@ -440,6 +440,79 @@ final class CartService {
 	}
 
 	/**
+	 * Bloquea y revalida el carrito dentro de la transacción de checkout.
+	 *
+	 * @param array<string, int|string> $identity          Identidad autorizada.
+	 * @param int                       $expected_revision Revisión enviada.
+	 * @return array<string, mixed>|WP_Error
+	 */
+	public static function lock_for_checkout( array $identity, int $expected_revision ): array|WP_Error {
+		$cart = self::lock_by_owner( (string) $identity['key'] );
+
+		if ( null === $cart || self::STATUS_ACTIVE !== $cart['status'] || $cart['expires_at'] <= current_time( 'mysql', true ) ) {
+			return self::not_found();
+		}
+
+		if ( (int) $cart['revision'] !== $expected_revision ) {
+			return CatalogDatabase::stale_error( (int) $cart['revision'] );
+		}
+
+		$discount_before = null === $cart['discount_code'] ? null : (string) $cart['discount_code'];
+		$recalculated    = self::recalculate_locked( $cart );
+
+		if ( is_wp_error( $recalculated ) ) {
+			return $recalculated;
+		}
+
+		$fresh     = self::row_by_id( (int) $cart['id'] );
+		$formatted = self::format_cart( $fresh );
+
+		if ( null !== $discount_before && null === $formatted['discount_code'] ) {
+			return new WP_Error( 'vicu_restaurante_unavailable', __( 'El descuento del carrito ya no está disponible.', 'vicunav-restaurante' ), array( 'status' => 409 ) );
+		}
+
+		if ( array() === $formatted['items'] || 0 >= (int) $formatted['totals']['total'] ) {
+			return self::invalid();
+		}
+
+		return array(
+			'internal_id' => (int) $fresh['id'],
+			'row'         => $fresh,
+			'cart'        => $formatted,
+		);
+	}
+
+	/**
+	 * Convierte un carrito ya bloqueado sin borrar sus líneas.
+	 *
+	 * @param int $internal_id      ID interno autorizado.
+	 * @param int $current_revision Revisión después de revalidar.
+	 * @return true|WP_Error
+	 */
+	public static function convert_in_transaction( int $internal_id, int $current_revision ): true|WP_Error {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$updated = $wpdb->update(
+			Schema::carts_table_name(),
+			array(
+				'status'     => 'converted',
+				'owner_key'  => null,
+				'updated_at' => current_time( 'mysql', true ),
+			),
+			array(
+				'id'       => $internal_id,
+				'revision' => $current_revision,
+				'status'   => self::STATUS_ACTIVE,
+			),
+			array( '%s', '%s', '%s' ),
+			array( '%d', '%d', '%s' )
+		);
+
+		return 1 === $updated ? true : CatalogDatabase::stale_error( $current_revision );
+	}
+
+	/**
 	 * Expira carritos vencidos sin borrar historia ni pedidos futuros.
 	 *
 	 * @return int

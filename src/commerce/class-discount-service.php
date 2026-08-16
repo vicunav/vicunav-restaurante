@@ -169,23 +169,47 @@ final class DiscountService {
 	 * @return array<string, mixed>|WP_Error
 	 */
 	public static function consume( string $code, int $subtotal_minor, string $now_utc = '' ): array|WP_Error {
+		if ( ! CatalogDatabase::begin() ) {
+			return CatalogDatabase::storage_error();
+		}
+
+		$result = self::consume_in_transaction( $code, $subtotal_minor, $now_utc );
+
+		if ( is_wp_error( $result ) || ! CatalogDatabase::commit() ) {
+			CatalogDatabase::rollback();
+			return is_wp_error( $result ) ? $result : CatalogDatabase::storage_error();
+		}
+
+		PricingRevision::clear_cache();
+
+		return $result;
+	}
+
+	/**
+	 * Consume un uso dentro de la transacción de checkout ya iniciada.
+	 *
+	 * @param string $code           Código.
+	 * @param int    $subtotal_minor Subtotal autoritativo.
+	 * @param string $now_utc        Fecha UTC.
+	 * @return array<string, mixed>|WP_Error
+	 */
+	public static function consume_in_transaction( string $code, int $subtotal_minor, string $now_utc = '' ): array|WP_Error {
 		global $wpdb;
 
 		$normalized = self::normalize_code( $code );
 
-		if ( '' === $normalized || ! CatalogDatabase::begin() ) {
-			return '' === $normalized ? self::invalid() : CatalogDatabase::storage_error();
+		if ( '' === $normalized ) {
+			return self::invalid();
 		}
 
 		$table = Schema::discount_codes_table_name();
-		// El bloqueo serializa la comprobación y el incremento del límite.
+		// El bloqueo se integra en la misma transacción que crea el pedido.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$row         = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE code = %s FOR UPDATE", $normalized ), ARRAY_A );
 		$discount    = is_array( $row ) ? self::format( $row ) : null;
 		$internal_id = is_array( $row ) ? (int) $row['id'] : 0;
 
 		if ( null === $discount || ! self::is_usable( $discount, $subtotal_minor, $now_utc ) ) {
-			CatalogDatabase::rollback();
 			return self::unavailable();
 		}
 
@@ -201,21 +225,15 @@ final class DiscountService {
 		);
 		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-		if ( 1 !== $updated || ! PricingRevision::bump_in_transaction() || ! CatalogDatabase::commit() ) {
-			CatalogDatabase::rollback();
+		if ( 1 !== $updated || ! PricingRevision::bump_in_transaction() ) {
 			return CatalogDatabase::storage_error();
 		}
 
-		PricingRevision::clear_cache();
-		$result = self::find( $discount['public_id'] );
+		$discount['uses_count']   = (int) $discount['uses_count'] + 1;
+		$discount['revision']     = (int) $discount['revision'] + 1;
+		$discount['amount_minor'] = self::amount( $discount, $subtotal_minor );
 
-		if ( null === $result ) {
-			return CatalogDatabase::storage_error();
-		}
-
-		$result['amount_minor'] = self::amount( $discount, $subtotal_minor );
-
-		return $result;
+		return $discount;
 	}
 
 	/**

@@ -1,10 +1,9 @@
 # Contrato público de `vicunav-restaurante`
 
-Estado: contrato 1.0.0 aprobado; REST-02H implementa carga, compatibilidad,
-instalación, menú, catálogo, pricing de pizzas, zonas, descuentos, totales y carrito.
-Las demás
-superficies se habilitan por los issues indicados en la matriz, sin considerarse
-operativas antes de ellos.
+Estado: contrato 1.0.0 aprobado; REST-02I implementa carga, compatibilidad,
+instalación, menú, catálogo, pricing de pizzas, zonas, descuentos, totales, carrito,
+checkout y pedidos. Las demás superficies se habilitan por los issues indicados en la
+matriz, sin considerarse operativas antes de ellos.
 
 ## Responsabilidad y límites
 
@@ -19,7 +18,7 @@ internas de otro paquete.
 
 ## Estado de implementación
 
-| Superficie | Issue propietario | Estado después de REST-02H |
+| Superficie | Issue propietario | Estado después de REST-02I |
 | --- | --- | --- |
 | Versiones, autoload, dependencias y hook de carga | REST-02B | Implementado |
 | Capabilities, migraciones e instalación | REST-02C | Implementado |
@@ -28,7 +27,8 @@ internas de otro paquete.
 | Pricing de pizzas | REST-02F | Implementado |
 | Totales, descuentos y delivery | REST-02G | Implementado |
 | Carrito seguro y mutaciones | REST-02H | Implementado |
-| Pedidos e integración con pagos | REST-02I y REST-02J | Planificado |
+| Checkout, pedidos y estado operativo | REST-02I | Implementado |
+| Integración con pagos | REST-02J | Planificado |
 | Reservas y pizzas guardadas | REST-02K y REST-02L | Planificado |
 | Bloques públicos | REST-02M a REST-02Q | Planificado |
 | E2E, privacidad, rendimiento y release candidata | REST-02R | Planificado |
@@ -81,12 +81,12 @@ archivo del plugin.
 ## Instalación y migraciones
 
 La activación ejecuta migraciones pendientes y solo después concede capabilities al
-rol administrador. REST-02H eleva el schema a versión `5`: conserva
+rol administrador. REST-02I eleva el schema a versión `6`: conserva
 `${prefix}vicu_rest_migrations`, un ledger InnoDB; mantiene la revisión del menú e
 incorpora tablas InnoDB vacías para ingredientes, relaciones, opciones de pizza, zonas
-de entrega, descuentos, sesiones, carritos, líneas e idempotencia. Inicializa las
-revisiones de disponibilidad y pricing en `1`, sin crear contenido, zonas, códigos,
-sesiones ni datos de demostración.
+de entrega, descuentos, sesiones, carritos, idempotencia, pedidos, líneas de pedido y
+eventos. Inicializa las revisiones de disponibilidad y pricing en `1`, sin crear
+contenido, zonas, códigos, sesiones, pedidos ni datos de demostración.
 
 Cada migración tiene versión monotónica, comprobación de aplicación, operación `up()`
 y compensación `down()`. El instalador:
@@ -154,7 +154,7 @@ Un item solo aparece en lecturas públicas cuando está publicado, tiene título
 precio, moneda y disponibilidad persistidos, y pertenece exactamente a una categoría
 visible. La ausencia o inconsistencia de un campo falla cerrada. Un item completo con
 `available = false` sí aparece para que el cliente muestre el estado agotado, pero no
-podrá añadirse a un carrito cuando REST-02H implemente esa escritura.
+puede añadirse a un carrito.
 
 La revisión global vive en `vicu_restaurante_menu_revision`, comienza en `1` y aumenta
 una vez por solicitud de escritura relevante. Sus valores invalidan las claves de
@@ -223,9 +223,9 @@ Delivery y propina no forman parte de la base fiscal en v1. El pedido congela el
 desglose y la solicitud de pago usa exactamente su `total` y `currency`. Un total debe
 ser positivo para crear una solicitud en pagos.
 
-`TotalsService` implementa esta fórmula y REST-02H la persiste en cada revisión del
-carrito, todavía sin crear pedidos. El subtotal proviene de líneas recalculadas por el
-servidor. El servicio
+`TotalsService` implementa esta fórmula, el carrito la persiste en cada revisión y el
+checkout congela el resultado en el pedido. El subtotal proviene de líneas
+recalculadas por el servidor. El servicio
 resuelve código y zona por ID, usa la moneda y tasas vigentes, y no acepta importes de
 descuento, impuesto, propina, delivery o total del cliente.
 
@@ -236,8 +236,8 @@ propina no nula preseleccionada en el dominio.
 
 Los descuentos son `fixed` en unidad menor o `percent` en puntos base. Pueden exigir
 subtotal mínimo, vigencia UTC, estado activo y máximo de usos. Resolver un código no
-lo consume. El checkout futuro consumirá el uso bajo bloqueo `SELECT ... FOR UPDATE`;
-la verificación y el incremento ocurren en la misma transacción. Un descuento nunca
+lo consume. El checkout consume el uso bajo bloqueo `SELECT ... FOR UPDATE`; la
+verificación y el incremento ocurren en la misma transacción. Un descuento nunca
 reduce `net_merchandise` por debajo de cero.
 
 Las zonas de delivery se eligen explícitamente por UUID. Cada una congela nombre,
@@ -475,7 +475,41 @@ responden con `Cache-Control: no-store, max-age=0`, `Vary: Cookie, X-WP-Nonce` y
 
 La vigencia predeterminada es 72 horas y puede configurarse entre 1 y 720. La tarea
 horaria `vicu_restaurante_expire_carts` cambia carritos vencidos a `expired` y libera
-su clave de ownership; no borra líneas ni afectará pedidos creados en REST-02I.
+su clave de ownership; no borra líneas ni afecta pedidos existentes.
+
+### Checkout y pedidos implementados
+
+`POST /orders` exige la identidad y las protecciones del carrito, el header
+`Idempotency-Key` y `expected_revision`. Acepta nombre y teléfono, correo opcional,
+dirección obligatoria solo para delivery, instrucciones y nota. El servidor bloquea el
+carrito, revalida catálogo, disponibilidad, descuento y totales, exige un total
+positivo y ejecuta en una transacción el consumo del descuento, los snapshots del
+pedido, el evento inicial y la conversión del carrito.
+
+La clave idempotente se conserva únicamente como hash junto con un fingerprint del
+request normalizado. Repetir la misma operación devuelve el mismo pedido; reutilizar
+la clave con otro payload devuelve `vicu_restaurante_idempotency_collision`. La
+respuesta de creación de un pedido invitado incluye una única credencial opaca
+derivada de forma estable para permitir replays sin persistirla en texto plano.
+
+`GET /orders/{public_id}` exige ownership por usuario autenticado o el header
+`X-Vicu-Order-Token`. Responde con UUID, número, estado, revisión, fulfillment,
+moneda, snapshots de líneas, totales congelados, vencimiento de pago, estado de
+sincronización y fechas. No publica contacto, dirección, token, IDs internos ni
+historial administrativo. Las respuestas usan `Cache-Control: no-store`, `ETag` por
+pedido y revisión, y `Vary: Cookie, X-WP-Nonce, X-Vicu-Order-Token`.
+
+`POST /admin/orders/{public_id}/transition` exige sesión WordPress, nonce, capability,
+`expected_revision`, destino y motivo cuando corresponda. Cada arco válido usa
+compare-and-swap, incrementa la revisión exactamente una vez y añade un evento
+append-only. La integración de pago de REST-02J será la única autorizada para los
+arcos de pago.
+
+Las tablas de dominio son la autoridad. El CPT privado `vicu_order` es una proyección
+reconstruible para listado y detalle administrativo: no admite creación, edición
+editorial, borrado ni quick edit. El panel muestra datos privados solo a
+`view_vicu_restaurant_orders`, separa operar, cancelar y reconstruir mediante sus
+capabilities y nonces, y registra motivos sin exponer secretos.
 
 ### Errores estables
 
