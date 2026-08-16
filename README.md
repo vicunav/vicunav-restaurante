@@ -1,51 +1,57 @@
-# Vicunav Repository Template
+# Vicunav Restaurante
 
-Reusable starting point for repositories in the Vicunav ecosystem. Creating a
-repository from this template copies its files and directory structure into a new,
-independent repository without treating it as a fork.
+Native WordPress domain plugin for restaurant menus, carts, orders, delivery, custom
+pizzas, and reservations.
 
-## Included foundation
+## Status
 
-- `AGENTS.md` with placeholders for repository-specific instructions.
-- `CONTRIBUTING.md` with the atomic issue and squash-merge workflow.
-- `docs/standards/` pinned to the shared Vicunav standards.
-- A structured atomic-task issue form.
-- PHP linting with WordPress Coding Standards in GitHub Actions.
-- GPL-2.0-or-later licensing suitable for WordPress themes and plugins.
+REST-02A provides the initial installable scaffold. It intentionally contains no
+restaurant runtime behavior yet. The public contract, persistence, REST endpoints,
+admin screens, and blocks will be introduced through separate atomic issues.
 
-## Creating a repository from this template
+The v1 architecture is owned by the Vicunav hub and does not use WooCommerce.
 
-1. Open this template repository on GitHub.
-2. Select **Use this template** and then **Create a new repository**.
-3. Choose the owner, repository name, description, and visibility.
-4. Select **Create repository**.
-5. Clone the new repository, including its submodules:
+## Boundaries
 
-   ```bash
-   git clone --recurse-submodules https://github.com/OWNER/REPOSITORY.git
-   cd REPOSITORY
-   ```
+`vicunav-restaurante` will own restaurant business data and behavior. It will consume
+public APIs from the following plugins without reading their internal storage:
 
-If the repository was cloned without submodules, initialize them afterward:
+- [`vicunav-plugin-core`](https://github.com/vicunav/vicunav-plugin-core) for shared
+  WordPress infrastructure.
+- [`vicunav-pagos`](https://github.com/vicunav/vicunav-pagos) for payment requests and
+  payment lifecycle events.
+
+Presentation shared across sites belongs in `vicunav-theme-core`. Bonasera content and
+Full Site Editing composition belong in the future `vicunav-demo-restaurante` project.
+
+## Requirements
+
+- WordPress 6.6 or later.
+- PHP 8.1 or later.
+- `vicunav-plugin-core` 0.1.0 or later within contract major 1.
+- `vicunav-pagos` 0.3.0 or later within its compatible contract.
+
+Install and activate the two dependency plugins before activating **Vicunav
+Restaurante**.
+
+## Development
+
+Initialize the shared standards and install development dependencies:
 
 ```bash
 git submodule update --init --recursive
+composer install
 ```
 
-## Required customization
+Run the complete scaffold validation:
 
-After creating the repository:
+```bash
+composer check
+```
 
-1. Replace this README with project-specific documentation in English.
-2. Replace every placeholder in `AGENTS.md` and document the actual validation
-   commands.
-3. Confirm that the standards submodule points to the intended commit.
-4. Add the package bootstrap, tests, and tooling required by its contract.
-5. Configure branch protection and allow only squash-merge pull requests into `main`.
-6. Verify that no `{{PLACEHOLDER}}` values remain in versioned files.
+Contributions follow one issue, branch, pull request, and squash-merge per change. See
+[`CONTRIBUTING.md`](CONTRIBUTING.md).
 
-Do not add product-specific files to this template merely because one consumer needs
-them. Shared repository scaffolding belongs here; package behavior belongs in the new
-repository.
+## License
 
-For more information, see the GitHub guide on [creating a repository from a template](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+This project is licensed under the [GPL-2.0-or-later](LICENSE) license.
