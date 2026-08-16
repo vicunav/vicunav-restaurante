@@ -5,10 +5,9 @@ delivery, pizzas y reservas.
 
 ## Estado y límites
 
-REST-02G añade zonas, descuentos, impuesto, propinas y cálculo autoritativo de totales
-sobre reglas propias del vertical. No añadas sesiones, carrito, pedidos, integración
-operativa con pagos, reservas, bloques ni contenido Bonasera antes del issue
-propietario definido en el plan del hub.
+REST-02H añade sesiones seguras, carrito persistente, líneas y mutaciones REST con
+revisión. No añadas checkout, pedidos, integración operativa con pagos, reservas,
+bloques ni contenido Bonasera antes del issue propietario definido en el plan del hub.
 
 El plugin será propietario del namespace `Vicu\Restaurante`. Depende de
 `vicunav-plugin-core` para capacidades compartidas y de `vicunav-pagos` para

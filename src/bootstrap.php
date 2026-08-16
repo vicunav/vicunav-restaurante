@@ -18,6 +18,8 @@ use Vicu\Restaurante\Rest\MenuRoutes;
 use Vicu\Restaurante\Rest\CatalogRoutes;
 use Vicu\Restaurante\Rest\PizzaQuoteRoute;
 use Vicu\Restaurante\Rest\DeliveryZonesRoute;
+use Vicu\Restaurante\Rest\CartRoutes;
+use Vicu\Restaurante\Cart\CartService;
 use Vicu\Restaurante\Settings\RestaurantSettings;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -107,6 +109,18 @@ function activate(): void {
 	}
 
 	Capabilities::grant_to_administrator();
+	CartService::schedule_expiration();
+}
+
+/**
+ * Retira únicamente tareas programadas del plugin.
+ *
+ * @internal
+ *
+ * @return void
+ */
+function deactivate(): void {
+	CartService::unschedule_expiration();
 }
 
 /**
@@ -149,6 +163,8 @@ function bootstrap_with_dependencies( array $dependencies ): void {
 	CatalogRoutes::register_hooks();
 	PizzaQuoteRoute::register_hooks();
 	DeliveryZonesRoute::register_hooks();
+	CartRoutes::register_hooks();
+	CartService::register_hooks();
 	RestaurantSettings::register_hooks();
 
 	/**

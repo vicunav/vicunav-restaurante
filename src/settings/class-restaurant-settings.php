@@ -14,9 +14,10 @@ use Vicu\Restaurante\Commerce\PricingRevision;
  * Conserva moneda operativa fuera de los ajustes compartidos de core.
  */
 final class RestaurantSettings {
-	public const OPTION_NAME           = 'vicu_restaurante_settings';
-	public const DEFAULT_TAX_RATE_BPS  = 800;
-	public const DEFAULT_TIP_RATES_BPS = array( 0, 1000, 1500, 2000 );
+	public const OPTION_NAME                 = 'vicu_restaurante_settings';
+	public const DEFAULT_TAX_RATE_BPS        = 800;
+	public const DEFAULT_TIP_RATES_BPS       = array( 0, 1000, 1500, 2000 );
+	public const DEFAULT_CART_LIFETIME_HOURS = 72;
 
 	private const GROUP = 'vicu_restaurante_settings';
 	private const PAGE  = 'vicu_restaurante_settings';
@@ -96,6 +97,18 @@ final class RestaurantSettings {
 	}
 
 	/**
+	 * Devuelve la vigencia de un carrito no convertido.
+	 *
+	 * @return int
+	 */
+	public static function cart_lifetime_hours(): int {
+		$settings = self::all();
+		$value    = self::bounded_integer( $settings['cart_lifetime_hours'] ?? null, 1, 720 );
+
+		return null === $value ? self::DEFAULT_CART_LIFETIME_HOURS : $value;
+	}
+
+	/**
 	 * Registra el option y el campo inicial del vertical.
 	 *
 	 * @return void
@@ -108,9 +121,10 @@ final class RestaurantSettings {
 				'type'              => 'array',
 				'sanitize_callback' => array( self::class, 'sanitize' ),
 				'default'           => array(
-					'currency'      => 'USD',
-					'tax_rate_bps'  => self::DEFAULT_TAX_RATE_BPS,
-					'tip_rates_bps' => self::DEFAULT_TIP_RATES_BPS,
+					'currency'            => 'USD',
+					'tax_rate_bps'        => self::DEFAULT_TAX_RATE_BPS,
+					'tip_rates_bps'       => self::DEFAULT_TIP_RATES_BPS,
+					'cart_lifetime_hours' => self::DEFAULT_CART_LIFETIME_HOURS,
 				),
 				'show_in_rest'      => false,
 			)
@@ -130,6 +144,15 @@ final class RestaurantSettings {
 			self::PAGE,
 			'vicu_restaurante_commerce',
 			array( 'label_for' => 'vicu_restaurante_currency' )
+		);
+
+		add_settings_field(
+			'vicu_restaurante_cart_lifetime_hours',
+			__( 'Vigencia del carrito (horas)', 'vicunav-restaurante' ),
+			array( self::class, 'render_cart_lifetime' ),
+			self::PAGE,
+			'vicu_restaurante_commerce',
+			array( 'label_for' => 'vicu_restaurante_cart_lifetime_hours' )
 		);
 
 		add_settings_field(
@@ -155,12 +178,13 @@ final class RestaurantSettings {
 	 * Sanitiza el option completo.
 	 *
 	 * @param mixed $input Datos candidatos.
-	 * @return array{currency: string, tax_rate_bps: int, tip_rates_bps: int[]}
+	 * @return array{currency: string, tax_rate_bps: int, tip_rates_bps: int[], cart_lifetime_hours: int}
 	 */
 	public static function sanitize( mixed $input ): array {
 		$currency  = is_array( $input ) ? self::sanitize_currency( $input['currency'] ?? '' ) : '';
 		$tax_rate  = is_array( $input ) ? self::rate( $input['tax_rate_bps'] ?? null ) : null;
 		$tip_rates = is_array( $input ) ? self::sanitize_tip_rates( $input['tip_rates_bps'] ?? array() ) : array();
+		$lifetime  = is_array( $input ) ? self::bounded_integer( $input['cart_lifetime_hours'] ?? null, 1, 720 ) : null;
 
 		if ( '' === $currency ) {
 			add_settings_error(
@@ -181,10 +205,16 @@ final class RestaurantSettings {
 			$tip_rates = self::tip_rates_bps();
 		}
 
+		if ( null === $lifetime ) {
+			add_settings_error( self::OPTION_NAME, 'vicu_restaurante_invalid_cart_lifetime', __( 'La vigencia del carrito debe estar entre 1 y 720 horas.', 'vicunav-restaurante' ) );
+			$lifetime = self::cart_lifetime_hours();
+		}
+
 		return array(
-			'currency'      => $currency,
-			'tax_rate_bps'  => $tax_rate,
-			'tip_rates_bps' => $tip_rates,
+			'currency'            => $currency,
+			'tax_rate_bps'        => $tax_rate,
+			'tip_rates_bps'       => $tip_rates,
+			'cart_lifetime_hours' => $lifetime,
 		);
 	}
 
@@ -255,6 +285,19 @@ final class RestaurantSettings {
 	}
 
 	/**
+	 * Renderiza la vigencia operativa del carrito.
+	 *
+	 * @return void
+	 */
+	public static function render_cart_lifetime(): void {
+		printf(
+			'<input type="number" min="1" max="720" id="vicu_restaurante_cart_lifetime_hours" name="%1$s[cart_lifetime_hours]" value="%2$d" required>',
+			esc_attr( self::OPTION_NAME ),
+			esc_attr( (string) self::cart_lifetime_hours() )
+		);
+	}
+
+	/**
 	 * Invalida pricing después de cambiar el option propietario.
 	 *
 	 * @param string $option    Nombre del option.
@@ -320,6 +363,24 @@ final class RestaurantSettings {
 		$rate = (int) $value;
 
 		return 0 <= $rate && 10000 >= $rate ? $rate : null;
+	}
+
+	/**
+	 * Valida un entero acotado sin aceptar coerciones parciales.
+	 *
+	 * @param mixed $value Valor candidato.
+	 * @param int   $min   Límite inferior.
+	 * @param int   $max   Límite superior.
+	 * @return int|null
+	 */
+	private static function bounded_integer( mixed $value, int $min, int $max ): ?int {
+		if ( ! is_scalar( $value ) || is_float( $value ) || ! is_numeric( $value ) || trim( (string) $value ) !== (string) (int) $value ) {
+			return null;
+		}
+
+		$value = (int) $value;
+
+		return $min <= $value && $max >= $value ? $value : null;
 	}
 
 	/**

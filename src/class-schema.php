@@ -80,6 +80,50 @@ final class Schema {
 	}
 
 	/**
+	 * Devuelve la tabla de sesiones anónimas de carrito.
+	 *
+	 * @return string
+	 */
+	public static function cart_sessions_table_name(): string {
+		global $wpdb;
+
+		return $wpdb->prefix . 'vicu_rest_cart_sessions';
+	}
+
+	/**
+	 * Devuelve la tabla autoritativa de carritos.
+	 *
+	 * @return string
+	 */
+	public static function carts_table_name(): string {
+		global $wpdb;
+
+		return $wpdb->prefix . 'vicu_rest_carts';
+	}
+
+	/**
+	 * Devuelve la tabla de líneas de carrito.
+	 *
+	 * @return string
+	 */
+	public static function cart_items_table_name(): string {
+		global $wpdb;
+
+		return $wpdb->prefix . 'vicu_rest_cart_items';
+	}
+
+	/**
+	 * Devuelve la tabla de resultados idempotentes del vertical.
+	 *
+	 * @return string
+	 */
+	public static function idempotency_table_name(): string {
+		global $wpdb;
+
+		return $wpdb->prefix . 'vicu_rest_idempotency';
+	}
+
+	/**
 	 * Comprueba la existencia de una tabla interna conocida.
 	 *
 	 * @param string $table_name Nombre completo y confiable de la tabla.

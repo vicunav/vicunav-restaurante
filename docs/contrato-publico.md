@@ -1,7 +1,8 @@
 # Contrato público de `vicunav-restaurante`
 
-Estado: contrato 1.0.0 aprobado; REST-02G implementa carga, compatibilidad,
-instalación, menú, catálogo, pricing de pizzas, zonas, descuentos y totales. Las demás
+Estado: contrato 1.0.0 aprobado; REST-02H implementa carga, compatibilidad,
+instalación, menú, catálogo, pricing de pizzas, zonas, descuentos, totales y carrito.
+Las demás
 superficies se habilitan por los issues indicados en la matriz, sin considerarse
 operativas antes de ellos.
 
@@ -18,7 +19,7 @@ internas de otro paquete.
 
 ## Estado de implementación
 
-| Superficie | Issue propietario | Estado después de REST-02G |
+| Superficie | Issue propietario | Estado después de REST-02H |
 | --- | --- | --- |
 | Versiones, autoload, dependencias y hook de carga | REST-02B | Implementado |
 | Capabilities, migraciones e instalación | REST-02C | Implementado |
@@ -26,7 +27,8 @@ internas de otro paquete.
 | Ingredientes y opciones de pizza | REST-02E | Implementado |
 | Pricing de pizzas | REST-02F | Implementado |
 | Totales, descuentos y delivery | REST-02G | Implementado |
-| Carrito, pedidos e integración con pagos | REST-02H a REST-02J | Planificado |
+| Carrito seguro y mutaciones | REST-02H | Implementado |
+| Pedidos e integración con pagos | REST-02I y REST-02J | Planificado |
 | Reservas y pizzas guardadas | REST-02K y REST-02L | Planificado |
 | Bloques públicos | REST-02M a REST-02Q | Planificado |
 | E2E, privacidad, rendimiento y release candidata | REST-02R | Planificado |
@@ -79,11 +81,12 @@ archivo del plugin.
 ## Instalación y migraciones
 
 La activación ejecuta migraciones pendientes y solo después concede capabilities al
-rol administrador. REST-02G eleva el schema a versión `4`: conserva
+rol administrador. REST-02H eleva el schema a versión `5`: conserva
 `${prefix}vicu_rest_migrations`, un ledger InnoDB; mantiene la revisión del menú e
 incorpora tablas InnoDB vacías para ingredientes, relaciones, opciones de pizza, zonas
-de entrega y descuentos. Inicializa las revisiones de disponibilidad y pricing en
-`1`, sin crear contenido, zonas, códigos ni datos de demostración.
+de entrega, descuentos, sesiones, carritos, líneas e idempotencia. Inicializa las
+revisiones de disponibilidad y pricing en `1`, sin crear contenido, zonas, códigos,
+sesiones ni datos de demostración.
 
 Cada migración tiene versión monotónica, comprobación de aplicación, operación `up()`
 y compensación `down()`. El instalador:
@@ -220,8 +223,9 @@ Delivery y propina no forman parte de la base fiscal en v1. El pedido congela el
 desglose y la solicitud de pago usa exactamente su `total` y `currency`. Un total debe
 ser positivo para crear una solicitud en pagos.
 
-REST-02G implementa esta fórmula en `TotalsService` sin persistir carrito ni pedido.
-El subtotal recibido debe provenir de líneas ya cotizadas por servidor. El servicio
+`TotalsService` implementa esta fórmula y REST-02H la persiste en cada revisión del
+carrito, todavía sin crear pedidos. El subtotal proviene de líneas recalculadas por el
+servidor. El servicio
 resuelve código y zona por ID, usa la moneda y tasas vigentes, y no acepta importes de
 descuento, impuesto, propina, delivery o total del cliente.
 
@@ -421,8 +425,57 @@ Las respuestas 200 incluyen `Cache-Control: public, max-age=60,
 stale-while-revalidate=300` y un `ETag` ligado a
 `vicu_restaurante_pricing_revision`; un `If-None-Match` vigente devuelve 304. Cambiar
 zonas, descuentos, tasas, propinas o moneda incrementa esa revisión. Los descuentos
-no tienen endpoint público separado: REST-02H los aplicará dentro del carrito para no
-crear un oráculo enumerable de códigos.
+no tienen endpoint público separado: se aplican dentro del carrito para no crear un
+oráculo enumerable de códigos.
+
+### Carrito implementado
+
+`POST /carts` crea o recupera un carrito activo. Una sesión anónima usa una credencial
+opaca de 256 bits en una cookie `HttpOnly`, `SameSite=Lax`, host-only y `Secure` cuando
+el sitio usa HTTPS. La base solo conserva hashes con separación de propósito. La
+respuesta privada entrega el token `csrf_token` ligado a esa sesión, nunca el secreto
+de cookie. El filtro `vicu_restaurante_allow_cart_creation` permite conectar rate
+limiting y devuelve HTTP 429 al denegar.
+
+Un usuario autenticado usa cookie WordPress y `X-WP-Nonce`. Si llega con un carrito
+anónimo y todavía no posee otro activo, el carrito se asocia sin copiar líneas y la
+sesión se rota e invalida. Si ya posee otro carrito, no se mezclan silenciosamente.
+
+Las rutas operativas son:
+
+| Método y ruta | Operación |
+| --- | --- |
+| `GET /cart` | Leer el carrito y sus revisiones |
+| `POST /cart/items` | Añadir una línea validada |
+| `PATCH /cart/items/{line_id}` | Sustituir una línea completa de forma atómica |
+| `DELETE /cart/items/{line_id}` | Retirar una línea |
+| `PUT /cart/discount` | Aplicar un código sin consumir usos |
+| `DELETE /cart/discount` | Retirar el código |
+| `PUT /cart/fulfillment` | Elegir pickup o delivery y zona activa |
+| `PUT /cart/tip` | Elegir una tasa configurada |
+
+Toda mutación requiere `expected_revision`. Un valor obsoleto devuelve
+`vicu_restaurante_stale_revision`, HTTP 409, `current_revision` y `retryable = true`;
+la transacción no altera líneas ni totales. Para sesiones anónimas exige además
+`X-Vicu-CSRF` y que `Origin` o `Referer` coincida exactamente en esquema, host y puerto
+con `home_url`. El UUID de línea nunca sustituye la comprobación de ownership.
+
+Una línea de menú solo se fusiona con otra cuando item, opciones normalizadas,
+ingredientes retirados, nota normalizada y precio autoritativo coinciden. Las pizzas
+personalizadas nunca se fusionan. Sustituir una línea cotiza primero y conserva la
+original si alguna selección falla. Tras cada mutación se recalculan todas las líneas,
+descuento, impuesto, propina, delivery y total contra las revisiones vivas. Los campos
+de precio o total del request se ignoran.
+
+La respuesta contiene UUID del carrito, estado, revisión, revisiones de catálogo,
+disponibilidad y pricing, líneas, fulfillment, propina, totales y vencimiento. No
+incluye IDs internos, hash de sesión ni propietario. Todas las lecturas y escrituras
+responden con `Cache-Control: no-store, max-age=0`, `Vary: Cookie, X-WP-Nonce` y un
+`ETag` ligado al UUID y la revisión.
+
+La vigencia predeterminada es 72 horas y puede configurarse entre 1 y 720. La tarea
+horaria `vicu_restaurante_expire_carts` cambia carritos vencidos a `expired` y libera
+su clave de ownership; no borra líneas ni afectará pedidos creados en REST-02I.
 
 ### Errores estables
 
