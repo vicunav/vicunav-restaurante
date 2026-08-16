@@ -5,8 +5,8 @@ delivery, pizzas y reservas.
 
 ## Estado y límites
 
-REST-02H añade sesiones seguras, carrito persistente, líneas y mutaciones REST con
-revisión. No añadas checkout, pedidos, integración operativa con pagos, reservas,
+REST-02I añade checkout transaccional, pedidos, snapshots, estados, eventos y su
+proyección administrativa. No añadas integración operativa con pagos, reservas,
 bloques ni contenido Bonasera antes del issue propietario definido en el plan del hub.
 
 El plugin será propietario del namespace `Vicu\Restaurante`. Depende de

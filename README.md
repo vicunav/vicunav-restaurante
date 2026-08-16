@@ -5,11 +5,12 @@ pizzas, and reservations.
 
 ## Status
 
-REST-02H publishes plugin version 0.8.0 over public contract 1.0.0. The current runtime
-adds secure anonymous sessions, authenticated ownership, persistent carts, menu and
-pizza lines, expiration, CSRF-protected REST mutations, compare-and-swap revisions,
-and authoritative recalculation. It does not include checkout, orders, reservations,
-demo content, or a WooCommerce dependency.
+REST-02I publishes plugin version 0.9.0 over public contract 1.0.0. The current runtime
+adds transactional checkout, immutable order snapshots, idempotent cart conversion,
+an audited order state machine, private order reads, and an administrative projection
+on top of the existing catalog, pricing, and cart domain. It does not yet create
+payment requests, accept payment evidence, manage reservations, include demo content,
+or depend on WooCommerce.
 
 Further domain persistence, REST endpoints, admin screens, and blocks are introduced
 only through their separate atomic issues. A planned surface is not available until

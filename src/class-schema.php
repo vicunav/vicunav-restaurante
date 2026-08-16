@@ -124,6 +124,39 @@ final class Schema {
 	}
 
 	/**
+	 * Devuelve la tabla autoritativa de pedidos.
+	 *
+	 * @return string
+	 */
+	public static function orders_table_name(): string {
+		global $wpdb;
+
+		return $wpdb->prefix . 'vicu_rest_orders';
+	}
+
+	/**
+	 * Devuelve la tabla de snapshots de líneas de pedido.
+	 *
+	 * @return string
+	 */
+	public static function order_items_table_name(): string {
+		global $wpdb;
+
+		return $wpdb->prefix . 'vicu_rest_order_items';
+	}
+
+	/**
+	 * Devuelve la tabla append-only de eventos de pedido.
+	 *
+	 * @return string
+	 */
+	public static function order_events_table_name(): string {
+		global $wpdb;
+
+		return $wpdb->prefix . 'vicu_rest_order_events';
+	}
+
+	/**
 	 * Comprueba la existencia de una tabla interna conocida.
 	 *
 	 * @param string $table_name Nombre completo y confiable de la tabla.

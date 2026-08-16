@@ -14,10 +14,11 @@ use Vicu\Restaurante\Commerce\PricingRevision;
  * Conserva moneda operativa fuera de los ajustes compartidos de core.
  */
 final class RestaurantSettings {
-	public const OPTION_NAME                 = 'vicu_restaurante_settings';
-	public const DEFAULT_TAX_RATE_BPS        = 800;
-	public const DEFAULT_TIP_RATES_BPS       = array( 0, 1000, 1500, 2000 );
-	public const DEFAULT_CART_LIFETIME_HOURS = 72;
+	public const OPTION_NAME                      = 'vicu_restaurante_settings';
+	public const DEFAULT_TAX_RATE_BPS             = 800;
+	public const DEFAULT_TIP_RATES_BPS            = array( 0, 1000, 1500, 2000 );
+	public const DEFAULT_CART_LIFETIME_HOURS      = 72;
+	public const DEFAULT_PAYMENT_LIFETIME_MINUTES = 30;
 
 	private const GROUP = 'vicu_restaurante_settings';
 	private const PAGE  = 'vicu_restaurante_settings';
@@ -109,6 +110,18 @@ final class RestaurantSettings {
 	}
 
 	/**
+	 * Devuelve el vencimiento congelable de una solicitud de pago.
+	 *
+	 * @return int
+	 */
+	public static function payment_lifetime_minutes(): int {
+		$settings = self::all();
+		$value    = self::bounded_integer( $settings['payment_lifetime_minutes'] ?? null, 5, 1440 );
+
+		return null === $value ? self::DEFAULT_PAYMENT_LIFETIME_MINUTES : $value;
+	}
+
+	/**
 	 * Registra el option y el campo inicial del vertical.
 	 *
 	 * @return void
@@ -121,10 +134,11 @@ final class RestaurantSettings {
 				'type'              => 'array',
 				'sanitize_callback' => array( self::class, 'sanitize' ),
 				'default'           => array(
-					'currency'            => 'USD',
-					'tax_rate_bps'        => self::DEFAULT_TAX_RATE_BPS,
-					'tip_rates_bps'       => self::DEFAULT_TIP_RATES_BPS,
-					'cart_lifetime_hours' => self::DEFAULT_CART_LIFETIME_HOURS,
+					'currency'                 => 'USD',
+					'tax_rate_bps'             => self::DEFAULT_TAX_RATE_BPS,
+					'tip_rates_bps'            => self::DEFAULT_TIP_RATES_BPS,
+					'cart_lifetime_hours'      => self::DEFAULT_CART_LIFETIME_HOURS,
+					'payment_lifetime_minutes' => self::DEFAULT_PAYMENT_LIFETIME_MINUTES,
 				),
 				'show_in_rest'      => false,
 			)
@@ -156,6 +170,15 @@ final class RestaurantSettings {
 		);
 
 		add_settings_field(
+			'vicu_restaurante_payment_lifetime_minutes',
+			__( 'Vigencia del pago (minutos)', 'vicunav-restaurante' ),
+			array( self::class, 'render_payment_lifetime' ),
+			self::PAGE,
+			'vicu_restaurante_commerce',
+			array( 'label_for' => 'vicu_restaurante_payment_lifetime_minutes' )
+		);
+
+		add_settings_field(
 			'vicu_restaurante_tax_rate_bps',
 			__( 'Impuesto (puntos base)', 'vicunav-restaurante' ),
 			array( self::class, 'render_tax_rate' ),
@@ -178,13 +201,14 @@ final class RestaurantSettings {
 	 * Sanitiza el option completo.
 	 *
 	 * @param mixed $input Datos candidatos.
-	 * @return array{currency: string, tax_rate_bps: int, tip_rates_bps: int[], cart_lifetime_hours: int}
+	 * @return array{currency: string, tax_rate_bps: int, tip_rates_bps: int[], cart_lifetime_hours: int, payment_lifetime_minutes: int}
 	 */
 	public static function sanitize( mixed $input ): array {
-		$currency  = is_array( $input ) ? self::sanitize_currency( $input['currency'] ?? '' ) : '';
-		$tax_rate  = is_array( $input ) ? self::rate( $input['tax_rate_bps'] ?? null ) : null;
-		$tip_rates = is_array( $input ) ? self::sanitize_tip_rates( $input['tip_rates_bps'] ?? array() ) : array();
-		$lifetime  = is_array( $input ) ? self::bounded_integer( $input['cart_lifetime_hours'] ?? null, 1, 720 ) : null;
+		$currency         = is_array( $input ) ? self::sanitize_currency( $input['currency'] ?? '' ) : '';
+		$tax_rate         = is_array( $input ) ? self::rate( $input['tax_rate_bps'] ?? null ) : null;
+		$tip_rates        = is_array( $input ) ? self::sanitize_tip_rates( $input['tip_rates_bps'] ?? array() ) : array();
+		$lifetime         = is_array( $input ) ? self::bounded_integer( $input['cart_lifetime_hours'] ?? null, 1, 720 ) : null;
+		$payment_lifetime = is_array( $input ) ? self::bounded_integer( $input['payment_lifetime_minutes'] ?? null, 5, 1440 ) : null;
 
 		if ( '' === $currency ) {
 			add_settings_error(
@@ -210,11 +234,17 @@ final class RestaurantSettings {
 			$lifetime = self::cart_lifetime_hours();
 		}
 
+		if ( null === $payment_lifetime ) {
+			add_settings_error( self::OPTION_NAME, 'vicu_restaurante_invalid_payment_lifetime', __( 'La vigencia del pago debe estar entre 5 y 1440 minutos.', 'vicunav-restaurante' ) );
+			$payment_lifetime = self::payment_lifetime_minutes();
+		}
+
 		return array(
-			'currency'            => $currency,
-			'tax_rate_bps'        => $tax_rate,
-			'tip_rates_bps'       => $tip_rates,
-			'cart_lifetime_hours' => $lifetime,
+			'currency'                 => $currency,
+			'tax_rate_bps'             => $tax_rate,
+			'tip_rates_bps'            => $tip_rates,
+			'cart_lifetime_hours'      => $lifetime,
+			'payment_lifetime_minutes' => $payment_lifetime,
 		);
 	}
 
@@ -294,6 +324,19 @@ final class RestaurantSettings {
 			'<input type="number" min="1" max="720" id="vicu_restaurante_cart_lifetime_hours" name="%1$s[cart_lifetime_hours]" value="%2$d" required>',
 			esc_attr( self::OPTION_NAME ),
 			esc_attr( (string) self::cart_lifetime_hours() )
+		);
+	}
+
+	/**
+	 * Renderiza el vencimiento que se congelará al crear el pedido.
+	 *
+	 * @return void
+	 */
+	public static function render_payment_lifetime(): void {
+		printf(
+			'<input type="number" min="5" max="1440" id="vicu_restaurante_payment_lifetime_minutes" name="%1$s[payment_lifetime_minutes]" value="%2$d" required>',
+			esc_attr( self::OPTION_NAME ),
+			esc_attr( (string) self::payment_lifetime_minutes() )
 		);
 	}
 

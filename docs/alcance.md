@@ -148,10 +148,29 @@ Esta fase añade únicamente:
 No crea pedidos, checkout ni solicitudes de pago. REST-02I es el siguiente issue y
 convertirá un carrito validado en snapshots inmutables y una máquina de estados.
 
+## Alcance de REST-02I
+
+Esta fase añade únicamente:
+
+- plugin 0.9.0 y schema de instalación 6;
+- tablas InnoDB para pedidos, líneas inmutables y eventos append-only;
+- checkout transaccional que bloquea y revalida el carrito, consume el descuento,
+  congela importes y convierte el carrito exactamente una vez;
+- `Idempotency-Key` con hash, fingerprint, replay y rechazo de colisiones, sin guardar
+  la clave ni el token de acceso en texto plano;
+- ownership por usuario o token opaco de pedido para invitados;
+- máquina de estados v1 con compare-and-swap, revisión y evento por transición;
+- `POST /orders`, `GET /orders/{public_id}` y transición administrativa protegida;
+- proyección privada `vicu_order`, listado, detalle, historial, salud y reconstrucción
+  idempotente en wp-admin.
+
+No crea solicitudes de pago ni consume eventos de `vicunav-pagos`. REST-02J es el
+siguiente issue y será propietario exclusivo de esa integración.
+
 ## Fuera de alcance actual
 
-El plugin todavía no registra bloques o assets. Tampoco contiene pedidos, integración
-operativa con pagos, reservas, contenido Bonasera ni integración con LocalWP.
+El plugin todavía no registra bloques o assets. Tampoco contiene integración operativa
+con pagos, reservas, contenido Bonasera ni integración con LocalWP.
 
 Esas capacidades se implementan únicamente mediante los issues atómicos posteriores
 del plan de restaurante.

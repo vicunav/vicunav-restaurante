@@ -11,6 +11,7 @@ use Vicu\Restaurante\Admin\MenuAdmin;
 use Vicu\Restaurante\Admin\CatalogAdmin;
 use Vicu\Restaurante\Admin\MenuRelationsAdmin;
 use Vicu\Restaurante\Admin\CommerceAdmin;
+use Vicu\Restaurante\Admin\OrderAdmin;
 use Vicu\Restaurante\Menu\MenuCategory;
 use Vicu\Restaurante\Menu\MenuItemPostType;
 use Vicu\Restaurante\Menu\MenuMeta;
@@ -19,7 +20,9 @@ use Vicu\Restaurante\Rest\CatalogRoutes;
 use Vicu\Restaurante\Rest\PizzaQuoteRoute;
 use Vicu\Restaurante\Rest\DeliveryZonesRoute;
 use Vicu\Restaurante\Rest\CartRoutes;
+use Vicu\Restaurante\Rest\OrderRoutes;
 use Vicu\Restaurante\Cart\CartService;
+use Vicu\Restaurante\Order\OrderPostType;
 use Vicu\Restaurante\Settings\RestaurantSettings;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -154,16 +157,19 @@ function bootstrap_with_dependencies( array $dependencies ): void {
 
 	MenuCategory::register_hooks();
 	( new MenuItemPostType() )->register_hooks();
+	( new OrderPostType() )->register_hooks();
 	MenuMeta::register_hooks();
 	MenuAdmin::register_hooks();
 	CatalogAdmin::register_hooks();
 	MenuRelationsAdmin::register_hooks();
 	CommerceAdmin::register_hooks();
+	OrderAdmin::register_hooks();
 	MenuRoutes::register_hooks();
 	CatalogRoutes::register_hooks();
 	PizzaQuoteRoute::register_hooks();
 	DeliveryZonesRoute::register_hooks();
 	CartRoutes::register_hooks();
+	OrderRoutes::register_hooks();
 	CartService::register_hooks();
 	RestaurantSettings::register_hooks();
 
