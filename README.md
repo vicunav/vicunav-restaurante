@@ -5,9 +5,14 @@ pizzas, and reservations.
 
 ## Status
 
-REST-02A provides the initial installable scaffold. It intentionally contains no
-restaurant runtime behavior yet. The public contract, persistence, REST endpoints,
-admin screens, and blocks will be introduced through separate atomic issues.
+REST-02B publishes public contract 1.0.0 and plugin version 0.2.0. The current runtime
+registers the package autoloader, verifies compatible Core and Payments contracts, and
+announces availability through `vicu_restaurante_loaded`. It intentionally contains no
+restaurant domain behavior yet.
+
+Persistence, REST endpoints, admin screens, and blocks will be introduced through
+separate atomic issues. Their planned contract does not imply that they are currently
+available.
 
 The v1 architecture is owned by the Vicunav hub and does not use WooCommerce.
 
@@ -28,8 +33,8 @@ Full Site Editing composition belong in the future `vicunav-demo-restaurante` pr
 
 - WordPress 6.6 or later.
 - PHP 8.1 or later.
-- `vicunav-plugin-core` 0.1.0 or later within contract major 1.
-- `vicunav-pagos` 0.3.0 or later within its compatible contract.
+- `vicunav-plugin-core` contract 1.x.
+- `vicunav-pagos` contract 0.3.0 or later, before contract 1.0.0.
 
 Install and activate the two dependency plugins before activating **Vicunav
 Restaurante**.
@@ -51,6 +56,9 @@ composer check
 
 Contributions follow one issue, branch, pull request, and squash-merge per change. See
 [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+The versioned integration surface and implementation matrix are documented in
+[`docs/contrato-publico.md`](docs/contrato-publico.md).
 
 ## License
 

@@ -5,16 +5,18 @@ delivery, pizzas y reservas.
 
 ## Estado y límites
 
-REST-02A mantiene un scaffold instalable sin lógica de dominio. No añadas menú,
-pricing, carrito, pedidos, integración con pagos, reservas, bloques ni contenido
-Bonasera antes del issue propietario definido en el plan del hub.
+REST-02B publica el contrato 1.0.0 y un bootstrap que valida las versiones y clases
+públicas de core y pagos. No añadas menú, pricing, carrito, pedidos, integración
+operativa con pagos, reservas, bloques ni contenido Bonasera antes del issue
+propietario definido en el plan del hub.
 
 El plugin será propietario del namespace `Vicu\Restaurante`. Depende de
 `vicunav-plugin-core` para capacidades compartidas y de `vicunav-pagos` para
 solicitudes de pago. Nunca lee persistencia interna de otro paquete.
 
-El contrato público se publicará en REST-02B. No inventes firmas, hooks, estados,
-schemas o endpoints antes de ese issue.
+El contrato público vive en [`docs/contrato-publico.md`](docs/contrato-publico.md).
+Una superficie marcada como planificada no está disponible y solo puede implementarse
+en su issue propietario.
 
 ## Reglas aplicables
 
