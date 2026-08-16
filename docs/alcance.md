@@ -86,11 +86,30 @@ Esta fase añade únicamente:
 No calcula precios de pizzas ni incorpora contenido de demostración. REST-02F es el
 siguiente issue y será propietario del quote autoritativo del constructor.
 
+## Alcance de REST-02F
+
+Esta fase añade únicamente:
+
+- plugin 0.6.0, conservando schema de instalación 3 y contrato 1.0.0;
+- `pizza_configuration` versión 1 con tamaño, masa, salsa, queso, toppings por zona,
+  cantidad y revisión de catálogo obligatorios;
+- validación cerrada de IDs, disponibilidad, tipos, versión, zonas y máximo global de
+  seis toppings;
+- pricing puro en enteros donde tamaño fija base, masa, queso y toppings suman
+  modificadores, y salsa no modifica el precio en v1;
+- precio completo por topping tanto en `whole` como en `left` o `right`;
+- moneda operativa propia mediante Settings API, con `USD` como valor inicial;
+- `POST /pizza/quote` público, sin caché, con schema y hook de rate limiting;
+- desglose autoritativo que ignora importes enviados por el cliente.
+
+No crea carritos ni calcula descuentos, impuestos, propina, delivery o total de
+pedido. REST-02G es el siguiente issue y será propietario de esos componentes.
+
 ## Fuera de alcance actual
 
 El plugin todavía no registra ajustes generales, bloques o assets. Tampoco contiene
-pricing autoritativo, carrito, pedidos, integración operativa con pagos, reservas,
-contenido Bonasera ni integración con LocalWP.
+totales de pedido, delivery, descuentos, carrito, pedidos, integración operativa con
+pagos, reservas, contenido Bonasera ni integración con LocalWP.
 
 Esas capacidades se implementan únicamente mediante los issues atómicos posteriores
 del plan de restaurante.

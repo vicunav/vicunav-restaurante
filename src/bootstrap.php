@@ -15,6 +15,8 @@ use Vicu\Restaurante\Menu\MenuItemPostType;
 use Vicu\Restaurante\Menu\MenuMeta;
 use Vicu\Restaurante\Rest\MenuRoutes;
 use Vicu\Restaurante\Rest\CatalogRoutes;
+use Vicu\Restaurante\Rest\PizzaQuoteRoute;
+use Vicu\Restaurante\Settings\RestaurantSettings;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -142,6 +144,8 @@ function bootstrap_with_dependencies( array $dependencies ): void {
 	MenuRelationsAdmin::register_hooks();
 	MenuRoutes::register_hooks();
 	CatalogRoutes::register_hooks();
+	PizzaQuoteRoute::register_hooks();
+	RestaurantSettings::register_hooks();
 
 	/**
 	 * Se ejecuta cuando el contrato base del vertical restaurante está disponible.

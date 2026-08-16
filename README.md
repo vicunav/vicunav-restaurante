@@ -5,11 +5,11 @@ pizzas, and reservations.
 
 ## Status
 
-REST-02E publishes plugin version 0.5.0 over public contract 1.0.0. The current runtime
-adds a canonical ingredient and pizza-option catalog, transactional availability,
-compare-and-swap writes, native WordPress administration, and cacheable public reads
-to the structured menu delivered in REST-02D. It does not include pizza quotes, carts,
-orders, reservations, demo content, or a WooCommerce dependency.
+REST-02F publishes plugin version 0.6.0 over public contract 1.0.0. The current runtime
+adds authoritative pizza validation and quotes to the canonical menu, ingredient,
+option, and availability catalog. Pricing uses server-side integer amounts, catalog
+revisions, and the restaurant currency setting. It does not include carts, order
+totals, orders, reservations, demo content, or a WooCommerce dependency.
 
 Further domain persistence, REST endpoints, admin screens, and blocks are introduced
 only through their separate atomic issues. A planned surface is not available until

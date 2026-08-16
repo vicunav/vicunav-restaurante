@@ -28,7 +28,7 @@ final class BootstrapTest extends TestCase {
 	 * @return void
 	 */
 	public function test_defines_foundational_constants(): void {
-		$this->assertSame( '0.5.0', VICU_RESTAURANTE_VERSION );
+		$this->assertSame( '0.6.0', VICU_RESTAURANTE_VERSION );
 		$this->assertSame( '1.0.0', VICU_RESTAURANTE_CONTRACT_VERSION );
 		$this->assertSame( '3', VICU_RESTAURANTE_DB_VERSION );
 		$this->assertSame(
@@ -156,7 +156,7 @@ final class BootstrapTest extends TestCase {
 
 		$this->assertSame( 1, did_action( 'vicu_restaurante_loaded' ) );
 		$this->assertSame(
-			array( '0.5.0', '1.0.0' ),
+			array( '0.6.0', '1.0.0' ),
 			$vicu_restaurante_test_fired_actions['vicu_restaurante_loaded'][0]
 		);
 	}
@@ -198,7 +198,7 @@ final class BootstrapTest extends TestCase {
 			$contents .= $file->fgets();
 		}
 
-		$this->assertStringContainsString( 'Version:           0.5.0', $contents );
+		$this->assertStringContainsString( 'Version:           0.6.0', $contents );
 		$this->assertStringContainsString( 'Requires at least: 6.6', $contents );
 		$this->assertStringContainsString( 'Requires PHP:      8.1', $contents );
 		$this->assertStringContainsString(
