@@ -7,8 +7,10 @@
 
 use Vicu\Restaurante\Capabilities;
 use Vicu\Restaurante\Installer;
+use Vicu\Restaurante\Catalog\AvailabilityRevision;
 use Vicu\Restaurante\Menu\CatalogRevision;
 use Vicu\Restaurante\Migrations\CreateMigrationLedger;
+use Vicu\Restaurante\Migrations\InitializeMenuCatalog;
 use Vicu\Restaurante\Schema;
 use Vicu\Restaurante\Tests\CreateProbeTable;
 use Vicu\Restaurante\Tests\FailingMigration;
@@ -32,6 +34,7 @@ final class InstallerTest extends WP_UnitTestCase {
 		$this->drop_test_tables();
 		delete_option( 'vicu_restaurante_db_version' );
 		delete_option( CatalogRevision::OPTION_NAME );
+		delete_option( AvailabilityRevision::OPTION_NAME );
 		CatalogRevision::reset_request();
 		$this->remove_restaurant_capabilities();
 	}
@@ -45,6 +48,7 @@ final class InstallerTest extends WP_UnitTestCase {
 		$this->drop_test_tables();
 		delete_option( 'vicu_restaurante_db_version' );
 		delete_option( CatalogRevision::OPTION_NAME );
+		delete_option( AvailabilityRevision::OPTION_NAME );
 		CatalogRevision::reset_request();
 		$this->remove_restaurant_capabilities();
 		parent::tearDown();
@@ -62,9 +66,13 @@ final class InstallerTest extends WP_UnitTestCase {
 		$table_name = Schema::migration_table_name();
 
 		$this->assertTrue( Schema::table_exists( $table_name ) );
-		$this->assertSame( '2', get_option( 'vicu_restaurante_db_version' ) );
-		$this->assertSame( 2, Installer::current_version() );
+		$this->assertSame( '3', get_option( 'vicu_restaurante_db_version' ) );
+		$this->assertSame( 3, Installer::current_version() );
 		$this->assertSame( '1', get_option( CatalogRevision::OPTION_NAME ) );
+		$this->assertSame( '1', get_option( AvailabilityRevision::OPTION_NAME ) );
+		$this->assertTrue( Schema::table_exists( Schema::ingredients_table_name() ) );
+		$this->assertTrue( Schema::table_exists( Schema::menu_ingredients_table_name() ) );
+		$this->assertTrue( Schema::table_exists( Schema::pizza_options_table_name() ) );
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$engine = $wpdb->get_var(
@@ -103,8 +111,8 @@ final class InstallerTest extends WP_UnitTestCase {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" );
 
-		$this->assertSame( 2, $count );
-		$this->assertSame( 2, Installer::current_version() );
+		$this->assertSame( 3, $count );
+		$this->assertSame( 3, Installer::current_version() );
 	}
 
 	/**
@@ -118,8 +126,8 @@ final class InstallerTest extends WP_UnitTestCase {
 
 		$this->assertSame( 0, Installer::current_version() );
 		$this->assertTrue( Installer::maybe_upgrade() );
-		$this->assertSame( '2', get_option( 'vicu_restaurante_db_version' ) );
-		$this->assertSame( 2, Installer::current_version() );
+		$this->assertSame( '3', get_option( 'vicu_restaurante_db_version' ) );
+		$this->assertSame( 3, Installer::current_version() );
 	}
 
 	/**
@@ -133,8 +141,36 @@ final class InstallerTest extends WP_UnitTestCase {
 		$this->assertFalse( get_option( CatalogRevision::OPTION_NAME, false ) );
 
 		$this->assertTrue( Installer::install() );
+		$this->assertSame( 3, Installer::current_version() );
+		$this->assertSame( '1', get_option( CatalogRevision::OPTION_NAME ) );
+		$this->assertSame( '1', get_option( AvailabilityRevision::OPTION_NAME ) );
+	}
+
+	/**
+	 * Una instalación 0.4.0 conserva el menú y añade solo el catálogo operativo.
+	 *
+	 * @return void
+	 */
+	public function test_upgrade_from_schema_two_creates_ingredient_catalog(): void {
+		$this->assertTrue(
+			Installer::install(
+				array(
+					new CreateMigrationLedger(),
+					new InitializeMenuCatalog(),
+				)
+			)
+		);
 		$this->assertSame( 2, Installer::current_version() );
 		$this->assertSame( '1', get_option( CatalogRevision::OPTION_NAME ) );
+		$this->assertFalse( get_option( AvailabilityRevision::OPTION_NAME, false ) );
+
+		$this->assertTrue( Installer::install() );
+		$this->assertSame( 3, Installer::current_version() );
+		$this->assertSame( '1', get_option( CatalogRevision::OPTION_NAME ) );
+		$this->assertSame( '1', get_option( AvailabilityRevision::OPTION_NAME ) );
+		$this->assertTrue( Schema::table_exists( Schema::ingredients_table_name() ) );
+		$this->assertTrue( Schema::table_exists( Schema::menu_ingredients_table_name() ) );
+		$this->assertTrue( Schema::table_exists( Schema::pizza_options_table_name() ) );
 	}
 
 	/**
@@ -149,6 +185,38 @@ final class InstallerTest extends WP_UnitTestCase {
 		$this->assertSame( '0', get_option( CatalogRevision::OPTION_NAME ) );
 		$this->assertFalse( Schema::table_exists( Schema::migration_table_name() ) );
 		$this->assertFalse( get_option( 'vicu_restaurante_db_version', false ) );
+	}
+
+	/**
+	 * El fallo de schema 3 conserva recursos previos y compensa solo los nuevos.
+	 *
+	 * @return void
+	 */
+	public function test_ingredient_migration_preserves_preexisting_resources_on_failure(): void {
+		global $wpdb;
+
+		$this->assertTrue(
+			Installer::install(
+				array(
+					new CreateMigrationLedger(),
+					new InitializeMenuCatalog(),
+				)
+			)
+		);
+
+		$table_name = Schema::ingredients_table_name();
+		// El identificador usa el prefijo efectivo y un sufijo fijo.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$this->assertNotFalse( $wpdb->query( "CREATE TABLE {$table_name} (id bigint(20) unsigned NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)) ENGINE=InnoDB" ) );
+		add_option( AvailabilityRevision::OPTION_NAME, '0', '', false );
+
+		$this->assertFalse( Installer::install() );
+		$this->assertSame( 2, Installer::current_version() );
+		$this->assertTrue( Schema::table_exists( $table_name ) );
+		$this->assertFalse( Schema::table_exists( Schema::menu_ingredients_table_name() ) );
+		$this->assertFalse( Schema::table_exists( Schema::pizza_options_table_name() ) );
+		$this->assertSame( '0', get_option( AvailabilityRevision::OPTION_NAME ) );
+		$this->assertSame( '1', get_option( CatalogRevision::OPTION_NAME ) );
 	}
 
 	/**
@@ -207,6 +275,9 @@ final class InstallerTest extends WP_UnitTestCase {
 		global $wpdb;
 
 		$tables = array(
+			Schema::menu_ingredients_table_name(),
+			Schema::pizza_options_table_name(),
+			Schema::ingredients_table_name(),
 			$wpdb->prefix . 'vicu_rest_failed',
 			$wpdb->prefix . 'vicu_rest_probe',
 			Schema::migration_table_name(),

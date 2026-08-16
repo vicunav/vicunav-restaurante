@@ -25,6 +25,39 @@ final class Schema {
 	}
 
 	/**
+	 * Devuelve la tabla canónica de ingredientes.
+	 *
+	 * @return string
+	 */
+	public static function ingredients_table_name(): string {
+		global $wpdb;
+
+		return $wpdb->prefix . 'vicu_rest_ingredients';
+	}
+
+	/**
+	 * Devuelve la tabla de relaciones entre menú e ingredientes.
+	 *
+	 * @return string
+	 */
+	public static function menu_ingredients_table_name(): string {
+		global $wpdb;
+
+		return $wpdb->prefix . 'vicu_rest_menu_ingredients';
+	}
+
+	/**
+	 * Devuelve la tabla canónica de opciones de pizza.
+	 *
+	 * @return string
+	 */
+	public static function pizza_options_table_name(): string {
+		global $wpdb;
+
+		return $wpdb->prefix . 'vicu_rest_pizza_options';
+	}
+
+	/**
 	 * Comprueba la existencia de una tabla interna conocida.
 	 *
 	 * @param string $table_name Nombre completo y confiable de la tabla.
