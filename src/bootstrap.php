@@ -7,6 +7,12 @@
 
 namespace Vicu\Restaurante;
 
+use Vicu\Restaurante\Admin\MenuAdmin;
+use Vicu\Restaurante\Menu\MenuCategory;
+use Vicu\Restaurante\Menu\MenuItemPostType;
+use Vicu\Restaurante\Menu\MenuMeta;
+use Vicu\Restaurante\Rest\MenuRoutes;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -124,6 +130,12 @@ function bootstrap_with_dependencies( array $dependencies ): void {
 	}
 
 	$loaded = true;
+
+	MenuCategory::register_hooks();
+	( new MenuItemPostType() )->register_hooks();
+	MenuMeta::register_hooks();
+	MenuAdmin::register_hooks();
+	MenuRoutes::register_hooks();
 
 	/**
 	 * Se ejecuta cuando el contrato base del vertical restaurante está disponible.

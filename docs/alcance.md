@@ -34,9 +34,8 @@ Esta fase añade únicamente:
 - action `vicu_restaurante_loaded` para anunciar una carga compatible;
 - contrato público y pruebas aisladas de estas garantías.
 
-REST-02B no registra entidades, persistencia, permisos, REST, administración ni
-bloques. REST-02C es el siguiente issue y será propietario de capabilities,
-migraciones e instalación idempotente.
+REST-02B no registró entidades de dominio. REST-02C añadió capabilities, migraciones e
+instalación idempotente.
 
 ## Alcance de REST-02C
 
@@ -52,10 +51,28 @@ Esta fase añade únicamente:
 No crea tablas o registros de negocio. REST-02D es el siguiente issue y será
 propietario del menú estructurado.
 
+## Alcance de REST-02D
+
+Esta fase añade únicamente:
+
+- plugin 0.4.0 y schema de instalación 2;
+- CPT `vicu_menu_item` y taxonomía `vicu_menu_category`;
+- copy editorial en título, extracto, contenido y media nativos;
+- precio en unidad menor, moneda, disponibilidad, calorías, alérgenos y etiquetas
+  dietarias como metadatos registrados y no expuestos por la API genérica;
+- IDs públicos UUID v4, revisión global monotónica y migración sin contenido;
+- edición nativa bajo el menú Vicunav con nonce y capability del catálogo;
+- `GET /vicu/v1/restaurante/menu` y detalle por ID público, con filtro de categoría,
+  object cache, `ETag` e invalidación por revisión.
+
+No incorpora ingredientes ni relaciones con ellos. REST-02E es el siguiente issue y
+será propietario del catálogo canónico de ingredientes, opciones de pizza y
+disponibilidad revisada.
+
 ## Fuera de alcance actual
 
-El plugin todavía no registra CPT, tablas de dominio, endpoints, ajustes, pantallas
-administrativas, bloques o assets. Tampoco contiene menú, pricing, carrito, pedidos,
+El plugin todavía no registra tablas de dominio, ajustes generales, bloques o assets.
+Tampoco contiene ingredientes, pricing, carrito, pedidos,
 integración operativa con pagos, reservas, contenido Bonasera ni integración con
 LocalWP.
 

@@ -9,6 +9,7 @@ namespace Vicu\Restaurante;
 
 use Throwable;
 use Vicu\Restaurante\Migrations\CreateMigrationLedger;
+use Vicu\Restaurante\Migrations\InitializeMenuCatalog;
 use Vicu\Restaurante\Migrations\Migration;
 
 /**
@@ -145,6 +146,7 @@ final class Installer {
 	private static function migrations(): array {
 		return array(
 			new CreateMigrationLedger(),
+			new InitializeMenuCatalog(),
 		);
 	}
 

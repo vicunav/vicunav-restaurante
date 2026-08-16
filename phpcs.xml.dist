@@ -13,6 +13,23 @@
 	<arg value="sp"/>
 
 	<rule ref="WordPress"/>
+	<rule ref="WordPress.WP.Capabilities">
+		<properties>
+			<property name="custom_capabilities" type="array">
+				<element value="manage_vicu_restaurant_catalog"/>
+				<element value="manage_vicu_restaurant_availability"/>
+				<element value="manage_vicu_restaurant_discounts"/>
+				<element value="manage_vicu_restaurant_delivery"/>
+				<element value="view_vicu_restaurant_orders"/>
+				<element value="manage_vicu_restaurant_orders"/>
+				<element value="fulfill_vicu_restaurant_orders"/>
+				<element value="view_vicu_restaurant_payment_evidence"/>
+				<element value="manage_vicu_restaurant_reservations"/>
+				<element value="manage_vicu_restaurant_settings"/>
+				<element value="reconcile_vicu_restaurant_payments"/>
+			</property>
+		</properties>
+	</rule>
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">

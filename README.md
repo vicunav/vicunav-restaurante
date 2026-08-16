@@ -5,15 +5,15 @@ pizzas, and reservations.
 
 ## Status
 
-REST-02C publishes plugin version 0.3.0 over public contract 1.0.0. The current runtime
-registers the package autoloader, verifies compatible Core and Payments contracts,
-maintains a versioned migration ledger, grants dedicated administrator capabilities,
-and announces availability through `vicu_restaurante_loaded`. It intentionally
-contains no restaurant domain behavior yet.
+REST-02D publishes plugin version 0.4.0 over public contract 1.0.0. The current runtime
+adds a structured menu, native WordPress administration, opaque public identifiers,
+and cacheable menu reads to the versioned installation and dependency contract. It
+does not include ingredients, pizza pricing, carts, orders, reservations, demo content,
+or a WooCommerce dependency.
 
-Persistence, REST endpoints, admin screens, and blocks will be introduced through
-separate atomic issues. Their planned contract does not imply that they are currently
-available.
+Further domain persistence, REST endpoints, admin screens, and blocks are introduced
+only through their separate atomic issues. A planned surface is not available until
+its implementation matrix marks it as complete.
 
 The v1 architecture is owned by the Vicunav hub and does not use WooCommerce.
 
