@@ -1,0 +1,51 @@
+name: Lint de PHP
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  estandares-php:
+    name: Estándares de código PHP
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v7
+
+      - name: Configurar PHP y Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          tools: composer:v2
+          coverage: none
+
+      - name: Instalar PHP_CodeSniffer y WordPress Coding Standards
+        shell: bash
+        run: |
+          composer global config \
+            allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          composer global require --dev --no-interaction --no-progress \
+            "wp-coding-standards/wpcs:^3.0" \
+            "dealerdirect/phpcodesniffer-composer-installer:^1.0"
+
+      - name: Analizar archivos PHP
+        shell: bash
+        run: |
+          mapfile -d '' archivos_php < <(
+            find . -type f -name '*.php' \
+              -not -path './.git/*' \
+              -not -path './vendor/*' \
+              -not -path './node_modules/*' \
+              -print0
+          )
+
+          if (( ${#archivos_php[@]} == 0 )); then
+            echo "No hay archivos PHP para analizar."
+            exit 0
+          fi
+
+          phpcs_bin="$(composer global config bin-dir --absolute)/phpcs"
+          "$phpcs_bin" --standard=WordPress "${archivos_php[@]}"

@@ -1,0 +1,4 @@
+# Limitación conocida: GitHub sigue mostrando la opción de issue en blanco,
+# marcada como "Maintainers only", a personas con permisos Write, Maintain o Admin.
+# Este valor deshabilita los issues en blanco para colaboradores externos.
+blank_issues_enabled: false

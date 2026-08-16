@@ -1,0 +1,33 @@
+name: Tarea atómica
+description: Define una tarea con alcance y criterios de aceptación verificables.
+labels: []
+assignees: []
+body:
+  - type: textarea
+    id: por-que
+    attributes:
+      label: Por qué
+      description: Explica el problema, la necesidad o el contexto de la tarea.
+      placeholder: Describe por qué es necesario realizar esta tarea.
+    validations:
+      required: false
+
+  - type: textarea
+    id: hacer
+    attributes:
+      label: Hacer
+      description: Describe el trabajo concreto que debe realizarse.
+      placeholder: Enumera los cambios incluidos en el alcance de la tarea.
+    validations:
+      required: true
+
+  - type: textarea
+    id: criterios-aceptacion
+    attributes:
+      label: Criterios de aceptación
+      description: Escribe criterios verificables usando el formato de checklist de Markdown.
+      placeholder: |
+        - [ ] criterio uno
+        - [ ] criterio dos
+    validations:
+      required: true

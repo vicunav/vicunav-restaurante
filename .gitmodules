@@ -1,0 +1,3 @@
+[submodule "docs/standards"]
+	path = docs/standards
+	url = https://github.com/vicunav/vicunav-standards.git
