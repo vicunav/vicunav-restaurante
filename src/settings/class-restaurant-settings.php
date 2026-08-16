@@ -8,12 +8,15 @@
 namespace Vicu\Restaurante\Settings;
 
 use Vicu\Core\Settings;
+use Vicu\Restaurante\Commerce\PricingRevision;
 
 /**
  * Conserva moneda operativa fuera de los ajustes compartidos de core.
  */
 final class RestaurantSettings {
-	public const OPTION_NAME = 'vicu_restaurante_settings';
+	public const OPTION_NAME           = 'vicu_restaurante_settings';
+	public const DEFAULT_TAX_RATE_BPS  = 800;
+	public const DEFAULT_TIP_RATES_BPS = array( 0, 1000, 1500, 2000 );
 
 	private const GROUP = 'vicu_restaurante_settings';
 	private const PAGE  = 'vicu_restaurante_settings';
@@ -36,6 +39,8 @@ final class RestaurantSettings {
 		}
 
 		add_action( 'admin_init', array( self::class, 'register_admin' ) );
+		add_action( 'updated_option', array( self::class, 'option_updated' ), 10, 3 );
+		add_action( 'added_option', array( self::class, 'option_added' ), 10, 2 );
 		self::$hooks_registered = true;
 	}
 
@@ -60,10 +65,34 @@ final class RestaurantSettings {
 	 * @return string
 	 */
 	public static function currency(): string {
-		$settings = get_option( self::OPTION_NAME, array() );
+		$settings = self::all();
 		$currency = is_array( $settings ) ? self::sanitize_currency( $settings['currency'] ?? '' ) : '';
 
 		return '' === $currency ? 'USD' : $currency;
+	}
+
+	/**
+	 * Devuelve la tasa fiscal vigente en puntos base.
+	 *
+	 * @return int
+	 */
+	public static function tax_rate_bps(): int {
+		$settings = self::all();
+		$rate     = self::rate( $settings['tax_rate_bps'] ?? null );
+
+		return null === $rate ? self::DEFAULT_TAX_RATE_BPS : $rate;
+	}
+
+	/**
+	 * Devuelve opciones de propina, incluida siempre la opción cero.
+	 *
+	 * @return int[]
+	 */
+	public static function tip_rates_bps(): array {
+		$settings = self::all();
+		$rates    = self::sanitize_tip_rates( $settings['tip_rates_bps'] ?? array() );
+
+		return array() === $rates ? self::DEFAULT_TIP_RATES_BPS : $rates;
 	}
 
 	/**
@@ -78,7 +107,11 @@ final class RestaurantSettings {
 			array(
 				'type'              => 'array',
 				'sanitize_callback' => array( self::class, 'sanitize' ),
-				'default'           => array( 'currency' => 'USD' ),
+				'default'           => array(
+					'currency'      => 'USD',
+					'tax_rate_bps'  => self::DEFAULT_TAX_RATE_BPS,
+					'tip_rates_bps' => self::DEFAULT_TIP_RATES_BPS,
+				),
 				'show_in_rest'      => false,
 			)
 		);
@@ -98,16 +131,36 @@ final class RestaurantSettings {
 			'vicu_restaurante_commerce',
 			array( 'label_for' => 'vicu_restaurante_currency' )
 		);
+
+		add_settings_field(
+			'vicu_restaurante_tax_rate_bps',
+			__( 'Impuesto (puntos base)', 'vicunav-restaurante' ),
+			array( self::class, 'render_tax_rate' ),
+			self::PAGE,
+			'vicu_restaurante_commerce',
+			array( 'label_for' => 'vicu_restaurante_tax_rate_bps' )
+		);
+
+		add_settings_field(
+			'vicu_restaurante_tip_rates_bps',
+			__( 'Propinas (puntos base)', 'vicunav-restaurante' ),
+			array( self::class, 'render_tip_rates' ),
+			self::PAGE,
+			'vicu_restaurante_commerce',
+			array( 'label_for' => 'vicu_restaurante_tip_rates_bps' )
+		);
 	}
 
 	/**
 	 * Sanitiza el option completo.
 	 *
 	 * @param mixed $input Datos candidatos.
-	 * @return array{currency: string}
+	 * @return array{currency: string, tax_rate_bps: int, tip_rates_bps: int[]}
 	 */
 	public static function sanitize( mixed $input ): array {
-		$currency = is_array( $input ) ? self::sanitize_currency( $input['currency'] ?? '' ) : '';
+		$currency  = is_array( $input ) ? self::sanitize_currency( $input['currency'] ?? '' ) : '';
+		$tax_rate  = is_array( $input ) ? self::rate( $input['tax_rate_bps'] ?? null ) : null;
+		$tip_rates = is_array( $input ) ? self::sanitize_tip_rates( $input['tip_rates_bps'] ?? array() ) : array();
 
 		if ( '' === $currency ) {
 			add_settings_error(
@@ -118,7 +171,21 @@ final class RestaurantSettings {
 			$currency = self::currency();
 		}
 
-		return array( 'currency' => $currency );
+		if ( null === $tax_rate ) {
+			add_settings_error( self::OPTION_NAME, 'vicu_restaurante_invalid_tax_rate', __( 'La tasa fiscal debe estar entre 0 y 10000 puntos base.', 'vicunav-restaurante' ) );
+			$tax_rate = self::tax_rate_bps();
+		}
+
+		if ( array() === $tip_rates ) {
+			add_settings_error( self::OPTION_NAME, 'vicu_restaurante_invalid_tip_rates', __( 'Las propinas deben ser puntos base entre 0 y 10000 e incluir cero.', 'vicunav-restaurante' ) );
+			$tip_rates = self::tip_rates_bps();
+		}
+
+		return array(
+			'currency'      => $currency,
+			'tax_rate_bps'  => $tax_rate,
+			'tip_rates_bps' => $tip_rates,
+		);
 	}
 
 	/**
@@ -144,7 +211,7 @@ final class RestaurantSettings {
 	 * @return void
 	 */
 	public static function render_description(): void {
-		echo '<p>' . esc_html__( 'La cotización, el carrito, los pedidos y pagos usan esta moneda.', 'vicunav-restaurante' ) . '</p>';
+		echo '<p>' . esc_html__( 'La cotización, el carrito, los pedidos y pagos usan estas reglas autoritativas.', 'vicunav-restaurante' ) . '</p>';
 	}
 
 	/**
@@ -161,6 +228,62 @@ final class RestaurantSettings {
 	}
 
 	/**
+	 * Renderiza la tasa fiscal en puntos base.
+	 *
+	 * @return void
+	 */
+	public static function render_tax_rate(): void {
+		printf(
+			'<input type="number" min="0" max="10000" id="vicu_restaurante_tax_rate_bps" name="%1$s[tax_rate_bps]" value="%2$d" required>',
+			esc_attr( self::OPTION_NAME ),
+			esc_attr( (string) self::tax_rate_bps() )
+		);
+	}
+
+	/**
+	 * Renderiza tasas de propina como lista controlada.
+	 *
+	 * @return void
+	 */
+	public static function render_tip_rates(): void {
+		printf(
+			'<input class="regular-text" id="vicu_restaurante_tip_rates_bps" name="%1$s[tip_rates_bps]" value="%2$s" required><p class="description">%3$s</p>',
+			esc_attr( self::OPTION_NAME ),
+			esc_attr( implode( ',', self::tip_rates_bps() ) ),
+			esc_html__( 'Valores separados por coma. Debe incluir 0.', 'vicunav-restaurante' )
+		);
+	}
+
+	/**
+	 * Invalida pricing después de cambiar el option propietario.
+	 *
+	 * @param string $option    Nombre del option.
+	 * @param mixed  $old_value Valor anterior.
+	 * @param mixed  $value     Valor nuevo.
+	 * @return void
+	 */
+	public static function option_updated( string $option, mixed $old_value, mixed $value ): void {
+		if ( self::OPTION_NAME === $option && $old_value !== $value && false !== get_option( PricingRevision::OPTION_NAME, false ) ) {
+			PricingRevision::bump();
+		}
+	}
+
+	/**
+	 * Invalida pricing al crear por primera vez el option propietario.
+	 *
+	 * @param string $option Nombre del option.
+	 * @param mixed  $value  Valor nuevo.
+	 * @return void
+	 */
+	public static function option_added( string $option, mixed $value ): void {
+		unset( $value );
+
+		if ( self::OPTION_NAME === $option && false !== get_option( PricingRevision::OPTION_NAME, false ) ) {
+			PricingRevision::bump();
+		}
+	}
+
+	/**
 	 * Normaliza una moneda o devuelve vacío.
 	 *
 	 * @param mixed $value Valor candidato.
@@ -170,5 +293,63 @@ final class RestaurantSettings {
 		$currency = is_scalar( $value ) ? strtoupper( trim( sanitize_text_field( wp_unslash( (string) $value ) ) ) ) : '';
 
 		return 1 === preg_match( '/^[A-Z]{3}$/', $currency ) ? $currency : '';
+	}
+
+	/**
+	 * Lee el option sin imponer defaults prematuramente.
+	 *
+	 * @return array<string, mixed>
+	 */
+	private static function all(): array {
+		$settings = get_option( self::OPTION_NAME, array() );
+
+		return is_array( $settings ) ? $settings : array();
+	}
+
+	/**
+	 * Valida puntos base.
+	 *
+	 * @param mixed $value Valor candidato.
+	 * @return int|null
+	 */
+	private static function rate( mixed $value ): ?int {
+		if ( ! is_scalar( $value ) || is_float( $value ) || ! is_numeric( $value ) || trim( (string) $value ) !== (string) (int) $value ) {
+			return null;
+		}
+
+		$rate = (int) $value;
+
+		return 0 <= $rate && 10000 >= $rate ? $rate : null;
+	}
+
+	/**
+	 * Normaliza una lista única de propinas e incluye cero.
+	 *
+	 * @param mixed $value Lista o CSV.
+	 * @return int[]
+	 */
+	private static function sanitize_tip_rates( mixed $value ): array {
+		$values = is_string( $value ) ? array_map( 'trim', explode( ',', $value ) ) : $value;
+
+		if ( ! is_array( $values ) ) {
+			return array();
+		}
+
+		$rates = array();
+
+		foreach ( $values as $candidate ) {
+			$rate = self::rate( $candidate );
+
+			if ( null === $rate ) {
+				return array();
+			}
+
+			$rates[] = $rate;
+		}
+
+		$rates = array_values( array_unique( $rates ) );
+		sort( $rates, SORT_NUMERIC );
+
+		return in_array( 0, $rates, true ) ? $rates : array();
 	}
 }

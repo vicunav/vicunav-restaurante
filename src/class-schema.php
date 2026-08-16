@@ -58,6 +58,28 @@ final class Schema {
 	}
 
 	/**
+	 * Devuelve la tabla canónica de zonas de entrega.
+	 *
+	 * @return string
+	 */
+	public static function delivery_zones_table_name(): string {
+		global $wpdb;
+
+		return $wpdb->prefix . 'vicu_rest_delivery_zones';
+	}
+
+	/**
+	 * Devuelve la tabla canónica de códigos de descuento.
+	 *
+	 * @return string
+	 */
+	public static function discount_codes_table_name(): string {
+		global $wpdb;
+
+		return $wpdb->prefix . 'vicu_rest_discount_codes';
+	}
+
+	/**
 	 * Comprueba la existencia de una tabla interna conocida.
 	 *
 	 * @param string $table_name Nombre completo y confiable de la tabla.

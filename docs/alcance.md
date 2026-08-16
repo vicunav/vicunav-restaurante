@@ -105,11 +105,30 @@ Esta fase añade únicamente:
 No crea carritos ni calcula descuentos, impuestos, propina, delivery o total de
 pedido. REST-02G es el siguiente issue y será propietario de esos componentes.
 
+## Alcance de REST-02G
+
+Esta fase añade únicamente:
+
+- plugin 0.7.0 y schema de instalación 4;
+- tablas InnoDB vacías para zonas de entrega y códigos de descuento;
+- UUID, revisión de fila, compare-and-swap y revisión global de pricing;
+- zonas explícitas con tarifa en unidad menor, ETA, orden y estado;
+- descuentos fijos o porcentuales con vigencia, subtotal mínimo y límite de usos;
+- consumo de códigos limitado mediante transacción y `SELECT ... FOR UPDATE`;
+- tasa fiscal y opciones de propina en puntos base dentro de los ajustes propios;
+- servicio puro de totales con redondeo half-up y orden descuento, impuesto, propina y
+  delivery;
+- `GET /delivery-zones` público, cacheable, con schema, revisión y `ETag`;
+- administración nativa de zonas y descuentos con capabilities y nonces.
+
+No crea sesiones, carritos ni pedidos. REST-02H es el siguiente issue y será
+propietario de esa persistencia y sus mutaciones REST.
+
 ## Fuera de alcance actual
 
-El plugin todavía no registra ajustes generales, bloques o assets. Tampoco contiene
-totales de pedido, delivery, descuentos, carrito, pedidos, integración operativa con
-pagos, reservas, contenido Bonasera ni integración con LocalWP.
+El plugin todavía no registra bloques o assets. Tampoco contiene carrito, pedidos,
+integración operativa con pagos, reservas, contenido Bonasera ni integración con
+LocalWP.
 
 Esas capacidades se implementan únicamente mediante los issues atómicos posteriores
 del plan de restaurante.
