@@ -13,6 +13,7 @@ use Vicu\Restaurante\Menu\CatalogRevision;
 use Vicu\Restaurante\Migrations\CreateMigrationLedger;
 use Vicu\Restaurante\Migrations\InitializeMenuCatalog;
 use Vicu\Restaurante\Migrations\CreateIngredientCatalog;
+use Vicu\Restaurante\Migrations\CreateCommerceRules;
 use Vicu\Restaurante\Schema;
 use Vicu\Restaurante\Tests\CreateProbeTable;
 use Vicu\Restaurante\Tests\FailingMigration;
@@ -70,8 +71,8 @@ final class InstallerTest extends WP_UnitTestCase {
 		$table_name = Schema::migration_table_name();
 
 		$this->assertTrue( Schema::table_exists( $table_name ) );
-		$this->assertSame( '4', get_option( 'vicu_restaurante_db_version' ) );
-		$this->assertSame( 4, Installer::current_version() );
+		$this->assertSame( '5', get_option( 'vicu_restaurante_db_version' ) );
+		$this->assertSame( 5, Installer::current_version() );
 		$this->assertSame( '1', get_option( CatalogRevision::OPTION_NAME ) );
 		$this->assertSame( '1', get_option( AvailabilityRevision::OPTION_NAME ) );
 		$this->assertTrue( Schema::table_exists( Schema::ingredients_table_name() ) );
@@ -80,6 +81,10 @@ final class InstallerTest extends WP_UnitTestCase {
 		$this->assertSame( '1', get_option( PricingRevision::OPTION_NAME ) );
 		$this->assertTrue( Schema::table_exists( Schema::delivery_zones_table_name() ) );
 		$this->assertTrue( Schema::table_exists( Schema::discount_codes_table_name() ) );
+		$this->assertTrue( Schema::table_exists( Schema::cart_sessions_table_name() ) );
+		$this->assertTrue( Schema::table_exists( Schema::carts_table_name() ) );
+		$this->assertTrue( Schema::table_exists( Schema::cart_items_table_name() ) );
+		$this->assertTrue( Schema::table_exists( Schema::idempotency_table_name() ) );
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$engine = $wpdb->get_var(
@@ -118,8 +123,8 @@ final class InstallerTest extends WP_UnitTestCase {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" );
 
-		$this->assertSame( 4, $count );
-		$this->assertSame( 4, Installer::current_version() );
+		$this->assertSame( 5, $count );
+		$this->assertSame( 5, Installer::current_version() );
 	}
 
 	/**
@@ -133,8 +138,8 @@ final class InstallerTest extends WP_UnitTestCase {
 
 		$this->assertSame( 0, Installer::current_version() );
 		$this->assertTrue( Installer::maybe_upgrade() );
-		$this->assertSame( '4', get_option( 'vicu_restaurante_db_version' ) );
-		$this->assertSame( 4, Installer::current_version() );
+		$this->assertSame( '5', get_option( 'vicu_restaurante_db_version' ) );
+		$this->assertSame( 5, Installer::current_version() );
 	}
 
 	/**
@@ -148,7 +153,7 @@ final class InstallerTest extends WP_UnitTestCase {
 		$this->assertFalse( get_option( CatalogRevision::OPTION_NAME, false ) );
 
 		$this->assertTrue( Installer::install() );
-		$this->assertSame( 4, Installer::current_version() );
+		$this->assertSame( 5, Installer::current_version() );
 		$this->assertSame( '1', get_option( CatalogRevision::OPTION_NAME ) );
 		$this->assertSame( '1', get_option( AvailabilityRevision::OPTION_NAME ) );
 	}
@@ -172,7 +177,7 @@ final class InstallerTest extends WP_UnitTestCase {
 		$this->assertFalse( get_option( AvailabilityRevision::OPTION_NAME, false ) );
 
 		$this->assertTrue( Installer::install() );
-		$this->assertSame( 4, Installer::current_version() );
+		$this->assertSame( 5, Installer::current_version() );
 		$this->assertSame( '1', get_option( CatalogRevision::OPTION_NAME ) );
 		$this->assertSame( '1', get_option( AvailabilityRevision::OPTION_NAME ) );
 		$this->assertTrue( Schema::table_exists( Schema::ingredients_table_name() ) );
@@ -199,10 +204,39 @@ final class InstallerTest extends WP_UnitTestCase {
 		$this->assertFalse( get_option( PricingRevision::OPTION_NAME, false ) );
 
 		$this->assertTrue( Installer::install() );
-		$this->assertSame( 4, Installer::current_version() );
+		$this->assertSame( 5, Installer::current_version() );
 		$this->assertSame( '1', get_option( PricingRevision::OPTION_NAME ) );
 		$this->assertTrue( Schema::table_exists( Schema::delivery_zones_table_name() ) );
 		$this->assertTrue( Schema::table_exists( Schema::discount_codes_table_name() ) );
+	}
+
+	/**
+	 * Una instalación 0.7.0 añade solo almacenamiento vacío de carritos.
+	 *
+	 * @return void
+	 */
+	public function test_upgrade_from_schema_four_creates_cart_storage(): void {
+		$this->assertTrue(
+			Installer::install(
+				array(
+					new CreateMigrationLedger(),
+					new InitializeMenuCatalog(),
+					new CreateIngredientCatalog(),
+					new CreateCommerceRules(),
+				)
+			)
+		);
+		$this->assertSame( 4, Installer::current_version() );
+		$this->assertFalse( Schema::table_exists( Schema::carts_table_name() ) );
+
+		$this->assertTrue( Installer::install() );
+		$this->assertSame( 5, Installer::current_version() );
+
+		foreach ( array( Schema::cart_sessions_table_name(), Schema::carts_table_name(), Schema::cart_items_table_name(), Schema::idempotency_table_name() ) as $table_name ) {
+			$this->assertTrue( Schema::table_exists( $table_name ) );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$this->assertSame( 0, (int) $GLOBALS['wpdb']->get_var( "SELECT COUNT(*) FROM {$table_name}" ) );
+		}
 	}
 
 	/**
@@ -307,6 +341,10 @@ final class InstallerTest extends WP_UnitTestCase {
 		global $wpdb;
 
 		$tables = array(
+			Schema::idempotency_table_name(),
+			Schema::cart_items_table_name(),
+			Schema::carts_table_name(),
+			Schema::cart_sessions_table_name(),
 			Schema::discount_codes_table_name(),
 			Schema::delivery_zones_table_name(),
 			Schema::menu_ingredients_table_name(),

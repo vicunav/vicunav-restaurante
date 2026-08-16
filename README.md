@@ -5,11 +5,11 @@ pizzas, and reservations.
 
 ## Status
 
-REST-02G publishes plugin version 0.7.0 over public contract 1.0.0. The current runtime
-adds delivery zones, discount rules, tax and tip settings, and authoritative integer
-totals to the menu and pizza catalog. Discount limits are transactionally consumed,
-and public delivery fees come only from server-owned zones. It does not include carts,
-orders, reservations, demo content, or a WooCommerce dependency.
+REST-02H publishes plugin version 0.8.0 over public contract 1.0.0. The current runtime
+adds secure anonymous sessions, authenticated ownership, persistent carts, menu and
+pizza lines, expiration, CSRF-protected REST mutations, compare-and-swap revisions,
+and authoritative recalculation. It does not include checkout, orders, reservations,
+demo content, or a WooCommerce dependency.
 
 Further domain persistence, REST endpoints, admin screens, and blocks are introduced
 only through their separate atomic issues. A planned surface is not available until

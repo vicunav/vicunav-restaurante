@@ -26,6 +26,7 @@ define( 'VICU_PAGOS_CONTRACT_VERSION', '0.3.0' );
 
 $GLOBALS['vicu_restaurante_test_actions']              = array();
 $GLOBALS['vicu_restaurante_test_activation_hooks']     = array();
+$GLOBALS['vicu_restaurante_test_deactivation_hooks']   = array();
 $GLOBALS['vicu_restaurante_test_fired_actions']        = array();
 $GLOBALS['vicu_restaurante_test_can_activate_plugins'] = true;
 
@@ -72,6 +73,22 @@ function register_activation_hook( string $file, callable $callback ): void {
 	global $vicu_restaurante_test_activation_hooks;
 
 	$vicu_restaurante_test_activation_hooks[] = array(
+		'file'     => $file,
+		'callback' => $callback,
+	);
+}
+
+/**
+ * Sustituto del registro de desactivación para inspeccionar el entry point.
+ *
+ * @param string   $file     Archivo principal del plugin.
+ * @param callable $callback Callback de desactivación.
+ * @return void
+ */
+function register_deactivation_hook( string $file, callable $callback ): void {
+	global $vicu_restaurante_test_deactivation_hooks;
+
+	$vicu_restaurante_test_deactivation_hooks[] = array(
 		'file'     => $file,
 		'callback' => $callback,
 	);

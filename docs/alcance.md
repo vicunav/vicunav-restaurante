@@ -124,11 +124,34 @@ Esta fase añade únicamente:
 No crea sesiones, carritos ni pedidos. REST-02H es el siguiente issue y será
 propietario de esa persistencia y sus mutaciones REST.
 
+## Alcance de REST-02H
+
+Esta fase añade únicamente:
+
+- plugin 0.8.0 y schema de instalación 5;
+- tablas InnoDB vacías para sesiones, carritos, líneas y registros idempotentes;
+- secreto de sesión hasheado, cookie `HttpOnly` limitada al sitio y CSRF ligado a la
+  sesión, con validación estricta de origen;
+- ownership exclusivo por sesión o usuario, asociación idempotente al iniciar sesión
+  sin fusionar dos carritos y rotación del secreto adoptado;
+- líneas de menú y pizzas recalculadas desde catálogo y pricing vivos, sin aceptar
+  importes ni snapshots del cliente;
+- fusión solo de líneas de menú equivalentes y líneas independientes para pizzas;
+- mutaciones atómicas con `expected_revision`, compare-and-swap y preservación de la
+  línea original ante una edición fallida;
+- descuento, pickup/delivery y propina con recálculo completo y revisión de catálogo,
+  disponibilidad y pricing;
+- expiración repetible mediante WP-Cron sin borrar líneas históricas;
+- endpoints privados de carrito con `Cache-Control: no-store`, schemas, `ETag`, rate
+  limiting conectable y errores contractuales.
+
+No crea pedidos, checkout ni solicitudes de pago. REST-02I es el siguiente issue y
+convertirá un carrito validado en snapshots inmutables y una máquina de estados.
+
 ## Fuera de alcance actual
 
-El plugin todavía no registra bloques o assets. Tampoco contiene carrito, pedidos,
-integración operativa con pagos, reservas, contenido Bonasera ni integración con
-LocalWP.
+El plugin todavía no registra bloques o assets. Tampoco contiene pedidos, integración
+operativa con pagos, reservas, contenido Bonasera ni integración con LocalWP.
 
 Esas capacidades se implementan únicamente mediante los issues atómicos posteriores
 del plan de restaurante.

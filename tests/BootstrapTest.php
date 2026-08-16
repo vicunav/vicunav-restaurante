@@ -28,9 +28,9 @@ final class BootstrapTest extends TestCase {
 	 * @return void
 	 */
 	public function test_defines_foundational_constants(): void {
-		$this->assertSame( '0.7.0', VICU_RESTAURANTE_VERSION );
+		$this->assertSame( '0.8.0', VICU_RESTAURANTE_VERSION );
 		$this->assertSame( '1.0.0', VICU_RESTAURANTE_CONTRACT_VERSION );
-		$this->assertSame( '4', VICU_RESTAURANTE_DB_VERSION );
+		$this->assertSame( '5', VICU_RESTAURANTE_DB_VERSION );
 		$this->assertSame(
 			realpath( dirname( __DIR__ ) . '/vicunav-restaurante.php' ),
 			realpath( VICU_RESTAURANTE_PLUGIN_FILE )
@@ -49,6 +49,19 @@ final class BootstrapTest extends TestCase {
 		$this->assertCount( 1, $vicu_restaurante_test_activation_hooks );
 		$this->assertSame( VICU_RESTAURANTE_PLUGIN_FILE, $vicu_restaurante_test_activation_hooks[0]['file'] );
 		$this->assertSame( 'Vicu\\Restaurante\\activate', $vicu_restaurante_test_activation_hooks[0]['callback'] );
+	}
+
+	/**
+	 * El entry point registra limpieza de cron sin borrar datos.
+	 *
+	 * @return void
+	 */
+	public function test_registers_deactivation_hook_from_entry_point(): void {
+		global $vicu_restaurante_test_deactivation_hooks;
+
+		$this->assertCount( 1, $vicu_restaurante_test_deactivation_hooks );
+		$this->assertSame( VICU_RESTAURANTE_PLUGIN_FILE, $vicu_restaurante_test_deactivation_hooks[0]['file'] );
+		$this->assertSame( 'Vicu\\Restaurante\\deactivate', $vicu_restaurante_test_deactivation_hooks[0]['callback'] );
 	}
 
 	/**
@@ -156,7 +169,7 @@ final class BootstrapTest extends TestCase {
 
 		$this->assertSame( 1, did_action( 'vicu_restaurante_loaded' ) );
 		$this->assertSame(
-			array( '0.7.0', '1.0.0' ),
+			array( '0.8.0', '1.0.0' ),
 			$vicu_restaurante_test_fired_actions['vicu_restaurante_loaded'][0]
 		);
 	}
@@ -198,7 +211,7 @@ final class BootstrapTest extends TestCase {
 			$contents .= $file->fgets();
 		}
 
-		$this->assertStringContainsString( 'Version:           0.7.0', $contents );
+		$this->assertStringContainsString( 'Version:           0.8.0', $contents );
 		$this->assertStringContainsString( 'Requires at least: 6.6', $contents );
 		$this->assertStringContainsString( 'Requires PHP:      8.1', $contents );
 		$this->assertStringContainsString(
