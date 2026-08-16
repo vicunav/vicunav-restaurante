@@ -1,7 +1,7 @@
 # Contrato público de `vicunav-restaurante`
 
-Estado: contrato 1.0.0 aprobado; REST-02B implementa únicamente carga, compatibilidad
-y publicación de disponibilidad. Las superficies de dominio se habilitan por los
+Estado: contrato 1.0.0 aprobado; REST-02C implementa carga, compatibilidad,
+capabilities y migraciones fundacionales. Las superficies de dominio se habilitan por los
 issues indicados en la matriz, sin considerarse operativas antes de ellos.
 
 ## Responsabilidad y límites
@@ -17,10 +17,10 @@ internas de otro paquete.
 
 ## Estado de implementación
 
-| Superficie | Issue propietario | Estado después de REST-02B |
+| Superficie | Issue propietario | Estado después de REST-02C |
 | --- | --- | --- |
 | Versiones, autoload, dependencias y hook de carga | REST-02B | Implementado |
-| Capabilities, migraciones e instalación | REST-02C | Planificado |
+| Capabilities, migraciones e instalación | REST-02C | Implementado |
 | Menú e ingredientes | REST-02D y REST-02E | Planificado |
 | Pricing de pizzas y totales | REST-02F y REST-02G | Planificado |
 | Carrito, pedidos e integración con pagos | REST-02H a REST-02J | Planificado |
@@ -72,6 +72,44 @@ do_action(
 Los consumidores inicializan integraciones en `vicu_restaurante_loaded` o en una
 prioridad posterior. No deben inferir disponibilidad solo por la existencia del
 archivo del plugin.
+
+## Instalación y migraciones
+
+La activación ejecuta migraciones pendientes y solo después concede capabilities al
+rol administrador. El schema fundacional tiene versión `1` y crea exclusivamente
+`${prefix}vicu_rest_migrations`, un ledger InnoDB sin datos de dominio.
+
+Cada migración tiene versión monotónica, comprobación de aplicación, operación `up()`
+y compensación `down()`. El instalador:
+
+1. ordena las migraciones por versión;
+2. omite las ya confirmadas por option y ledger;
+3. registra cada versión únicamente después de verificar el cambio físico;
+4. compensa en orden inverso los recursos nuevos si una migración falla;
+5. conserva exactamente la versión previa ante fallo.
+
+Los nombres se construyen con `$wpdb->prefix`. Cada issue de dominio añade su propia
+migración y sus pruebas, sin crear datos de demo.
+
+### Capabilities fundacionales
+
+El administrador recibe durante activación:
+
+- `manage_vicu_restaurant_catalog`;
+- `manage_vicu_restaurant_availability`;
+- `manage_vicu_restaurant_discounts`;
+- `manage_vicu_restaurant_delivery`;
+- `view_vicu_restaurant_orders`;
+- `manage_vicu_restaurant_orders`;
+- `fulfill_vicu_restaurant_orders`;
+- `view_vicu_restaurant_payment_evidence`;
+- `manage_vicu_restaurant_reservations`;
+- `manage_vicu_restaurant_settings`;
+- `reconcile_vicu_restaurant_payments`.
+
+No se conceden por defecto a otros roles. Una capability autoriza una categoría de
+operación, pero cada escritura debe verificar además nonce, ownership y revisión
+cuando correspondan.
 
 ## Principios de datos públicos v1
 

@@ -5,10 +5,11 @@ pizzas, and reservations.
 
 ## Status
 
-REST-02B publishes public contract 1.0.0 and plugin version 0.2.0. The current runtime
-registers the package autoloader, verifies compatible Core and Payments contracts, and
-announces availability through `vicu_restaurante_loaded`. It intentionally contains no
-restaurant domain behavior yet.
+REST-02C publishes plugin version 0.3.0 over public contract 1.0.0. The current runtime
+registers the package autoloader, verifies compatible Core and Payments contracts,
+maintains a versioned migration ledger, grants dedicated administrator capabilities,
+and announces availability through `vicu_restaurante_loaded`. It intentionally
+contains no restaurant domain behavior yet.
 
 Persistence, REST endpoints, admin screens, and blocks will be introduced through
 separate atomic issues. Their planned contract does not imply that they are currently

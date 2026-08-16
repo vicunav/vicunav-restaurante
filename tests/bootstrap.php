@@ -25,6 +25,7 @@ define( 'VICU_CORE_CONTRACT_VERSION', '1.0.0' );
 define( 'VICU_PAGOS_CONTRACT_VERSION', '0.3.0' );
 
 $GLOBALS['vicu_restaurante_test_actions']              = array();
+$GLOBALS['vicu_restaurante_test_activation_hooks']     = array();
 $GLOBALS['vicu_restaurante_test_fired_actions']        = array();
 $GLOBALS['vicu_restaurante_test_can_activate_plugins'] = true;
 
@@ -44,6 +45,22 @@ function add_action( string $hook, callable $callback, int $priority = 10, int $
 		'callback'      => $callback,
 		'priority'      => $priority,
 		'accepted_args' => $accepted_args,
+	);
+}
+
+/**
+ * Sustituto del registro de activación para inspeccionar el entry point.
+ *
+ * @param string   $file     Archivo principal del plugin.
+ * @param callable $callback Callback de activación.
+ * @return void
+ */
+function register_activation_hook( string $file, callable $callback ): void {
+	global $vicu_restaurante_test_activation_hooks;
+
+	$vicu_restaurante_test_activation_hooks[] = array(
+		'file'     => $file,
+		'callback' => $callback,
 	);
 }
 

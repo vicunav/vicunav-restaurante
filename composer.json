@@ -8,22 +8,35 @@
   },
   "require-dev": {
     "dealerdirect/phpcodesniffer-composer-installer": "^1.1",
+    "johnpbloch/wordpress-core": "6.9.*",
+    "johnpbloch/wordpress-core-installer": "^2.0",
     "php-parallel-lint/php-parallel-lint": "^1.4",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
     "phpunit/phpunit": "^9.6",
-    "wp-coding-standards/wpcs": "^3.2"
+    "wp-coding-standards/wpcs": "^3.2",
+    "wp-phpunit/wp-phpunit": "6.9.*",
+    "yoast/wp-test-utils": "^1.2"
   },
   "config": {
     "allow-plugins": {
-      "dealerdirect/phpcodesniffer-composer-installer": true
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "johnpbloch/wordpress-core-installer": true
     },
     "sort-packages": true
+  },
+  "extra": {
+    "wordpress-install-dir": "vendor/wordpress"
   },
   "scripts": {
     "validate-composer": "composer validate --strict",
     "lint": "parallel-lint --exclude vendor .",
     "phpcs": "phpcs",
-    "test": "phpunit",
+    "test:unit": "phpunit -c phpunit.xml.dist",
+    "test:integration": "phpunit -c phpunit.integration.xml.dist",
+    "test": [
+      "@test:unit",
+      "@test:integration"
+    ],
     "check": [
       "@validate-composer",
       "@lint",
