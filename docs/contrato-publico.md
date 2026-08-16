@@ -1,8 +1,8 @@
 # Contrato público de `vicunav-restaurante`
 
-Estado: contrato 1.0.0 aprobado; REST-02E implementa carga, compatibilidad,
-instalación fundacional, menú estructurado, ingredientes, opciones y disponibilidad.
-Las demás superficies se habilitan por los issues indicados en la matriz, sin
+Estado: contrato 1.0.0 aprobado; REST-02F implementa carga, compatibilidad,
+instalación fundacional, menú, catálogo, disponibilidad y quote autoritativo de
+pizzas. Las demás superficies se habilitan por los issues indicados en la matriz, sin
 considerarse operativas antes de ellos.
 
 ## Responsabilidad y límites
@@ -18,13 +18,14 @@ internas de otro paquete.
 
 ## Estado de implementación
 
-| Superficie | Issue propietario | Estado después de REST-02E |
+| Superficie | Issue propietario | Estado después de REST-02F |
 | --- | --- | --- |
 | Versiones, autoload, dependencias y hook de carga | REST-02B | Implementado |
 | Capabilities, migraciones e instalación | REST-02C | Implementado |
 | Menú estructurado | REST-02D | Implementado |
 | Ingredientes y opciones de pizza | REST-02E | Implementado |
-| Pricing de pizzas y totales | REST-02F y REST-02G | Planificado |
+| Pricing de pizzas | REST-02F | Implementado |
+| Totales, descuentos y delivery | REST-02G | Planificado |
 | Carrito, pedidos e integración con pagos | REST-02H a REST-02J | Planificado |
 | Reservas y pizzas guardadas | REST-02K y REST-02L | Planificado |
 | Bloques públicos | REST-02M a REST-02Q | Planificado |
@@ -343,6 +344,51 @@ revisión y `ETag`; un `If-None-Match` vigente devuelve 304.
 
 Ambas rutas son lecturas públicas y sus schemas forman parte del contrato 1.x. No
 aceptan parámetros de escritura ni calculan precios.
+
+### Quote de pizza implementado
+
+`POST /pizza/quote` recibe un objeto `configuration` con esta forma:
+
+```json
+{
+  "version": 1,
+  "catalog_revision": 7,
+  "size_id": "00000000-0000-4000-8000-000000000001",
+  "crust_id": "00000000-0000-4000-8000-000000000002",
+  "sauce_id": "00000000-0000-4000-8000-000000000003",
+  "cheese_ingredient_id": "00000000-0000-4000-8000-000000000004",
+  "toppings": {
+    "00000000-0000-4000-8000-000000000005": "left"
+  },
+  "quantity": 1
+}
+```
+
+Tamaño, masa, salsa y queso son obligatorios. Los toppings forman un mapa por UUID,
+por lo que una referencia solo puede ocupar una zona exclusiva: `whole`, `left` o
+`right`. El máximo es seis en todo el mapa. Una configuración incompleta, con versión
+desconocida, zona inválida o cantidad no entera usa
+`vicu_restaurante_invalid_request`. Una revisión antigua usa
+`vicu_restaurante_stale_revision`; una referencia ausente, agotada o de tipo
+incorrecto usa `vicu_restaurante_unavailable`. No se completan defaults.
+
+El tamaño aporta el precio base. Masa, queso y cada topping aportan su modificador. La
+salsa aporta cero en v1 aunque el registro tenga un modificador almacenado. Cada
+topping se cobra una vez a precio completo, también cuando ocupa solo `left` o
+`right`. El flag visual premium no participa del cálculo.
+
+La respuesta incluye configuración normalizada, revisión, moneda, componentes,
+`unit_total_minor`, cantidad y `total_minor`. Todos los importes provienen del
+catálogo vigente y usan enteros; cualquier precio adicional del request se ignora. La
+moneda proviene del option propio `vicu_restaurante_settings`, administrado en la
+pestaña Restaurante de Vicunav mediante Settings API. El valor inicial es `USD` y solo
+se aceptan tres letras mayúsculas.
+
+La ruta es pública para el constructor, devuelve `Cache-Control: no-store, max-age=0`
+y expone el filtro `vicu_restaurante_allow_public_quote` para conectar la política de
+rate limit de la instalación. Si el filtro deniega, devuelve
+`vicu_restaurante_rate_limited` con HTTP 429. Un quote no reserva inventario, no crea
+carrito y debe revalidarse en cada mutación posterior.
 
 ### Errores estables
 
