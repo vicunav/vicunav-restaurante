@@ -66,7 +66,34 @@ function to_kebab_case( string $value ): string {
  * @return void
  */
 function bootstrap(): void {
-	bootstrap_with_dependencies( DependencyRequirements::inspect() );
+	$dependencies = DependencyRequirements::inspect();
+	$error_code   = DependencyRequirements::validate( $dependencies );
+
+	if ( null === $error_code && ! Installer::maybe_upgrade() ) {
+		register_admin_notice( Installer::ERROR_INSTALLATION );
+		return;
+	}
+
+	bootstrap_with_dependencies( $dependencies );
+}
+
+/**
+ * Instala el schema base y las capabilities iniciales.
+ *
+ * @internal
+ *
+ * @return void
+ */
+function activate(): void {
+	if ( ! Installer::install() ) {
+		wp_die(
+			esc_html__( 'Vicunav Restaurante no pudo completar su instalación.', 'vicunav-restaurante' ),
+			'',
+			array( 'response' => 500 )
+		);
+	}
+
+	Capabilities::grant_to_administrator();
 }
 
 /**
@@ -89,12 +116,7 @@ function bootstrap_with_dependencies( array $dependencies ): void {
 
 	if ( null !== $error_code ) {
 		if ( ! $notice_registered ) {
-			add_action(
-				'admin_notices',
-				static function () use ( $error_code ): void {
-					render_dependency_notice( $error_code );
-				}
-			);
+			register_admin_notice( $error_code );
 			$notice_registered = true;
 		}
 
@@ -119,6 +141,23 @@ function bootstrap_with_dependencies( array $dependencies ): void {
 }
 
 /**
+ * Registra un aviso administrativo para un error de carga.
+ *
+ * @internal
+ *
+ * @param string $error_code Código interno del error.
+ * @return void
+ */
+function register_admin_notice( string $error_code ): void {
+	add_action(
+		'admin_notices',
+		static function () use ( $error_code ): void {
+			render_dependency_notice( $error_code );
+		}
+	);
+}
+
+/**
  * Muestra un aviso seguro cuando una dependencia no satisface el contrato.
  *
  * @internal
@@ -136,6 +175,7 @@ function render_dependency_notice( string $error_code ): void {
 		DependencyRequirements::ERROR_CORE_INCOMPATIBLE  => esc_html__( 'Vicunav Restaurante requiere el contrato mayor 1 de Vicunav Plugin Core.', 'vicunav-restaurante' ),
 		DependencyRequirements::ERROR_PAGOS_UNAVAILABLE  => esc_html__( 'Vicunav Restaurante requiere Vicunav Pagos activo y con sus APIs públicas disponibles.', 'vicunav-restaurante' ),
 		DependencyRequirements::ERROR_PAGOS_INCOMPATIBLE => esc_html__( 'Vicunav Restaurante requiere el contrato de Vicunav Pagos desde 0.3.0 y anterior a 1.0.0.', 'vicunav-restaurante' ),
+		Installer::ERROR_INSTALLATION                    => esc_html__( 'Vicunav Restaurante no pudo actualizar su schema. Revisa la salud del sitio antes de continuar.', 'vicunav-restaurante' ),
 	);
 	$message  = $messages[ $error_code ] ?? esc_html__( 'Vicunav Restaurante no pudo validar sus dependencias.', 'vicunav-restaurante' );
 

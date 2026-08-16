@@ -38,9 +38,23 @@ REST-02B no registra entidades, persistencia, permisos, REST, administración ni
 bloques. REST-02C es el siguiente issue y será propietario de capabilities,
 migraciones e instalación idempotente.
 
+## Alcance de REST-02C
+
+Esta fase añade únicamente:
+
+- versión de plugin 0.3.0 y schema fundacional 1;
+- capabilities primitivas concedidas al administrador durante activación;
+- ledger InnoDB `${prefix}vicu_rest_migrations`;
+- migraciones ordenadas, idempotentes y compensables;
+- upgrade durante una carga compatible;
+- pruebas aisladas y pruebas de integración con WordPress y MySQL reales.
+
+No crea tablas o registros de negocio. REST-02D es el siguiente issue y será
+propietario del menú estructurado.
+
 ## Fuera de alcance actual
 
-El plugin todavía no registra CPT, tablas, capabilities, endpoints, ajustes, pantallas
+El plugin todavía no registra CPT, tablas de dominio, endpoints, ajustes, pantallas
 administrativas, bloques o assets. Tampoco contiene menú, pricing, carrito, pedidos,
 integración operativa con pagos, reservas, contenido Bonasera ni integración con
 LocalWP.
