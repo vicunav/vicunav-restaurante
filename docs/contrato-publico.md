@@ -1,8 +1,9 @@
 # Contrato público de `vicunav-restaurante`
 
-Estado: contrato 1.0.0 aprobado; REST-02D implementa carga, compatibilidad,
-instalación fundacional y menú estructurado. Las demás superficies se habilitan por los
-issues indicados en la matriz, sin considerarse operativas antes de ellos.
+Estado: contrato 1.0.0 aprobado; REST-02E implementa carga, compatibilidad,
+instalación fundacional, menú estructurado, ingredientes, opciones y disponibilidad.
+Las demás superficies se habilitan por los issues indicados en la matriz, sin
+considerarse operativas antes de ellos.
 
 ## Responsabilidad y límites
 
@@ -17,12 +18,12 @@ internas de otro paquete.
 
 ## Estado de implementación
 
-| Superficie | Issue propietario | Estado después de REST-02D |
+| Superficie | Issue propietario | Estado después de REST-02E |
 | --- | --- | --- |
 | Versiones, autoload, dependencias y hook de carga | REST-02B | Implementado |
 | Capabilities, migraciones e instalación | REST-02C | Implementado |
 | Menú estructurado | REST-02D | Implementado |
-| Ingredientes y opciones de pizza | REST-02E | Planificado |
+| Ingredientes y opciones de pizza | REST-02E | Implementado |
 | Pricing de pizzas y totales | REST-02F y REST-02G | Planificado |
 | Carrito, pedidos e integración con pagos | REST-02H a REST-02J | Planificado |
 | Reservas y pizzas guardadas | REST-02K y REST-02L | Planificado |
@@ -77,9 +78,11 @@ archivo del plugin.
 ## Instalación y migraciones
 
 La activación ejecuta migraciones pendientes y solo después concede capabilities al
-rol administrador. REST-02D eleva el schema a versión `2`: conserva
-`${prefix}vicu_rest_migrations`, un ledger InnoDB, e inicializa el option operativo de
-revisión del menú en `1`, sin crear contenido ni datos de demostración.
+rol administrador. REST-02E eleva el schema a versión `3`: conserva
+`${prefix}vicu_rest_migrations`, un ledger InnoDB; mantiene la revisión del menú e
+incorpora tres tablas InnoDB vacías para ingredientes, relaciones y opciones de pizza.
+También inicializa `vicu_restaurante_availability_revision` en `1`, sin crear contenido
+ni datos de demostración.
 
 Cada migración tiene versión monotónica, comprobación de aplicación, operación `up()`
 y compensación `down()`. El instalador:
@@ -152,6 +155,37 @@ podrá añadirse a un carrito cuando REST-02H implemente esa escritura.
 La revisión global vive en `vicu_restaurante_menu_revision`, comienza en `1` y aumenta
 una vez por solicitud de escritura relevante. Sus valores invalidan las claves de
 object cache y forman parte del `ETag`.
+
+## Ingredientes, opciones y disponibilidad v1
+
+El catálogo operativo usa IDs públicos UUID v4 y no expone sus IDs internos. Un
+ingrediente contiene nombre, categoría, modificador de precio con signo en unidad
+menor, disponibilidad, alérgenos, etiquetas dietarias y revisión de fila. Las
+categorías cerradas son `base`, `cheese`, `extra` y `topping`; alérgenos y etiquetas
+reutilizan los vocabularios controlados del menú.
+
+Una opción de pizza contiene nombre, tipo, modificador de precio con signo,
+disponibilidad, orden y revisión de fila. Los únicos tipos son `size`, `crust` y
+`sauce`. REST-02E almacena esos modificadores, pero no calcula configuraciones ni
+totales: esa autoridad comienza en REST-02F.
+
+Las relaciones entre un `vicu_menu_item` y sus ingredientes usan uno de los roles
+`required`, `removable` u `optional`, un orden no negativo y una sustitución explícita
+opcional. El reemplazo del conjunto es transaccional. La sustitución debe referenciar
+otro ingrediente existente y nunca se infiere desde nombres o categorías.
+
+Ingredientes y opciones comparten la revisión global
+`vicu_restaurante_availability_revision`. Comienza en `1` y aumenta exactamente una
+vez por creación o actualización confirmada. Cada recurso empieza con revisión `1` y
+la incrementa una vez por actualización. Las escrituras usan compare-and-swap; una
+revisión esperada obsoleta devuelve `vicu_restaurante_stale_revision` con HTTP 409,
+`current_revision` y `retryable = true`, sin aplicar cambios parciales.
+
+La administración nativa vive bajo Vicunav y separa catálogo de disponibilidad. Los
+formularios estructurales requieren `manage_vicu_restaurant_catalog`; los toggles de
+disponibilidad requieren `manage_vicu_restaurant_availability`. Toda escritura exige
+nonce. No existe borrado operativo: un recurso se desactiva para conservar
+referencias históricas.
 
 ## Principios de datos públicos v1
 
@@ -292,6 +326,23 @@ oculta usa `vicu_restaurante_invalid_request`. Las respuestas 200 incluyen `ETag
 `Cache-Control: public, max-age=60, stale-while-revalidate=300`; un
 `If-None-Match` exacto devuelve 304. El object cache interno usa TTL de 300 segundos y
 claves ligadas a revisión.
+
+### Lecturas de ingredientes y opciones implementadas
+
+`GET /ingredients/availability` devuelve la revisión global y todos los ingredientes
+como `{ public_id, available, revision }`, incluidos los no disponibles. Responde con
+`Cache-Control: no-cache, max-age=0, must-revalidate` y `ETag`; un
+`If-None-Match` vigente devuelve 304.
+
+`GET /pizza/options` devuelve la misma revisión y agrupa el catálogo en `sizes`,
+`crusts`, `sauces`, `cheeses` y `toppings`. Las tres primeras colecciones contienen
+opciones completas; las dos últimas contienen ingredientes completos. Los elementos
+no disponibles permanecen presentes con `available = false`. Responde con
+`Cache-Control: public, max-age=60, stale-while-revalidate=300`, object cache ligado a
+revisión y `ETag`; un `If-None-Match` vigente devuelve 304.
+
+Ambas rutas son lecturas públicas y sus schemas forman parte del contrato 1.x. No
+aceptan parámetros de escritura ni calculan precios.
 
 ### Errores estables
 

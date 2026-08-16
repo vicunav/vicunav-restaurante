@@ -69,12 +69,28 @@ No incorpora ingredientes ni relaciones con ellos. REST-02E es el siguiente issu
 será propietario del catálogo canónico de ingredientes, opciones de pizza y
 disponibilidad revisada.
 
+## Alcance de REST-02E
+
+Esta fase añade únicamente:
+
+- plugin 0.5.0 y schema de instalación 3;
+- tablas InnoDB vacías para ingredientes, relaciones de items y opciones de pizza;
+- IDs públicos UUID v4, importes enteros con signo y vocabularios cerrados;
+- servicios transaccionales con revisión de fila y compare-and-swap;
+- una revisión global única para ingredientes, opciones y disponibilidad;
+- relaciones `required`, `removable` u `optional`, con orden y sustitución explícita;
+- administración nativa bajo Vicunav con capabilities y nonces;
+- `GET /ingredients/availability` y `GET /pizza/options`, con schema, `ETag`, caché e
+  invalidación por revisión.
+
+No calcula precios de pizzas ni incorpora contenido de demostración. REST-02F es el
+siguiente issue y será propietario del quote autoritativo del constructor.
+
 ## Fuera de alcance actual
 
-El plugin todavía no registra tablas de dominio, ajustes generales, bloques o assets.
-Tampoco contiene ingredientes, pricing, carrito, pedidos,
-integración operativa con pagos, reservas, contenido Bonasera ni integración con
-LocalWP.
+El plugin todavía no registra ajustes generales, bloques o assets. Tampoco contiene
+pricing autoritativo, carrito, pedidos, integración operativa con pagos, reservas,
+contenido Bonasera ni integración con LocalWP.
 
 Esas capacidades se implementan únicamente mediante los issues atómicos posteriores
 del plan de restaurante.
