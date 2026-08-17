@@ -201,6 +201,17 @@ final class Schema {
 	}
 
 	/**
+	 * Devuelve la autoridad de pizzas guardadas por cuenta.
+	 *
+	 * @return string
+	 */
+	public static function saved_pizzas_table_name(): string {
+		global $wpdb;
+
+		return $wpdb->prefix . 'vicu_rest_saved_pizzas';
+	}
+
+	/**
 	 * Comprueba la existencia de una tabla interna conocida.
 	 *
 	 * @param string $table_name Nombre completo y confiable de la tabla.

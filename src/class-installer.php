@@ -16,6 +16,7 @@ use Vicu\Restaurante\Migrations\CreateCartStorage;
 use Vicu\Restaurante\Migrations\CreateOrderStorage;
 use Vicu\Restaurante\Migrations\AddPaymentIntegration;
 use Vicu\Restaurante\Migrations\CreateReservationStorage;
+use Vicu\Restaurante\Migrations\CreateSavedPizzaStorage;
 use Vicu\Restaurante\Migrations\Migration;
 
 /**
@@ -159,6 +160,7 @@ final class Installer {
 			new CreateOrderStorage(),
 			new AddPaymentIntegration(),
 			new CreateReservationStorage(),
+			new CreateSavedPizzaStorage(),
 		);
 	}
 

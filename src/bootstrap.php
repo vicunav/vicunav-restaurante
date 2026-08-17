@@ -23,6 +23,7 @@ use Vicu\Restaurante\Rest\DeliveryZonesRoute;
 use Vicu\Restaurante\Rest\CartRoutes;
 use Vicu\Restaurante\Rest\OrderRoutes;
 use Vicu\Restaurante\Rest\ReservationRoutes;
+use Vicu\Restaurante\Rest\SavedPizzaRoutes;
 use Vicu\Restaurante\Cart\CartService;
 use Vicu\Restaurante\Order\OrderPostType;
 use Vicu\Restaurante\Order\PaymentIntegration;
@@ -180,6 +181,7 @@ function bootstrap_with_dependencies( array $dependencies ): void {
 	CartRoutes::register_hooks();
 	OrderRoutes::register_hooks();
 	ReservationRoutes::register_hooks();
+	SavedPizzaRoutes::register_hooks();
 	CartService::register_hooks();
 	PaymentIntegration::register_hooks();
 	RestaurantSettings::register_hooks();

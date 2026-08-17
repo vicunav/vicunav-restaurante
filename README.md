@@ -5,12 +5,12 @@ pizzas, and reservations.
 
 ## Status
 
-REST-02K publishes plugin version 0.11.0 over public contract 1.0.0. The current
-runtime manages timezone-aware restaurant schedules, overlapping capacity,
-idempotent reservations, private guest access, operational states, and native admin
-projections. It also preserves the payment integration delivered in REST-02J without
-reading payment storage. It does not yet manage saved pizzas, blocks, demo content,
-or depend on WooCommerce.
+REST-02L publishes plugin version 0.12.0 over public contract 1.0.0. The current
+runtime adds account-owned saved pizzas with versioned configurations, optimistic
+concurrency, secure share-link rotation, and authoritative repricing when a shared
+configuration is opened. It preserves the reservations and payment integration
+delivered previously without reading payment storage. It does not yet register
+blocks, demo content, or depend on WooCommerce.
 
 Further domain persistence, REST endpoints, admin screens, and blocks are introduced
 only through their separate atomic issues. A planned surface is not available until
