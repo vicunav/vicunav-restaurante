@@ -5,12 +5,13 @@ pizzas, and reservations.
 
 ## Status
 
-REST-02L publishes plugin version 0.12.0 over public contract 1.0.0. The current
-runtime adds account-owned saved pizzas with versioned configurations, optimistic
-concurrency, secure share-link rotation, and authoritative repricing when a shared
-configuration is opened. It preserves the reservations and payment integration
-delivered previously without reading payment storage. It does not yet register
-blocks, demo content, or depend on WooCommerce.
+REST-02M publishes plugin version 0.13.0 over public contract 1.0.0. The current
+runtime adds the dynamic `vicunav/restaurante-menu` block with server rendering,
+accessible category and dietary filters, explicit loading/error/empty states, and
+conditional editor/frontend assets. It preserves account-owned saved pizzas,
+reservations, and payment integration without reading another package's storage. It
+does not yet register the transactional blocks, demo content, or depend on
+WooCommerce.
 
 Further domain persistence, REST endpoints, admin screens, and blocks are introduced
 only through their separate atomic issues. A planned surface is not available until
@@ -48,11 +49,13 @@ Initialize the shared standards and install development dependencies:
 ```bash
 git submodule update --init --recursive
 composer install
+npm ci
 ```
 
-Run the complete scaffold validation:
+Run the complete validation:
 
 ```bash
+npm run check
 composer check
 ```
 

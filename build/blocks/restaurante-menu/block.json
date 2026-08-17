@@ -1,0 +1,37 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "vicunav/restaurante-menu",
+  "version": "1.0.0",
+  "title": "Menú del restaurante",
+  "category": "widgets",
+  "icon": "food",
+  "description": "Muestra el menú estructurado con búsqueda, categorías y disponibilidad.",
+  "keywords": [
+    "restaurante",
+    "menú",
+    "platos"
+  ],
+  "textdomain": "vicunav-restaurante",
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "color": {
+      "background": true,
+      "text": true
+    },
+    "html": false,
+    "spacing": {
+      "margin": true,
+      "padding": true
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}
