@@ -15,6 +15,7 @@ use Vicu\Restaurante\Migrations\CreateCommerceRules;
 use Vicu\Restaurante\Migrations\CreateCartStorage;
 use Vicu\Restaurante\Migrations\CreateOrderStorage;
 use Vicu\Restaurante\Migrations\AddPaymentIntegration;
+use Vicu\Restaurante\Migrations\CreateReservationStorage;
 use Vicu\Restaurante\Migrations\Migration;
 
 /**
@@ -157,6 +158,7 @@ final class Installer {
 			new CreateCartStorage(),
 			new CreateOrderStorage(),
 			new AddPaymentIntegration(),
+			new CreateReservationStorage(),
 		);
 	}
 

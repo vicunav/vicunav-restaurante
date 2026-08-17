@@ -28,9 +28,9 @@ final class BootstrapTest extends TestCase {
 	 * @return void
 	 */
 	public function test_defines_foundational_constants(): void {
-		$this->assertSame( '0.10.0', VICU_RESTAURANTE_VERSION );
+		$this->assertSame( '0.11.0', VICU_RESTAURANTE_VERSION );
 		$this->assertSame( '1.0.0', VICU_RESTAURANTE_CONTRACT_VERSION );
-		$this->assertSame( '7', VICU_RESTAURANTE_DB_VERSION );
+		$this->assertSame( '8', VICU_RESTAURANTE_DB_VERSION );
 		$this->assertSame(
 			realpath( dirname( __DIR__ ) . '/vicunav-restaurante.php' ),
 			realpath( VICU_RESTAURANTE_PLUGIN_FILE )
@@ -169,7 +169,7 @@ final class BootstrapTest extends TestCase {
 
 		$this->assertSame( 1, did_action( 'vicu_restaurante_loaded' ) );
 		$this->assertSame(
-			array( '0.10.0', '1.0.0' ),
+			array( '0.11.0', '1.0.0' ),
 			$vicu_restaurante_test_fired_actions['vicu_restaurante_loaded'][0]
 		);
 	}
@@ -211,7 +211,7 @@ final class BootstrapTest extends TestCase {
 			$contents .= $file->fgets();
 		}
 
-		$this->assertStringContainsString( 'Version:           0.10.0', $contents );
+		$this->assertStringContainsString( 'Version:           0.11.0', $contents );
 		$this->assertStringContainsString( 'Requires at least: 6.6', $contents );
 		$this->assertStringContainsString( 'Requires PHP:      8.1', $contents );
 		$this->assertStringContainsString(
@@ -239,6 +239,7 @@ final class BootstrapTest extends TestCase {
 		$this->assertStringContainsString( '| Capabilities, migraciones e instalación | REST-02C | Implementado |', $contract );
 		$this->assertStringContainsString( '| Menú estructurado | REST-02D | Implementado |', $contract );
 		$this->assertStringContainsString( '| Integración con pagos | REST-02J | Implementado |', $contract );
+		$this->assertStringContainsString( '| Reservas | REST-02K | Implementado |', $contract );
 		$this->assertStringContainsString( "'vicu_restaurante_loaded'", $contract );
 	}
 }

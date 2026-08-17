@@ -168,6 +168,39 @@ final class Schema {
 	}
 
 	/**
+	 * Devuelve la autoridad de reservas.
+	 *
+	 * @return string
+	 */
+	public static function reservations_table_name(): string {
+		global $wpdb;
+
+		return $wpdb->prefix . 'vicu_rest_reservations';
+	}
+
+	/**
+	 * Devuelve la ocupación agregada por intervalo UTC.
+	 *
+	 * @return string
+	 */
+	public static function reservation_occupancy_table_name(): string {
+		global $wpdb;
+
+		return $wpdb->prefix . 'vicu_rest_reservation_occupancy';
+	}
+
+	/**
+	 * Devuelve los eventos append-only de reservas.
+	 *
+	 * @return string
+	 */
+	public static function reservation_events_table_name(): string {
+		global $wpdb;
+
+		return $wpdb->prefix . 'vicu_rest_reservation_events';
+	}
+
+	/**
 	 * Comprueba la existencia de una tabla interna conocida.
 	 *
 	 * @param string $table_name Nombre completo y confiable de la tabla.

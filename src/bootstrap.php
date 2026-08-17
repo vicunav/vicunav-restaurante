@@ -12,6 +12,7 @@ use Vicu\Restaurante\Admin\CatalogAdmin;
 use Vicu\Restaurante\Admin\MenuRelationsAdmin;
 use Vicu\Restaurante\Admin\CommerceAdmin;
 use Vicu\Restaurante\Admin\OrderAdmin;
+use Vicu\Restaurante\Admin\ReservationAdmin;
 use Vicu\Restaurante\Menu\MenuCategory;
 use Vicu\Restaurante\Menu\MenuItemPostType;
 use Vicu\Restaurante\Menu\MenuMeta;
@@ -21,9 +22,12 @@ use Vicu\Restaurante\Rest\PizzaQuoteRoute;
 use Vicu\Restaurante\Rest\DeliveryZonesRoute;
 use Vicu\Restaurante\Rest\CartRoutes;
 use Vicu\Restaurante\Rest\OrderRoutes;
+use Vicu\Restaurante\Rest\ReservationRoutes;
 use Vicu\Restaurante\Cart\CartService;
 use Vicu\Restaurante\Order\OrderPostType;
 use Vicu\Restaurante\Order\PaymentIntegration;
+use Vicu\Restaurante\Reservation\ReservationPostType;
+use Vicu\Restaurante\Reservation\ReservationSettings;
 use Vicu\Restaurante\Settings\RestaurantSettings;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -161,21 +165,25 @@ function bootstrap_with_dependencies( array $dependencies ): void {
 	MenuCategory::register_hooks();
 	( new MenuItemPostType() )->register_hooks();
 	( new OrderPostType() )->register_hooks();
+	( new ReservationPostType() )->register_hooks();
 	MenuMeta::register_hooks();
 	MenuAdmin::register_hooks();
 	CatalogAdmin::register_hooks();
 	MenuRelationsAdmin::register_hooks();
 	CommerceAdmin::register_hooks();
 	OrderAdmin::register_hooks();
+	ReservationAdmin::register_hooks();
 	MenuRoutes::register_hooks();
 	CatalogRoutes::register_hooks();
 	PizzaQuoteRoute::register_hooks();
 	DeliveryZonesRoute::register_hooks();
 	CartRoutes::register_hooks();
 	OrderRoutes::register_hooks();
+	ReservationRoutes::register_hooks();
 	CartService::register_hooks();
 	PaymentIntegration::register_hooks();
 	RestaurantSettings::register_hooks();
+	ReservationSettings::register_hooks();
 
 	/**
 	 * Se ejecuta cuando el contrato base del vertical restaurante está disponible.

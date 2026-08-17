@@ -191,10 +191,29 @@ No incorpora archivos de comprobante, bancos, reservas, pizzas guardadas, bloque
 contenido de demostración. REST-02K es el siguiente issue y será propietario de
 horarios, capacidad y reservas.
 
+## Alcance de REST-02K
+
+Esta fase añade únicamente:
+
+- plugin 0.11.0 y schema de instalación 8;
+- horarios semanales, excepciones por fecha, cierres recurrentes y zona IANA propios;
+- slots completos por duración, aviso mínimo, tamaño de grupo y capacidad agregada;
+- creación idempotente con bloqueo cronológico de todos los intervalos solapados;
+- reservas con snapshots de horario, revisión, eventos y ownership por cuenta o token;
+- estados pendiente, confirmada, completada, cancelada y no asistió;
+- liberación atómica e idempotente de capacidad al llegar a un estado terminal;
+- disponibilidad, creación, consulta privada y cancelación mediante REST sin caché;
+- settings, listado, detalle, transiciones y proyección reconstruible en wp-admin;
+- rate limiting conectable, schemas públicos y pruebas con WordPress y MySQL reales.
+
+No incorpora horas ni reservas Bonasera, asignación de mesas, depósitos, lista de
+espera, bloques, pizzas guardadas ni contenido de demostración. REST-02L es el
+siguiente issue y será propietario de las pizzas guardadas de cuenta.
+
 ## Fuera de alcance actual
 
-El plugin todavía no registra bloques o assets. Tampoco contiene reservas, pizzas
-guardadas, contenido Bonasera ni integración con LocalWP.
+El plugin todavía no registra bloques o assets. Tampoco contiene pizzas guardadas,
+contenido Bonasera ni integración con LocalWP.
 
 Esas capacidades se implementan únicamente mediante los issues atómicos posteriores
 del plan de restaurante.
