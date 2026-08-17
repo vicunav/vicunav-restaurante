@@ -210,10 +210,35 @@ No incorpora horas ni reservas Bonasera, asignación de mesas, depósitos, lista
 espera, bloques, pizzas guardadas ni contenido de demostración. REST-02L es el
 siguiente issue y será propietario de las pizzas guardadas de cuenta.
 
+## Alcance de REST-02L
+
+Esta fase añade únicamente:
+
+- plugin 0.12.0 y schema de instalación 9;
+- tabla InnoDB vacía para pizzas guardadas de cuenta, con UUID, nombre privado,
+  configuración versionada, revisión y fechas UTC;
+- persistencia de selecciones normalizadas sin importes, nombres de catálogo ni
+  snapshots que puedan convertirse en autoridad de precio;
+- listado, creación, actualización, renombrado y borrado exclusivos del propietario,
+  con sesión WordPress, nonce y compare-and-swap;
+- rechazo cerrado de versiones desconocidas, configuraciones incompletas y
+  referencias no disponibles mediante el pricing autoritativo existente;
+- rotación explícita de un token compartible aleatorio cuyo valor solo se entrega una
+  vez y cuyo hash es la única credencial persistida;
+- lectura pública no enumerable que no revela nombre, propietario, IDs internos ni
+  fechas, y vuelve a cotizar la configuración contra el catálogo vigente;
+- respuestas `no-store`, rate limiting conectable, schemas públicos y pruebas con
+  WordPress y MySQL reales.
+
+Un enlace compartido no autoriza CRUD, no contiene importes ni sustituye el quote del
+servidor. No añade bloques, contenido Bonasera, importación legacy ni integración con
+LocalWP. REST-02M es el siguiente issue y será propietario del bloque dinámico de menú
+y filtros.
+
 ## Fuera de alcance actual
 
-El plugin todavía no registra bloques o assets. Tampoco contiene pizzas guardadas,
-contenido Bonasera ni integración con LocalWP.
+El plugin todavía no registra bloques o assets. Tampoco contiene contenido Bonasera
+ni integración con LocalWP.
 
 Esas capacidades se implementan únicamente mediante los issues atómicos posteriores
 del plan de restaurante.

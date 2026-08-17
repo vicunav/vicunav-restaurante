@@ -1,9 +1,10 @@
 # Contrato público de `vicunav-restaurante`
 
-Estado: contrato 1.0.0 aprobado; REST-02K implementa carga, compatibilidad,
+Estado: contrato 1.0.0 aprobado; REST-02L implementa carga, compatibilidad,
 instalación, menú, catálogo, pricing de pizzas, zonas, descuentos, totales, carrito,
-checkout, pedidos, integración pública con pagos y reservas. Las demás superficies se habilitan
-por los issues indicados en la matriz, sin considerarse operativas antes de ellos.
+checkout, pedidos, integración pública con pagos, reservas y pizzas guardadas. Las
+demás superficies se habilitan por los issues indicados en la matriz, sin
+considerarse operativas antes de ellos.
 
 ## Responsabilidad y límites
 
@@ -18,7 +19,7 @@ internas de otro paquete.
 
 ## Estado de implementación
 
-| Superficie | Issue propietario | Estado después de REST-02K |
+| Superficie | Issue propietario | Estado después de REST-02L |
 | --- | --- | --- |
 | Versiones, autoload, dependencias y hook de carga | REST-02B | Implementado |
 | Capabilities, migraciones e instalación | REST-02C | Implementado |
@@ -30,7 +31,7 @@ internas de otro paquete.
 | Checkout, pedidos y estado operativo | REST-02I | Implementado |
 | Integración con pagos | REST-02J | Implementado |
 | Reservas | REST-02K | Implementado |
-| Pizzas guardadas | REST-02L | Planificado |
+| Pizzas guardadas | REST-02L | Implementado |
 | Bloques públicos | REST-02M a REST-02Q | Planificado |
 | E2E, privacidad, rendimiento y release candidata | REST-02R | Planificado |
 
@@ -82,15 +83,16 @@ archivo del plugin.
 ## Instalación y migraciones
 
 La activación ejecuta migraciones pendientes y solo después concede capabilities al
-rol administrador. REST-02K eleva el schema a versión `8`: conserva
+rol administrador. REST-02L eleva el schema a versión `9`: conserva
 `${prefix}vicu_rest_migrations`, un ledger InnoDB; mantiene la revisión del menú e
 incorpora tablas InnoDB vacías para ingredientes, relaciones, opciones de pizza, zonas
 de entrega, descuentos, sesiones, carritos, idempotencia, pedidos, líneas de pedido,
 eventos y evidencia manual privada, y añade autoridades vacías para reservas,
-ocupación agregada por intervalo UTC y eventos de reserva. Añade al pedido únicamente el estado observado,
-revisión, proveedor, salud y fecha de reconciliación. Inicializa las revisiones de
-disponibilidad y pricing en `1`, sin crear contenido, solicitudes, evidencias, pedidos
-ni datos de demostración. No instala horarios Bonasera ni reservas de ejemplo.
+ocupación agregada por intervalo UTC, eventos de reserva y pizzas guardadas de cuenta.
+Añade al pedido únicamente el estado observado, revisión, proveedor, salud y fecha de
+reconciliación. Inicializa las revisiones de disponibilidad y pricing en `1`, sin
+crear contenido, solicitudes, evidencias, pedidos, pizzas guardadas ni datos de
+demostración. No instala horarios Bonasera ni reservas de ejemplo.
 
 Cada migración tiene versión monotónica, comprobación de aplicación, operación `up()`
 y compensación `down()`. El instalador:
@@ -203,8 +205,9 @@ referencias históricas.
 - Recursos mutables publican una revisión monotónica para compare-and-swap.
 - Pedidos y reservas conservan snapshots históricos.
 - El servidor es la única autoridad de precio, disponibilidad, capacidad y estado.
-- Tokens, claves idempotentes y datos privados no aparecen en URLs, logs ni respuestas
-  públicas.
+- Tokens de pedido, reserva y sesión, claves idempotentes y datos privados no aparecen
+  en URLs, logs ni respuestas públicas. Un token compartible rotado puede formar parte
+  de su ruta pública, pero nunca autoriza operaciones privadas.
 
 La persistencia física no forma parte del contrato. Sus tablas, índices y proyecciones
 pueden cambiar mediante migraciones compatibles sin autorizar lecturas externas.
@@ -380,6 +383,51 @@ autoritativas. Datos privados, eventos y transiciones operativas se muestran sol
 capability y nonce. FSE, posts y metadatos proyectados nunca participan en horarios,
 capacidad, ownership o transiciones.
 
+## Pizzas guardadas v1
+
+Una pizza guardada pertenece exactamente a una cuenta WordPress. La autoridad es una
+tabla InnoDB propia con UUID público, `user_id`, nombre privado de hasta 100 caracteres,
+versión y JSON de configuración normalizada, revisión monotónica y fechas UTC. La
+configuración usa `pizza_configuration` versión 1 y no persiste importes, moneda,
+nombres de catálogo ni resultados del quote. El límite operativo es 100 pizzas por
+usuario.
+
+Crear o reemplazar una configuración ejecuta `PizzaPricingService::quote()` antes de
+escribir. Por ello rechaza versiones desconocidas, revisiones antiguas de catálogo,
+selecciones incompletas o referencias no disponibles. Renombrar, reemplazar, eliminar
+o rotar un enlace exige `expected_revision`; una revisión obsoleta no aplica cambios y
+devuelve `vicu_restaurante_stale_revision`. El UUID se busca siempre dentro del
+`user_id` actual y un fallo de ownership responde como recurso ausente.
+
+Las rutas privadas implementadas son:
+
+| Método y ruta | Contrato |
+| --- | --- |
+| `GET /saved-pizzas` | Lista únicamente las pizzas de la cuenta actual |
+| `POST /saved-pizzas` | Guarda nombre y configuración validada |
+| `PATCH /saved-pizzas/{public_id}` | Renombra, reemplaza o combina ambos cambios con CAS |
+| `DELETE /saved-pizzas/{public_id}` | Elimina con ownership y CAS |
+| `POST /saved-pizzas/{public_id}/share` | Rota y entrega una credencial compartible una sola vez |
+
+Todas requieren una cuenta autenticada y `X-WP-Nonce`. Sus respuestas incluyen
+`Cache-Control: no-store, max-age=0` y no exponen `user_id`, IDs internos ni el hash
+del token. El nombre sí forma parte de la respuesta privada del propietario.
+
+Rotar un enlace crea 256 bits aleatorios codificados como 43 caracteres URL-safe,
+invalida inmediatamente la credencial anterior e incrementa la revisión. La base
+conserva solo un HMAC SHA-256 con separación de propósito. El token nuevo se devuelve
+una sola vez junto con su ruta y nunca puede autorizar listado, edición, renombrado,
+borrado o una nueva rotación.
+
+`GET /saved-pizzas/shared/{token}` es público, no enumerable y no cacheable. Su
+respuesta excluye nombre, propietario, UUID de la pizza y fechas. Incluye únicamente
+`share_version = 1`, la configuración revalidada y un `authoritative_quote` calculado
+contra la revisión, disponibilidad, importes y moneda vigentes. El token no contiene
+precios ni convierte el snapshot guardado en autoridad. Si una opción deja de estar
+disponible, la lectura falla cerrada. El filtro
+`vicu_restaurante_allow_shared_pizza` permite conectar rate limiting y devuelve HTTP
+429 al denegar.
+
 ## REST v1
 
 El namespace base es `/wp-json/vicu/v1/restaurante`. Las rutas se registran mediante
@@ -393,7 +441,8 @@ El namespace base es `/wp-json/vicu/v1/restaurante`. Las rutas se registran medi
 | Carrito | `POST /carts`, `GET /cart`, mutaciones bajo `/cart` |
 | Pedidos | `POST /orders`, `GET /orders/{public_id}`, entrega de evidencia |
 | Reservas | disponibilidad, creación, consulta privada y cancelación bajo `/reservations` |
-| Cuenta | CRUD propio bajo `/saved-pizzas` |
+| Cuenta | CRUD propio y rotación bajo `/saved-pizzas` |
+| Pizza compartida | Lectura recotizada bajo `/saved-pizzas/shared/{token}` |
 
 Los schemas exactos se incorporan con el issue que implementa cada grupo y permanecen
 compatibles durante el contrato mayor 1.
