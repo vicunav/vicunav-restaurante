@@ -266,10 +266,42 @@ No añade acciones de carrito, constructor, contenido o identidad Bonasera, patt
 templates ni integración con LocalWP. REST-02N es el siguiente issue y será
 propietario del constructor de pizzas.
 
+## Alcance de REST-02N
+
+Esta fase añade únicamente:
+
+- plugin 0.14.0, conservando schema de instalación 9 y contrato 1.0.0;
+- bloque estable `vicunav/restaurante-pizza-builder` con `block.json`, API 3,
+  render dinámico y módulo frontend de Interactivity API compatible con WordPress
+  6.6;
+- opciones vivas de tamaños, masas, salsas, quesos y toppings, incluidos agotados
+  visibles y deshabilitados;
+- zonas exclusivas `whole`, `left` y `right`, con máximo global de seis toppings y
+  cantidad uno al añadir desde el constructor;
+- cotización tras cada cambio mediante `POST /pizza/quote`, sin fórmulas ni importes
+  autoritativos en JavaScript;
+- creación o recuperación del carrito y `POST /cart/items` con revisión esperada,
+  nonce para cuentas o CSRF derivado para sesiones anónimas;
+- nueva cotización inmediatamente antes de cada alta y error visible ante catálogo
+  obsoleto, indisponibilidad, red o concurrencia;
+- fallback explícito cuando falta configuración, mensajes vivos, foco visible,
+  targets de 44 px, responsive desde 320 px y respeto a `prefers-reduced-motion`;
+- preview mediante render de servidor, assets condicionales y pruebas PHP,
+  JavaScript e integración con WordPress y MySQL.
+
+El builder no guarda importes, no fusiona pizzas, no modifica líneas existentes y no
+publica secretos de sesión. El audit de producción npm permanece sin vulnerabilidades;
+los avisos transitivos de desarrollo del toolchain oficial continúan diferidos a
+REST-02R.
+
+No añade la vista del carrito, checkout, estado de pedidos, pizzas guardadas, contenido
+Bonasera, patterns, templates ni integración con LocalWP. REST-02O es el siguiente
+issue y será propietario de los bloques coordinados de comercio.
+
 ## Fuera de alcance actual
 
-El plugin todavía no registra bloques transaccionales o de cuenta. Tampoco contiene
-contenido Bonasera ni integración con LocalWP.
+El plugin todavía no registra las vistas coordinadas de carrito, checkout, pedidos,
+reservas o cuenta. Tampoco contiene contenido Bonasera ni integración con LocalWP.
 
 Esas capacidades se implementan únicamente mediante los issues atómicos posteriores
 del plan de restaurante.

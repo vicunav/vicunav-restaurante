@@ -30,10 +30,12 @@ final class BlockRegistry {
 
 	/** Registra bloques individuales sin depender de APIs posteriores a 6.6. */
 	public static function register_blocks(): void {
-		$menu_path = VICU_RESTAURANTE_PATH . 'build/blocks/restaurante-menu';
+		foreach ( array( 'restaurante-menu', 'restaurante-pizza-builder' ) as $block ) {
+			$path = VICU_RESTAURANTE_PATH . 'build/blocks/' . $block;
 
-		if ( file_exists( $menu_path . '/block.json' ) ) {
-			register_block_type_from_metadata( $menu_path );
+			if ( file_exists( $path . '/block.json' ) ) {
+				register_block_type_from_metadata( $path );
+			}
 		}
 	}
 }

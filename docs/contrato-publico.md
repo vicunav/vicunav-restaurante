@@ -1,10 +1,10 @@
 # Contrato público de `vicunav-restaurante`
 
-Estado: contrato 1.0.0 aprobado; REST-02M implementa carga, compatibilidad,
+Estado: contrato 1.0.0 aprobado; REST-02N implementa carga, compatibilidad,
 instalación, menú, catálogo, pricing de pizzas, zonas, descuentos, totales, carrito,
 checkout, pedidos, integración pública con pagos, reservas, pizzas guardadas y el
-bloque público de menú. Las demás superficies se habilitan por los issues indicados
-en la matriz, sin considerarse operativas antes de ellos.
+bloque público de menú y el constructor de pizzas. Las demás superficies se habilitan
+por los issues indicados en la matriz, sin considerarse operativas antes de ellos.
 
 ## Responsabilidad y límites
 
@@ -19,7 +19,7 @@ internas de otro paquete.
 
 ## Estado de implementación
 
-| Superficie | Issue propietario | Estado después de REST-02M |
+| Superficie | Issue propietario | Estado después de REST-02N |
 | --- | --- | --- |
 | Versiones, autoload, dependencias y hook de carga | REST-02B | Implementado |
 | Capabilities, migraciones e instalación | REST-02C | Implementado |
@@ -33,7 +33,10 @@ internas de otro paquete.
 | Reservas | REST-02K | Implementado |
 | Pizzas guardadas | REST-02L | Implementado |
 | Bloque de menú y filtros | REST-02M | Implementado |
-| Bloques transaccionales y de cuenta | REST-02N a REST-02Q | Planificado |
+| Constructor de pizzas | REST-02N | Implementado |
+| Carrito, checkout y estado de pedido | REST-02O | Planificado |
+| Bloque de reservas | REST-02P | Planificado |
+| Bloque de pizzas guardadas | REST-02Q | Planificado |
 | E2E, privacidad, rendimiento y release candidata | REST-02R | Planificado |
 
 Una superficie planificada no es una API disponible. Cada issue actualiza esta matriz,
@@ -686,10 +689,10 @@ privados.
 
 ## Bloques v1
 
-`vicunav/restaurante-menu` está implementado. Las superficies públicas restantes usan
-estos nombres estables y permanecen planificadas hasta sus issues propietarios:
+`vicunav/restaurante-menu` y `vicunav/restaurante-pizza-builder` están implementados.
+Las superficies públicas restantes usan estos nombres estables y permanecen
+planificadas hasta sus issues propietarios:
 
-- `vicunav/restaurante-pizza-builder`;
 - `vicunav/restaurante-cart`;
 - `vicunav/restaurante-checkout`;
 - `vicunav/restaurante-order-status`;
@@ -728,7 +731,46 @@ renderiza. El build reproducible de REST-02M mide:
 | Editor `index.js` | 1.706 | 967 |
 | Editor `index.css` | 153 | 109 |
 
-Los bloques REST-02N a REST-02Q también serán dinámicos, con render de servidor y
+Los dos bloques implementados son dinámicos y mantienen sus assets separados de la
+composición editorial. FSE no puede alterar pricing, estados, permisos, schemas o
+disponibilidad transaccional.
+
+### Constructor de pizzas implementado
+
+`vicunav/restaurante-pizza-builder` usa API 3, render de servidor e Interactivity API
+mediante `viewScriptModule`. PHP publica las opciones operativas vigentes y el cliente
+solo mantiene selección efímera, zona activa y estados de interfaz. El módulo nunca
+calcula precios: envía `pizza_configuration` versión 1 a `POST /pizza/quote` tras cada
+cambio y repite la cotización antes de mutar el carrito.
+
+El constructor elige una opción disponible por grupo, muestra agotados sin permitir
+seleccionarlos, trata `whole`, `left` y `right` como zonas exclusivas y limita a seis
+toppings entre todas las zonas. Cada alta usa cantidad uno. La autoridad REST vuelve a
+validar IDs, disponibilidad, revisión, precio y cantidad; el payload del navegador no
+incluye importes.
+
+Para añadir, el módulo recupera o crea el carrito propio y envía la revisión recibida.
+Las cuentas usan `X-WP-Nonce`; las sesiones anónimas usan la cookie HttpOnly y el CSRF
+derivado devuelto por el servidor. Un error de red, catálogo obsoleto, selección
+agotada o conflicto impide el alta, anuncia el error y ofrece recargar opciones. El
+bloque no renderiza el carrito, no edita líneas y no persiste borradores.
+
+FSE puede cambiar alineación, anchor, color y espaciado, pero no las opciones, reglas,
+precios ni rutas. Si falta una selección obligatoria disponible, el SSR muestra un
+estado explícito en lugar de un formulario parcial. Los controles admiten teclado,
+foco visible y targets de 44 px; el layout baja a una columna en móvil y elimina
+animaciones bajo `prefers-reduced-motion`.
+
+El build reproducible de REST-02N mide:
+
+| Asset | Bytes minificados | Bytes gzip |
+| --- | ---: | ---: |
+| Módulo frontend `view.js` | 3.049 | 1.397 |
+| Compartido `style-index.css` | 4.252 | 870 |
+| Editor `index.js` | 1.713 | 971 |
+| Editor `index.css` | 103 | 105 |
+
+Los bloques REST-02O a REST-02Q también serán dinámicos, con render de servidor y
 assets condicionales. FSE puede editar composición y contenido, pero no pricing,
 estados, permisos, schemas o disponibilidad transaccional.
 
