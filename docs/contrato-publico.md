@@ -1,8 +1,8 @@
 # Contrato público de `vicunav-restaurante`
 
-Estado: contrato 1.0.0 aprobado; REST-02J implementa carga, compatibilidad,
+Estado: contrato 1.0.0 aprobado; REST-02K implementa carga, compatibilidad,
 instalación, menú, catálogo, pricing de pizzas, zonas, descuentos, totales, carrito,
-checkout, pedidos e integración pública con pagos. Las demás superficies se habilitan
+checkout, pedidos, integración pública con pagos y reservas. Las demás superficies se habilitan
 por los issues indicados en la matriz, sin considerarse operativas antes de ellos.
 
 ## Responsabilidad y límites
@@ -18,7 +18,7 @@ internas de otro paquete.
 
 ## Estado de implementación
 
-| Superficie | Issue propietario | Estado después de REST-02J |
+| Superficie | Issue propietario | Estado después de REST-02K |
 | --- | --- | --- |
 | Versiones, autoload, dependencias y hook de carga | REST-02B | Implementado |
 | Capabilities, migraciones e instalación | REST-02C | Implementado |
@@ -29,7 +29,8 @@ internas de otro paquete.
 | Carrito seguro y mutaciones | REST-02H | Implementado |
 | Checkout, pedidos y estado operativo | REST-02I | Implementado |
 | Integración con pagos | REST-02J | Implementado |
-| Reservas y pizzas guardadas | REST-02K y REST-02L | Planificado |
+| Reservas | REST-02K | Implementado |
+| Pizzas guardadas | REST-02L | Planificado |
 | Bloques públicos | REST-02M a REST-02Q | Planificado |
 | E2E, privacidad, rendimiento y release candidata | REST-02R | Planificado |
 
@@ -81,14 +82,15 @@ archivo del plugin.
 ## Instalación y migraciones
 
 La activación ejecuta migraciones pendientes y solo después concede capabilities al
-rol administrador. REST-02J eleva el schema a versión `7`: conserva
+rol administrador. REST-02K eleva el schema a versión `8`: conserva
 `${prefix}vicu_rest_migrations`, un ledger InnoDB; mantiene la revisión del menú e
 incorpora tablas InnoDB vacías para ingredientes, relaciones, opciones de pizza, zonas
 de entrega, descuentos, sesiones, carritos, idempotencia, pedidos, líneas de pedido,
-eventos y evidencia manual privada. Añade al pedido únicamente el estado observado,
+eventos y evidencia manual privada, y añade autoridades vacías para reservas,
+ocupación agregada por intervalo UTC y eventos de reserva. Añade al pedido únicamente el estado observado,
 revisión, proveedor, salud y fecha de reconciliación. Inicializa las revisiones de
 disponibilidad y pricing en `1`, sin crear contenido, solicitudes, evidencias, pedidos
-ni datos de demostración.
+ni datos de demostración. No instala horarios Bonasera ni reservas de ejemplo.
 
 Cada migración tiene versión monotónica, comprobación de aplicación, operación `up()`
 y compensación `down()`. El instalador:
@@ -317,6 +319,66 @@ Una confirmación incompatible con un pedido terminal crea
 Monto, moneda o ID de solicitud incompatibles dejan
 `vicu_restaurante_payment_mismatch` como alerta persistente, sin registrar un evento
 ni cambiar el estado. El CPT de pagos, sus tablas y sus metadatos nunca se consultan.
+
+## Reservas v1
+
+La configuración autoritativa vive en el vertical y usa una zona horaria IANA exacta.
+Define periodos semanales por día, excepciones únicas por fecha, cierres recurrentes
+`MM-DD`, intervalo de slots, duración, capacidad, tamaño mínimo y máximo del grupo,
+aviso mínimo, umbral de capacidad limitada y confirmación automática. Los defaults no
+incluyen periodos de apertura ni contenido Bonasera. Un cambio confirmado aumenta una
+revisión global de configuración.
+
+La disponibilidad convierte cada periodo local a UTC y solo publica inicios cuyo rango
+completo cabe antes del cierre. Cada slot considera todos los intervalos que cruza la
+duración, no solo su hora de inicio. Su estado es `available`, `limited` o
+`unavailable` según la menor capacidad restante del rango. Cierres, excepciones,
+límites de grupo y aviso mínimo se aplican en servidor. La respuesta usa
+`Cache-Control: no-store` porque una lectura no reserva capacidad.
+
+Crear una reserva exige `Idempotency-Key` de 16 a 191 bytes. El servidor normaliza
+fecha, hora, grupo y contacto, revalida el slot, crea las filas de ocupación ausentes,
+las bloquea cronológicamente con `SELECT ... FOR UPDATE`, vuelve a comprobar la
+revisión de configuración y aplica incrementos condicionados por capacidad. Reserva,
+ocupación, evento inicial y resultado idempotente se confirman en una sola
+transacción. Dos solicitudes por los últimos puestos no pueden confirmarse ambas.
+
+La reserva congela fecha y hora locales, zona IANA, inicio y fin UTC, tamaño del
+intervalo y grupo. Su UUID público y código breve no autorizan acceso. Una reserva
+invitada devuelve un token opaco de 64 caracteres solo al crearla o repetir exactamente
+la misma operación; la base conserva únicamente su hash. Una reserva de cuenta solo es
+legible por ese usuario. Las respuestas públicas nunca incluyen nombre, teléfono,
+correo, notas, preferencia de zona, IDs internos ni eventos administrativos.
+
+Los estados estables son `pendiente`, `confirmada`, `completada`, `cancelada` y
+`no_asistio`. Pendiente puede pasar a confirmada o cancelada. Confirmada puede pasar a
+completada, cancelada o no asistió. Los tres destinos son terminales y no se reabren.
+Pendiente y confirmada consumen capacidad. Toda salida hacia un terminal bloquea los
+mismos intervalos congelados, resta el grupo una sola vez, incrementa la revisión y
+añade un evento dentro de la misma transacción. Repetir una cancelación ya aplicada
+devuelve su estado actual sin otro evento ni otra liberación.
+
+Las rutas implementadas son:
+
+| Método y ruta | Contrato |
+| --- | --- |
+| `GET /reservations/availability` | Fecha y grupo; slots no cacheables |
+| `POST /reservations` | Creación idempotente pública o de cuenta |
+| `GET /reservations/{public_id}` | Cuenta propietaria o `X-Vicu-Reservation-Token` |
+| `POST /reservations/{public_id}/cancel` | Ownership y `expected_revision` |
+
+Las cuentas autenticadas requieren `X-WP-Nonce`. Los filtros
+`vicu_restaurante_allow_reservation_availability` y
+`vicu_restaurante_allow_reservation_creation` permiten conectar rate limiting o
+antifraude sin incorporar una política global al dominio. Ownership fallido responde
+como recurso ausente para no ofrecer un oráculo de UUID.
+
+El tab de ajustes y el CPT privado `vicu_reservation` requieren
+`manage_vicu_restaurant_reservations`. La proyección sirve únicamente para listado y
+detalle: no admite creación, quick edit ni borrado, y se reconstruye desde las tablas
+autoritativas. Datos privados, eventos y transiciones operativas se muestran solo tras
+capability y nonce. FSE, posts y metadatos proyectados nunca participan en horarios,
+capacidad, ownership o transiciones.
 
 ## REST v1
 
