@@ -1,0 +1,26 @@
+{
+  "name": "vicunav-restaurante",
+  "version": "0.13.0",
+  "private": true,
+  "description": "Bloques Gutenberg del dominio restaurante de Vicunav.",
+  "license": "GPL-2.0-or-later",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "scripts": {
+    "build": "wp-scripts build",
+    "start": "wp-scripts start",
+    "audit:prod": "npm audit --omit=dev",
+    "lint:js": "wp-scripts lint-js src/blocks tests/js",
+    "lint:css": "wp-scripts lint-style 'src/blocks/**/*.scss'",
+    "test:js": "wp-scripts test-unit-js",
+    "check": "npm run audit:prod && npm run lint:js && npm run lint:css && npm run test:js && npm run build"
+  },
+  "devDependencies": {
+    "@wordpress/block-editor": "16.2.0",
+    "@wordpress/blocks": "15.26.0",
+    "@wordpress/scripts": "34.1.0",
+    "@wordpress/server-side-render": "6.29.0"
+  }
+}

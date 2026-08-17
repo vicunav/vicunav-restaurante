@@ -10,6 +10,7 @@
 
 	<arg name="basepath" value="."/>
 	<arg name="colors"/>
+	<arg name="extensions" value="php"/>
 	<arg value="sp"/>
 
 	<rule ref="WordPress"/>

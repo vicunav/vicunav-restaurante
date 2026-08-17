@@ -235,10 +235,41 @@ servidor. No añade bloques, contenido Bonasera, importación legacy ni integrac
 LocalWP. REST-02M es el siguiente issue y será propietario del bloque dinámico de menú
 y filtros.
 
+## Alcance de REST-02M
+
+Esta fase añade únicamente:
+
+- plugin 0.13.0, conservando schema de instalación 9 y contrato 1.0.0;
+- toolchain oficial `@wordpress/scripts` con build reproducible, lint de JavaScript y
+  estilos, pruebas Jest y audit de dependencias publicadas;
+- bloque estable `vicunav/restaurante-menu` con `block.json`, API 3, registro PHP por
+  metadata y render dinámico desde `CatalogRepository`;
+- fallback SSR completo para visitantes sin JavaScript, sin serializar markup de
+  negocio en el contenido editorial;
+- mejora progresiva que refresca el contrato REST, filtra por búsqueda, categoría,
+  vegetariano y picante, y conserva el SSR ante fallos de red;
+- estados anunciables de carga, error, catálogo vacío y filtros sin resultados;
+- agotados visibles con estado textual, precios informativos recibidos del servidor y
+  advertencia de contaminación cruzada;
+- preview mediante render de servidor, assets de editor y frontend condicionales, y
+  soportes FSE limitados a composición visual;
+- CSS fluido a 320 px, targets de 44 px, foco visible, orden DOM estable y respeto a
+  `prefers-reduced-motion`;
+- pruebas PHP y JavaScript de registro, SSR, escaping, disponibilidad, estados,
+  filtros y carga condicional.
+
+El frontend publicado no incluye dependencias npm y `npm audit --omit=dev` no reporta
+vulnerabilidades. El audit completo conserva avisos transitivos del toolchain oficial
+que se reevaluarán antes de REST-02R; no forman parte de los assets compilados.
+
+No añade acciones de carrito, constructor, contenido o identidad Bonasera, patterns,
+templates ni integración con LocalWP. REST-02N es el siguiente issue y será
+propietario del constructor de pizzas.
+
 ## Fuera de alcance actual
 
-El plugin todavía no registra bloques o assets. Tampoco contiene contenido Bonasera
-ni integración con LocalWP.
+El plugin todavía no registra bloques transaccionales o de cuenta. Tampoco contiene
+contenido Bonasera ni integración con LocalWP.
 
 Esas capacidades se implementan únicamente mediante los issues atómicos posteriores
 del plan de restaurante.

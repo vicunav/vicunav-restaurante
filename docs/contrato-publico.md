@@ -1,10 +1,10 @@
 # Contrato público de `vicunav-restaurante`
 
-Estado: contrato 1.0.0 aprobado; REST-02L implementa carga, compatibilidad,
+Estado: contrato 1.0.0 aprobado; REST-02M implementa carga, compatibilidad,
 instalación, menú, catálogo, pricing de pizzas, zonas, descuentos, totales, carrito,
-checkout, pedidos, integración pública con pagos, reservas y pizzas guardadas. Las
-demás superficies se habilitan por los issues indicados en la matriz, sin
-considerarse operativas antes de ellos.
+checkout, pedidos, integración pública con pagos, reservas, pizzas guardadas y el
+bloque público de menú. Las demás superficies se habilitan por los issues indicados
+en la matriz, sin considerarse operativas antes de ellos.
 
 ## Responsabilidad y límites
 
@@ -19,7 +19,7 @@ internas de otro paquete.
 
 ## Estado de implementación
 
-| Superficie | Issue propietario | Estado después de REST-02L |
+| Superficie | Issue propietario | Estado después de REST-02M |
 | --- | --- | --- |
 | Versiones, autoload, dependencias y hook de carga | REST-02B | Implementado |
 | Capabilities, migraciones e instalación | REST-02C | Implementado |
@@ -32,7 +32,8 @@ internas de otro paquete.
 | Integración con pagos | REST-02J | Implementado |
 | Reservas | REST-02K | Implementado |
 | Pizzas guardadas | REST-02L | Implementado |
-| Bloques públicos | REST-02M a REST-02Q | Planificado |
+| Bloque de menú y filtros | REST-02M | Implementado |
+| Bloques transaccionales y de cuenta | REST-02N a REST-02Q | Planificado |
 | E2E, privacidad, rendimiento y release candidata | REST-02R | Planificado |
 
 Una superficie planificada no es una API disponible. Cada issue actualiza esta matriz,
@@ -685,9 +686,9 @@ privados.
 
 ## Bloques v1
 
-Las superficies públicas planificadas usan estos nombres estables:
+`vicunav/restaurante-menu` está implementado. Las superficies públicas restantes usan
+estos nombres estables y permanecen planificadas hasta sus issues propietarios:
 
-- `vicunav/restaurante-menu`;
 - `vicunav/restaurante-pizza-builder`;
 - `vicunav/restaurante-cart`;
 - `vicunav/restaurante-checkout`;
@@ -696,9 +697,40 @@ Las superficies públicas planificadas usan estos nombres estables:
 - `vicunav/restaurante-reservations`;
 - `vicunav/restaurante-saved-pizzas`.
 
-Serán bloques dinámicos con render de servidor y assets condicionales. FSE puede editar
-composición y contenido, pero no pricing, estados, permisos, schemas o disponibilidad
-transaccional.
+### Menú y filtros implementado
+
+`vicunav/restaurante-menu` usa API 3 y se registra en servidor desde `block.json`
+mediante `register_block_type_from_metadata()`. No posee atributos de negocio ni
+guarda markup propio en `post_content`: el editor muestra una preview mediante render
+de servidor y el frontend consulta exclusivamente `CatalogRepository` y `GET /menu`.
+
+El SSR publica búsqueda, filtros por categoría, vegetariano y picante, catálogo
+completo, precios informativos, alérgenos y disponibilidad textual. Un item agotado
+permanece visible y no se transforma en disponible desde el cliente. Sin JavaScript
+el visitante conserva todo el catálogo; con JavaScript el bloque refresca la lectura
+REST, muestra una región de carga, actualiza filtros localmente y anuncia la cantidad
+de resultados. Un error de red conserva el SSR y añade un mensaje seguro sin mover el
+foco. Catálogo vacío y filtros sin coincidencias tienen estados distintos.
+
+El bloque no aporta un H1. La composición FSE debe situarlo bajo el heading editorial
+correspondiente y conservar una jerarquía coherente para los H3 de los platos. FSE
+puede cambiar alineación, anchor, color y espaciado mediante supports nativos, pero no
+puede editar items, precios, disponibilidad, schemas o lógica de filtrado. No incluye
+acciones de carrito ni contenido Bonasera.
+
+Los assets se declaran por metadata y WordPress los encola solo cuando el bloque se
+renderiza. El build reproducible de REST-02M mide:
+
+| Asset | Bytes minificados | Bytes gzip |
+| --- | ---: | ---: |
+| Frontend `view.js` | 4.323 | 1.759 |
+| Compartido `style-index.css` | 4.417 | 1.014 |
+| Editor `index.js` | 1.706 | 967 |
+| Editor `index.css` | 153 | 109 |
+
+Los bloques REST-02N a REST-02Q también serán dinámicos, con render de servidor y
+assets condicionales. FSE puede editar composición y contenido, pero no pricing,
+estados, permisos, schemas o disponibilidad transaccional.
 
 ## Gestión de cambios
 

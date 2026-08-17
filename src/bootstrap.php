@@ -7,6 +7,7 @@
 
 namespace Vicu\Restaurante;
 
+use Vicu\Restaurante\Blocks\BlockRegistry;
 use Vicu\Restaurante\Admin\MenuAdmin;
 use Vicu\Restaurante\Admin\CatalogAdmin;
 use Vicu\Restaurante\Admin\MenuRelationsAdmin;
@@ -182,6 +183,7 @@ function bootstrap_with_dependencies( array $dependencies ): void {
 	OrderRoutes::register_hooks();
 	ReservationRoutes::register_hooks();
 	SavedPizzaRoutes::register_hooks();
+	BlockRegistry::register_hooks();
 	CartService::register_hooks();
 	PaymentIntegration::register_hooks();
 	RestaurantSettings::register_hooks();

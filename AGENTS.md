@@ -5,9 +5,9 @@ delivery, pizzas y reservas.
 
 ## Estado y límites
 
-REST-02J integra pedidos con el contrato público de pagos, evidencia manual, eventos
-y reconciliación. No añadas reservas, pizzas guardadas, bloques ni contenido Bonasera
-antes del issue propietario definido en el plan del hub.
+REST-02M incorpora el primer bloque dinámico sobre el dominio ya implementado hasta
+REST-02L. No añadas constructor, carrito, checkout, reservas, cuenta, contenido
+Bonasera ni otros bloques antes de su issue propietario definido en el plan del hub.
 
 El plugin será propietario del namespace `Vicu\Restaurante`. Depende de
 `vicunav-plugin-core` para capacidades compartidas y de `vicunav-pagos` para
@@ -28,10 +28,11 @@ repositorio.
 ## Validación
 
 ```sh
+npm run check &&
 composer check &&
 git diff --check &&
 git submodule status &&
-! rg -n '\{\{|\}\}' --glob '!docs/standards/**' .
+! rg -n '\{\{|\}\}' --glob '*.php' --glob '*.md' --glob '!docs/standards/**' .
 ```
 
 Revisa además la estructura, los enlaces y el formato Markdown de los documentos

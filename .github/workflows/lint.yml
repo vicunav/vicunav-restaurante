@@ -45,8 +45,23 @@ jobs:
           tools: composer:v2
           coverage: none
 
+      - name: Configurar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+
       - name: Instalar dependencias
         run: composer install --no-interaction --no-progress --prefer-dist
 
-      - name: Validar
+      - name: Instalar dependencias de bloques
+        run: npm ci
+
+      - name: Validar bloques
+        run: npm run check
+
+      - name: Comprobar build versionado
+        run: git diff --exit-code -- build
+
+      - name: Validar PHP
         run: composer check

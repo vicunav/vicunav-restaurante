@@ -1,0 +1,198 @@
+.wp-block-vicunav-restaurante-menu {
+	--vicu-menu-border: 1px solid currentcolor;
+	--vicu-menu-gap: clamp(1rem, 2vw, 1.5rem);
+
+	box-sizing: border-box;
+	max-width: 100%;
+
+	[hidden] {
+		display: none !important;
+	}
+
+	.vicu-restaurante-menu__controls {
+		display: grid;
+		gap: 1rem;
+		margin-block-end: var(--vicu-menu-gap);
+	}
+
+	.vicu-restaurante-menu__search {
+		display: grid;
+		gap: 0.375rem;
+		max-width: 36rem;
+	}
+
+	.vicu-restaurante-menu__search input {
+		box-sizing: border-box;
+		min-height: 44px;
+		max-width: 100%;
+		padding: 0.625rem 0.75rem;
+		border: var(--vicu-menu-border);
+		border-radius: 0.25rem;
+		font: inherit;
+	}
+
+	.vicu-restaurante-menu__dietary {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 1rem;
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+
+	.vicu-restaurante-menu__dietary legend {
+		width: 100%;
+		margin-block-end: 0.25rem;
+	}
+
+	.vicu-restaurante-menu__dietary label {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		gap: 0.5rem;
+	}
+
+	.vicu-restaurante-menu__dietary input {
+		inline-size: 1.25rem;
+		block-size: 1.25rem;
+	}
+
+	.vicu-restaurante-menu__categories {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.vicu-restaurante-menu__categories button {
+		min-height: 44px;
+		padding: 0.625rem 1rem;
+		border: var(--vicu-menu-border);
+		border-radius: 999px;
+		background: transparent;
+		color: inherit;
+		font: inherit;
+		cursor: pointer;
+	}
+
+	.vicu-restaurante-menu__categories button[aria-pressed="true"] {
+		font-weight: 700;
+		text-decoration: underline;
+		text-underline-offset: 0.25em;
+	}
+
+	.vicu-restaurante-menu__search input:focus-visible,
+	.vicu-restaurante-menu__categories button:focus-visible,
+	.vicu-restaurante-menu__dietary input:focus-visible {
+		outline: 3px solid currentcolor;
+		outline-offset: 3px;
+	}
+
+	.vicu-restaurante-menu__status,
+	.vicu-restaurante-menu__error,
+	.vicu-restaurante-menu__empty {
+		margin-block: 1rem;
+	}
+
+	.vicu-restaurante-menu__error {
+		padding: 0.75rem;
+		border: 2px solid currentcolor;
+	}
+
+	.vicu-restaurante-menu__grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+		gap: var(--vicu-menu-gap);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.vicu-restaurante-menu__item {
+		display: flex;
+		min-width: 0;
+		flex-direction: column;
+		overflow: hidden;
+		border: var(--vicu-menu-border);
+		border-radius: 0.5rem;
+	}
+
+	.vicu-restaurante-menu__item.is-unavailable {
+		border-style: dashed;
+	}
+
+	.vicu-restaurante-menu__image {
+		display: block;
+		width: 100%;
+		height: auto;
+		aspect-ratio: 4 / 3;
+		object-fit: cover;
+	}
+
+	.vicu-restaurante-menu__item-content {
+		display: grid;
+		gap: 0.75rem;
+		padding: 1rem;
+	}
+
+	.vicu-restaurante-menu__item-content > * {
+		margin: 0;
+	}
+
+	.vicu-restaurante-menu__item-heading {
+		display: flex;
+		align-items: start;
+		justify-content: space-between;
+		gap: 0.75rem;
+	}
+
+	.vicu-restaurante-menu__item-heading h3 {
+		margin: 0;
+		font-size: inherit;
+	}
+
+	.vicu-restaurante-menu__availability,
+	.vicu-restaurante-menu__tags {
+		font-size: 0.875em;
+		font-weight: 600;
+	}
+
+	.vicu-restaurante-menu__price {
+		font-weight: 700;
+	}
+
+	.vicu-restaurante-menu__allergens,
+	.vicu-restaurante-menu__allergen-note {
+		font-size: 0.875em;
+	}
+
+	.vicu-restaurante-menu__allergen-note {
+		margin-block-start: var(--vicu-menu-gap);
+	}
+}
+
+@media (max-width: 37.5rem) {
+
+	.wp-block-vicunav-restaurante-menu {
+
+		.vicu-restaurante-menu__categories {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.vicu-restaurante-menu__categories button {
+			width: 100%;
+		}
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.wp-block-vicunav-restaurante-menu *,
+	.wp-block-vicunav-restaurante-menu *::before,
+	.wp-block-vicunav-restaurante-menu *::after {
+		scroll-behavior: auto !important;
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+	}
+}
