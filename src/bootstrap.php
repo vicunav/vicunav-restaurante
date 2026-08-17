@@ -23,6 +23,7 @@ use Vicu\Restaurante\Rest\CartRoutes;
 use Vicu\Restaurante\Rest\OrderRoutes;
 use Vicu\Restaurante\Cart\CartService;
 use Vicu\Restaurante\Order\OrderPostType;
+use Vicu\Restaurante\Order\PaymentIntegration;
 use Vicu\Restaurante\Settings\RestaurantSettings;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -113,6 +114,7 @@ function activate(): void {
 
 	Capabilities::grant_to_administrator();
 	CartService::schedule_expiration();
+	PaymentIntegration::schedule();
 }
 
 /**
@@ -124,6 +126,7 @@ function activate(): void {
  */
 function deactivate(): void {
 	CartService::unschedule_expiration();
+	PaymentIntegration::unschedule();
 }
 
 /**
@@ -171,6 +174,7 @@ function bootstrap_with_dependencies( array $dependencies ): void {
 	CartRoutes::register_hooks();
 	OrderRoutes::register_hooks();
 	CartService::register_hooks();
+	PaymentIntegration::register_hooks();
 	RestaurantSettings::register_hooks();
 
 	/**

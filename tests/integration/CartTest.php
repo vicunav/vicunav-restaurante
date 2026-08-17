@@ -48,11 +48,12 @@ final class CartTest extends WP_UnitTestCase {
 		update_option(
 			RestaurantSettings::OPTION_NAME,
 			array(
-				'currency'                 => 'USD',
-				'tax_rate_bps'             => 800,
-				'tip_rates_bps'            => array( 0, 1000, 1500, 2000 ),
-				'cart_lifetime_hours'      => 72,
-				'payment_lifetime_minutes' => 30,
+				'currency'                    => 'USD',
+				'tax_rate_bps'                => 800,
+				'tip_rates_bps'               => array( 0, 1000, 1500, 2000 ),
+				'cart_lifetime_hours'         => 72,
+				'payment_lifetime_minutes'    => 30,
+				'manual_payment_instructions' => '',
 			),
 			false
 		);

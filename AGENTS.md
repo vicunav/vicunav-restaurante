@@ -5,9 +5,9 @@ delivery, pizzas y reservas.
 
 ## Estado y límites
 
-REST-02I añade checkout transaccional, pedidos, snapshots, estados, eventos y su
-proyección administrativa. No añadas integración operativa con pagos, reservas,
-bloques ni contenido Bonasera antes del issue propietario definido en el plan del hub.
+REST-02J integra pedidos con el contrato público de pagos, evidencia manual, eventos
+y reconciliación. No añadas reservas, pizzas guardadas, bloques ni contenido Bonasera
+antes del issue propietario definido en el plan del hub.
 
 El plugin será propietario del namespace `Vicu\Restaurante`. Depende de
 `vicunav-plugin-core` para capacidades compartidas y de `vicunav-pagos` para

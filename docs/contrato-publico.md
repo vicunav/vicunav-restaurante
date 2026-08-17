@@ -1,9 +1,9 @@
 # Contrato público de `vicunav-restaurante`
 
-Estado: contrato 1.0.0 aprobado; REST-02I implementa carga, compatibilidad,
+Estado: contrato 1.0.0 aprobado; REST-02J implementa carga, compatibilidad,
 instalación, menú, catálogo, pricing de pizzas, zonas, descuentos, totales, carrito,
-checkout y pedidos. Las demás superficies se habilitan por los issues indicados en la
-matriz, sin considerarse operativas antes de ellos.
+checkout, pedidos e integración pública con pagos. Las demás superficies se habilitan
+por los issues indicados en la matriz, sin considerarse operativas antes de ellos.
 
 ## Responsabilidad y límites
 
@@ -18,7 +18,7 @@ internas de otro paquete.
 
 ## Estado de implementación
 
-| Superficie | Issue propietario | Estado después de REST-02I |
+| Superficie | Issue propietario | Estado después de REST-02J |
 | --- | --- | --- |
 | Versiones, autoload, dependencias y hook de carga | REST-02B | Implementado |
 | Capabilities, migraciones e instalación | REST-02C | Implementado |
@@ -28,7 +28,7 @@ internas de otro paquete.
 | Totales, descuentos y delivery | REST-02G | Implementado |
 | Carrito seguro y mutaciones | REST-02H | Implementado |
 | Checkout, pedidos y estado operativo | REST-02I | Implementado |
-| Integración con pagos | REST-02J | Planificado |
+| Integración con pagos | REST-02J | Implementado |
 | Reservas y pizzas guardadas | REST-02K y REST-02L | Planificado |
 | Bloques públicos | REST-02M a REST-02Q | Planificado |
 | E2E, privacidad, rendimiento y release candidata | REST-02R | Planificado |
@@ -81,12 +81,14 @@ archivo del plugin.
 ## Instalación y migraciones
 
 La activación ejecuta migraciones pendientes y solo después concede capabilities al
-rol administrador. REST-02I eleva el schema a versión `6`: conserva
+rol administrador. REST-02J eleva el schema a versión `7`: conserva
 `${prefix}vicu_rest_migrations`, un ledger InnoDB; mantiene la revisión del menú e
 incorpora tablas InnoDB vacías para ingredientes, relaciones, opciones de pizza, zonas
-de entrega, descuentos, sesiones, carritos, idempotencia, pedidos, líneas de pedido y
-eventos. Inicializa las revisiones de disponibilidad y pricing en `1`, sin crear
-contenido, zonas, códigos, sesiones, pedidos ni datos de demostración.
+de entrega, descuentos, sesiones, carritos, idempotencia, pedidos, líneas de pedido,
+eventos y evidencia manual privada. Añade al pedido únicamente el estado observado,
+revisión, proveedor, salud y fecha de reconciliación. Inicializa las revisiones de
+disponibilidad y pricing en `1`, sin crear contenido, solicitudes, evidencias, pedidos
+ni datos de demostración.
 
 Cada migración tiene versión monotónica, comprobación de aplicación, operación `up()`
 y compensación `down()`. El instalador:
@@ -285,6 +287,12 @@ La evidencia textual v1 se entrega mediante
 `Vicu\Pagos\ManualPaymentProvider::submit_proof()`. Pagos recibe una referencia opaca,
 no el contenido privado ni instrucciones del comercio.
 
+La creación ocurre después del commit del pedido. Un fallo deja
+`payment_sync_status = error` y un código seguro, pero no revierte ni duplica el
+pedido. Checkout, replay, cron o retry administrativo llaman de nuevo a `create()` con
+la misma referencia y recuperan la solicitud existente. El pedido conserva el ID,
+estado y revisión observados, no una copia de la máquina interna de pagos.
+
 El vertical consume estos eventos con `payload_version = 1.0.0`:
 
 - `vicu_pagos_comprobante_recibido`;
@@ -296,6 +304,19 @@ Antes de reaccionar comprueba tipo e ID externos, monto, moneda, revisión y tra
 Un evento duplicado u obsoleto no cambia el pedido. La reconciliación mediante
 `PaymentRequests::get()` es obligatoria porque los hooks no constituyen entrega
 garantizada.
+
+`PaymentIntegration` escucha esos cuatro hooks y agenda
+`vicu_restaurante_reconcile_payments` cada hora. La reconciliación consulta únicamente
+`PaymentRequests::get()` o repite `create()`. Una revisión duplicada u obsoleta se
+ignora; una confirmación perdida puede aplicar primero `pago_en_revision` y después
+`confirmado` dentro de una sola transacción local. Rechazo devuelve un pedido en
+revisión a `pendiente_pago`; expiración solo opera desde estados de pago abiertos.
+Una confirmación incompatible con un pedido terminal crea
+`vicu_restaurante_payment_attention` y nunca inventa un arco.
+
+Monto, moneda o ID de solicitud incompatibles dejan
+`vicu_restaurante_payment_mismatch` como alerta persistente, sin registrar un evento
+ni cambiar el estado. El CPT de pagos, sus tablas y sus metadatos nunca se consultan.
 
 ## REST v1
 
@@ -502,14 +523,33 @@ pedido y revisión, y `Vary: Cookie, X-WP-Nonce, X-Vicu-Order-Token`.
 `POST /admin/orders/{public_id}/transition` exige sesión WordPress, nonce, capability,
 `expected_revision`, destino y motivo cuando corresponda. Cada arco válido usa
 compare-and-swap, incrementa la revisión exactamente una vez y añade un evento
-append-only. La integración de pago de REST-02J será la única autorizada para los
-arcos de pago.
+append-only. `PaymentIntegration` es la única integración autorizada para los arcos de
+pago.
+
+La respuesta privada del pedido incluye `payment`: proveedor `manual`, disponibilidad
+real del proveedor, instrucciones editoriales del sitio, estado y revisión observados.
+No expone `payment_request_id`. Si sincronización o evidencia falla, el pedido sigue
+consultable con `payment_sync_status = error`; wp-admin muestra el código seguro y
+permite reconciliar con `reconcile_vicu_restaurant_payments`.
+
+`POST /orders/{public_id}/payment-evidence` exige ownership por cuenta o
+`X-Vicu-Order-Token`, `Idempotency-Key` de 16 a 191 bytes y una `reference` textual de
+1 a 191 bytes. Persiste el texto solo en la tabla privada y entrega a pagos
+`vicu-order-evidence:{uuid}` con una clave estable derivada del UUID. Repetir clave y
+texto devuelve la misma evidencia; otro texto colisiona. La respuesta 201 contiene
+solo UUID, `submitted`, fecha y pedido actualizado, con `Cache-Control: no-store`.
+Archivos y referencias en URLs quedan fuera de v1.
 
 Las tablas de dominio son la autoridad. El CPT privado `vicu_order` es una proyección
 reconstruible para listado y detalle administrativo: no admite creación, edición
 editorial, borrado ni quick edit. El panel muestra datos privados solo a
 `view_vicu_restaurant_orders`, separa operar, cancelar y reconstruir mediante sus
 capabilities y nonces, y registra motivos sin exponer secretos.
+
+La salud administrativa muestra proveedor habilitado, sincronizaciones con error,
+retry individual y reconciliación acotada. Solo
+`view_vicu_restaurant_payment_evidence` revela el texto privado; operar pedidos,
+reconstruir proyecciones y reconciliar pagos conservan capabilities separadas.
 
 ### Errores estables
 
@@ -524,6 +564,7 @@ Los fallos usan `WP_Error` y la forma REST estándar. Los códigos v1 son:
 - `vicu_restaurante_idempotency_collision`;
 - `vicu_restaurante_invalid_transition`;
 - `vicu_restaurante_payment_mismatch`;
+- `vicu_restaurante_payment_attention`;
 - `vicu_restaurante_rate_limited`;
 - `vicu_restaurante_storage_error`;
 - `vicu_restaurante_dependency_unavailable`.

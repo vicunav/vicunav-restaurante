@@ -11,6 +11,7 @@ use Vicu\Core\Rest;
 use Vicu\Restaurante\Cart\CartAuthentication;
 use Vicu\Restaurante\Order\OrderService;
 use Vicu\Restaurante\Order\OrderStateMachine;
+use Vicu\Restaurante\Order\PaymentEvidenceService;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -104,6 +105,29 @@ final class OrderRoutes {
 					),
 				),
 				'schema'              => array( self::class, 'order_schema' ),
+			)
+		);
+
+		Rest::register_route(
+			'/restaurante/orders/(?P<public_id>[a-f0-9-]{36})/payment-evidence',
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => array( self::class, 'submit_payment_evidence' ),
+				'permission_callback' => array( self::class, 'allow_order_read' ),
+				'args'                => array(
+					'public_id' => array(
+						'type'     => 'string',
+						'format'   => 'uuid',
+						'required' => true,
+					),
+					'reference' => array(
+						'type'      => 'string',
+						'minLength' => 1,
+						'maxLength' => 191,
+						'required'  => true,
+					),
+				),
+				'schema'              => array( self::class, 'evidence_schema' ),
 			)
 		);
 	}
@@ -226,6 +250,33 @@ final class OrderRoutes {
 	}
 
 	/**
+	 * Persiste evidencia privada y entrega a pagos una referencia opaca.
+	 *
+	 * @param WP_REST_Request $request Solicitud.
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public static function submit_payment_evidence( WP_REST_Request $request ): WP_REST_Response|WP_Error {
+		$identity = self::order_identity();
+		$result   = PaymentEvidenceService::submit(
+			(string) $request['public_id'],
+			$identity,
+			trim( (string) $request->get_header( 'x-vicu-order-token' ) ),
+			trim( (string) $request->get_header( 'idempotency-key' ) ),
+			$request->get_param( 'reference' )
+		);
+
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		$response = new WP_REST_Response( $result, 201 );
+		$response->header( 'Cache-Control', 'no-store, max-age=0' );
+		$response->header( 'Vary', 'Cookie, X-WP-Nonce, X-Vicu-Order-Token' );
+
+		return $response;
+	}
+
+	/**
 	 * Respuesta privada con revisión HTTP.
 	 *
 	 * @param array<string, mixed> $order  Pedido.
@@ -239,6 +290,31 @@ final class OrderRoutes {
 		$response->header( 'Vary', 'Cookie, X-WP-Nonce, X-Vicu-Order-Token' );
 
 		return $response;
+	}
+
+	/**
+	 * Identidad mínima ya preautorizada para lectura privada.
+	 *
+	 * @return array<string, int|string>
+	 */
+	private static function order_identity(): array {
+		return 0 < get_current_user_id()
+			? array(
+				'type'       => 'user',
+				'key'        => 'user:' . get_current_user_id(),
+				'session_id' => 0,
+				'user_id'    => get_current_user_id(),
+				'csrf_token' => '',
+				'expires_at' => '',
+			)
+			: array(
+				'type'       => 'guest',
+				'key'        => 'guest',
+				'session_id' => 0,
+				'user_id'    => 0,
+				'csrf_token' => '',
+				'expires_at' => '',
+			);
 	}
 
 	/**
@@ -304,7 +380,7 @@ final class OrderRoutes {
 			'$schema'    => 'http://json-schema.org/draft-04/schema#',
 			'title'      => 'vicu_restaurante_order',
 			'type'       => 'object',
-			'required'   => array( 'public_id', 'order_number', 'status', 'revision', 'fulfillment', 'currency', 'items', 'totals', 'payment_expires_at', 'payment_sync_status', 'created_at', 'updated_at' ),
+			'required'   => array( 'public_id', 'order_number', 'status', 'revision', 'fulfillment', 'currency', 'items', 'totals', 'payment_expires_at', 'payment_sync_status', 'payment', 'created_at', 'updated_at' ),
 			'properties' => array(
 				'public_id'           => array(
 					'type'   => 'string',
@@ -340,6 +416,25 @@ final class OrderRoutes {
 					'type' => 'string',
 					'enum' => array( 'pending', 'synced', 'error' ),
 				),
+				'payment'             => array(
+					'type'       => 'object',
+					'required'   => array( 'provider', 'provider_enabled', 'instructions', 'state', 'revision' ),
+					'properties' => array(
+						'provider'         => array(
+							'type' => 'string',
+							'enum' => array( 'manual' ),
+						),
+						'provider_enabled' => array( 'type' => 'boolean' ),
+						'instructions'     => array( 'type' => 'string' ),
+						'state'            => array(
+							'type' => array( 'string', 'null' ),
+						),
+						'revision'         => array(
+							'type'    => 'integer',
+							'minimum' => 0,
+						),
+					),
+				),
 				'created_at'          => array(
 					'type'   => 'string',
 					'format' => 'date-time',
@@ -349,6 +444,41 @@ final class OrderRoutes {
 					'format' => 'date-time',
 				),
 				'access_token'        => array( 'type' => 'string' ),
+			),
+		);
+	}
+
+	/**
+	 * Schema de confirmación sin texto privado.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public static function evidence_schema(): array {
+		return array(
+			'$schema'    => 'http://json-schema.org/draft-04/schema#',
+			'title'      => 'vicu_restaurante_payment_evidence',
+			'type'       => 'object',
+			'required'   => array( 'evidence', 'order' ),
+			'properties' => array(
+				'evidence' => array(
+					'type'       => 'object',
+					'required'   => array( 'public_id', 'status', 'submitted_at' ),
+					'properties' => array(
+						'public_id'    => array(
+							'type'   => 'string',
+							'format' => 'uuid',
+						),
+						'status'       => array(
+							'type' => 'string',
+							'enum' => array( 'submitted' ),
+						),
+						'submitted_at' => array(
+							'type'   => 'string',
+							'format' => 'date-time',
+						),
+					),
+				),
+				'order'    => self::order_schema(),
 			),
 		);
 	}

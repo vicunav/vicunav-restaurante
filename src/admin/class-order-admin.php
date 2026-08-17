@@ -11,6 +11,9 @@ use Vicu\Restaurante\Order\OrderPostType;
 use Vicu\Restaurante\Order\OrderProjection;
 use Vicu\Restaurante\Order\OrderService;
 use Vicu\Restaurante\Order\OrderStateMachine;
+use Vicu\Restaurante\Order\PaymentEvidenceService;
+use Vicu\Restaurante\Order\PaymentIntegration;
+use Vicu\Pagos\ManualPaymentProvider;
 use WP_Post;
 
 /**
@@ -39,6 +42,8 @@ final class OrderAdmin {
 		add_action( 'add_meta_boxes_' . OrderPostType::POST_TYPE, array( self::class, 'add_meta_box' ) );
 		add_action( 'admin_post_vicu_restaurante_transition_order', array( self::class, 'transition' ) );
 		add_action( 'admin_post_vicu_restaurante_rebuild_orders', array( self::class, 'rebuild' ) );
+		add_action( 'admin_post_vicu_restaurante_reconcile_order', array( self::class, 'reconcile' ) );
+		add_action( 'admin_post_vicu_restaurante_reconcile_payments', array( self::class, 'reconcile_all' ) );
 		add_action( 'admin_menu', array( self::class, 'register_health_page' ), 30 );
 		add_filter( 'manage_' . OrderPostType::POST_TYPE . '_posts_columns', array( self::class, 'columns' ) );
 		add_action( 'manage_' . OrderPostType::POST_TYPE . '_posts_custom_column', array( self::class, 'column' ), 10, 2 );
@@ -93,6 +98,14 @@ final class OrderAdmin {
 		foreach ( $order['events'] as $event ) :
 			?>
 			<li><?php echo esc_html( $event['created_at'] . ' · ' . ( null === $event['from'] ? 'creación' : $event['from'] ) . ' → ' . $event['to'] ); ?></li><?php endforeach; ?></ol>
+		<h3><?php echo esc_html__( 'Pago manual', 'vicunav-restaurante' ); ?></h3>
+		<p><?php echo esc_html( $order['payment']['state'] ?? 'sin solicitud' ); ?> · <?php echo esc_html( $order['payment_sync_status'] ); ?> · <?php echo esc_html( (string) $order['payment']['revision'] ); ?></p>
+		<?php
+		if ( null !== $order['payment_last_error'] ) :
+			?>
+			<p class="notice notice-error inline"><?php echo esc_html( $order['payment_last_error'] ); ?></p><?php endif; ?>
+		<?php self::render_evidence( $order ); ?>
+		<?php self::render_reconciliation_form( $order ); ?>
 		<?php self::render_transition_form( $order ); ?>
 		<?php
 	}
@@ -151,6 +164,41 @@ final class OrderAdmin {
 	}
 
 	/**
+	 * Reconcilia un pedido mediante el servicio público de pagos.
+	 *
+	 * @return void
+	 */
+	public static function reconcile(): void {
+		self::require_capability( 'reconcile_vicu_restaurant_payments' );
+		check_admin_referer( 'vicu_restaurante_reconcile_order' );
+		$result = PaymentIntegration::reconcile_order( self::request_text( 'public_id' ) );
+		$status = is_wp_error( $result ) ? $result->get_error_code() : 'reconciled';
+		wp_safe_redirect( add_query_arg( 'vicu_payment_status', rawurlencode( $status ), admin_url( 'edit.php?post_type=' . OrderPostType::POST_TYPE ) ) );
+		exit;
+	}
+
+	/**
+	 * Reconcilia el lote acotado desde salud.
+	 *
+	 * @return void
+	 */
+	public static function reconcile_all(): void {
+		self::require_capability( 'reconcile_vicu_restaurant_payments' );
+		check_admin_referer( 'vicu_restaurante_reconcile_payments' );
+		$result = PaymentIntegration::reconcile_due();
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'payments_synced' => $result['synced'],
+					'payments_failed' => $result['failed'],
+				),
+				admin_url( 'admin.php?page=' . self::HEALTH_PAGE )
+			)
+		);
+		exit;
+	}
+
+	/**
 	 * Registra una superficie de salud reconstruible.
 	 *
 	 * @return void
@@ -166,11 +214,19 @@ final class OrderAdmin {
 	 */
 	public static function render_health(): void {
 		self::require_capability( 'manage_vicu_restaurant_orders' );
-		$pending = count( array_filter( OrderService::admin_list(), static fn( array $order ): bool => 'pending' === ( OrderService::admin_detail( $order['public_id'] )['projection_status'] ?? '' ) ) );
+		$pending        = count( array_filter( OrderService::admin_list(), static fn( array $order ): bool => 'pending' === ( OrderService::admin_detail( $order['public_id'] )['projection_status'] ?? '' ) ) );
+		$payment_errors = count( array_filter( OrderService::admin_list(), static fn( array $order ): bool => 'error' === ( $order['payment_sync_status'] ?? '' ) ) );
+		$manual         = ManualPaymentProvider::get_configuration();
 		?>
 		<div class="wrap"><h1><?php echo esc_html__( 'Salud de pedidos', 'vicunav-restaurante' ); ?></h1>
 		<p><?php echo esc_html( sprintf( /* translators: %d: proyecciones pendientes. */ __( 'Proyecciones pendientes: %d', 'vicunav-restaurante' ), $pending ) ); ?></p>
-		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>"><input type="hidden" name="action" value="vicu_restaurante_rebuild_orders"><?php wp_nonce_field( 'vicu_restaurante_rebuild_orders' ); ?><?php submit_button( __( 'Reconstruir proyecciones', 'vicunav-restaurante' ) ); ?></form></div>
+		<p><?php echo esc_html( sprintf( /* translators: %d: pagos con error. */ __( 'Pagos con error: %d', 'vicunav-restaurante' ), $payment_errors ) ); ?></p>
+		<p><?php echo esc_html( true === ( $manual['enabled'] ?? false ) ? __( 'Proveedor manual habilitado.', 'vicunav-restaurante' ) : __( 'Proveedor manual deshabilitado.', 'vicunav-restaurante' ) ); ?></p>
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>"><input type="hidden" name="action" value="vicu_restaurante_rebuild_orders"><?php wp_nonce_field( 'vicu_restaurante_rebuild_orders' ); ?><?php submit_button( __( 'Reconstruir proyecciones', 'vicunav-restaurante' ) ); ?></form>
+		<?php
+		if ( current_user_can( 'reconcile_vicu_restaurant_payments' ) ) :
+			?>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>"><input type="hidden" name="action" value="vicu_restaurante_reconcile_payments"><?php wp_nonce_field( 'vicu_restaurante_reconcile_payments' ); ?><?php submit_button( __( 'Reconciliar pagos', 'vicunav-restaurante' ) ); ?></form><?php endif; ?></div>
 		<?php
 	}
 
@@ -242,6 +298,46 @@ final class OrderAdmin {
 		foreach ( array( 'en_preparacion', 'listo', 'en_reparto', 'completado', 'cancelado' ) as $target ) :
 			?>
 			<option value="<?php echo esc_attr( $target ); ?>"><?php echo esc_html( $target ); ?></option><?php endforeach; ?></select><label><?php echo esc_html__( 'Motivo', 'vicunav-restaurante' ); ?> <input name="reason" maxlength="500"></label><?php submit_button( __( 'Aplicar transición', 'vicunav-restaurante' ), 'secondary', 'submit', false ); ?></form>
+		<?php
+	}
+
+	/**
+	 * Renderiza referencias privadas solo con capability específica.
+	 *
+	 * @param array<string, mixed> $order Pedido administrativo.
+	 * @return void
+	 */
+	private static function render_evidence( array $order ): void {
+		if ( ! current_user_can( 'view_vicu_restaurant_payment_evidence' ) ) {
+			return;
+		}
+
+		$evidence = PaymentEvidenceService::admin_for_order( (int) $order['internal_id'] );
+
+		if ( array() === $evidence ) {
+			return;
+		}
+		?>
+		<ul>
+		<?php
+		foreach ( $evidence as $item ) :
+			?>
+			<li><?php echo esc_html( $item['created_at'] . ' · ' . $item['status'] . ' · ' . $item['reference_text'] ); ?></li><?php endforeach; ?></ul>
+		<?php
+	}
+
+	/**
+	 * Renderiza retry protegido por nonce y capability.
+	 *
+	 * @param array<string, mixed> $order Pedido.
+	 * @return void
+	 */
+	private static function render_reconciliation_form( array $order ): void {
+		if ( ! current_user_can( 'reconcile_vicu_restaurant_payments' ) ) {
+			return;
+		}
+		?>
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>"><input type="hidden" name="action" value="vicu_restaurante_reconcile_order"><input type="hidden" name="public_id" value="<?php echo esc_attr( $order['public_id'] ); ?>"><?php wp_nonce_field( 'vicu_restaurante_reconcile_order' ); ?><?php submit_button( __( 'Reconciliar pago', 'vicunav-restaurante' ), 'secondary', 'submit', false ); ?></form>
 		<?php
 	}
 

@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Order;
 
+use Vicu\Pagos\ManualPaymentProvider;
+use Vicu\Pagos\PaymentRequestState;
 use Vicu\Restaurante\Cart\CartService;
 use Vicu\Restaurante\Catalog\CatalogDatabase;
 use Vicu\Restaurante\Commerce\DiscountService;
@@ -53,7 +55,8 @@ final class OrderService {
 		if ( 'replay' === $claim['mode'] ) {
 			CatalogDatabase::commit();
 			$order_public_id = (string) ( $claim['response']['order_public_id'] ?? '' );
-			$row             = self::row( $order_public_id );
+			PaymentIntegration::ensure_request( $order_public_id );
+			$row = self::row( $order_public_id );
 
 			if ( null === $row ) {
 				return self::storage_error();
@@ -156,6 +159,7 @@ final class OrderService {
 
 		PricingRevision::clear_cache();
 		OrderProjection::sync( $public_id );
+		PaymentIntegration::ensure_request( $public_id );
 		$row = self::row( $public_id );
 
 		return null === $row ? self::storage_error() : self::with_access_token( self::public_response( $row ), $row, $identity, $idempotency_key );
@@ -266,17 +270,20 @@ final class OrderService {
 			return null;
 		}
 
-		$result                          = self::public_response( $row );
-		$result['customer']              = array(
+		$result                               = self::public_response( $row );
+		$result['internal_id']                = (int) $row['id'];
+		$result['customer']                   = array(
 			'name'  => (string) $row['customer_name'],
 			'email' => null === $row['customer_email'] ? null : (string) $row['customer_email'],
 			'phone' => (string) $row['customer_phone'],
 		);
-		$result['delivery_address']      = null === $row['delivery_address'] ? null : (string) $row['delivery_address'];
-		$result['delivery_instructions'] = null === $row['delivery_instructions'] ? null : (string) $row['delivery_instructions'];
-		$result['customer_note']         = null === $row['customer_note'] ? null : (string) $row['customer_note'];
-		$result['projection_status']     = (string) $row['projection_status'];
-		$result['events']                = self::events( (int) $row['id'] );
+		$result['delivery_address']           = null === $row['delivery_address'] ? null : (string) $row['delivery_address'];
+		$result['delivery_instructions']      = null === $row['delivery_instructions'] ? null : (string) $row['delivery_instructions'];
+		$result['customer_note']              = null === $row['customer_note'] ? null : (string) $row['customer_note'];
+		$result['projection_status']          = (string) $row['projection_status'];
+		$result['payment_last_error']         = null === ( $row['payment_last_error'] ?? null ) ? null : (string) $row['payment_last_error'];
+		$result['payment_last_reconciled_at'] = null === ( $row['payment_last_reconciled_at'] ?? null ) ? null : mysql_to_rfc3339( (string) $row['payment_last_reconciled_at'] );
+		$result['events']                     = self::events( (int) $row['id'] );
 
 		return $result;
 	}
@@ -316,6 +323,345 @@ final class OrderService {
 		$result = $wpdb->update( Schema::orders_table_name(), array( 'projection_status' => $status ), array( 'public_id' => $public_id ), array( '%s' ), array( '%s' ) );
 
 		return false !== $result;
+	}
+
+	/**
+	 * Devuelve únicamente los datos necesarios para el contrato de pagos.
+	 *
+	 * @param string $public_id UUID del pedido.
+	 * @return array<string, mixed>|null
+	 */
+	public static function payment_record( string $public_id ): ?array {
+		$row = self::row( $public_id );
+
+		return null === $row ? null : self::payment_record_from_row( $row );
+	}
+
+	/**
+	 * Lista candidatos acotados para reconciliación.
+	 *
+	 * @param int $limit Límite máximo.
+	 * @return array<int, array<string, mixed>>
+	 */
+	public static function payment_candidates( int $limit = 100 ): array {
+		global $wpdb;
+
+		$limit = max( 1, min( 100, $limit ) );
+		$table = Schema::orders_table_name();
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table} WHERE payment_sync_status <> 'synced' OR status IN ('pendiente_pago','pago_en_revision') ORDER BY updated_at ASC, id ASC LIMIT %d", $limit ), ARRAY_A );
+
+		return array_map( array( self::class, 'payment_record_from_row' ), $rows );
+	}
+
+	/**
+	 * Registra un fallo recuperable sin alterar el estado del pedido.
+	 *
+	 * @param string $public_id UUID.
+	 * @param string $error_code Código seguro.
+	 * @return bool
+	 */
+	public static function mark_payment_error( string $public_id, string $error_code ): bool {
+		global $wpdb;
+
+		$error_code = substr( sanitize_key( $error_code ), 0, 64 );
+
+		if ( '' === $error_code ) {
+			return false;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result = $wpdb->update(
+			Schema::orders_table_name(),
+			array(
+				'payment_sync_status'        => 'error',
+				'payment_last_error'         => $error_code,
+				'payment_last_reconciled_at' => current_time( 'mysql', true ),
+			),
+			array( 'public_id' => $public_id ),
+			array( '%s', '%s', '%s' ),
+			array( '%s' )
+		);
+
+		return false !== $result;
+	}
+
+	/**
+	 * Aplica una observación pública de pagos bajo bloqueo y revisión monotónica.
+	 *
+	 * @param array<string, mixed> $request Solicitud pública de pagos.
+	 * @param string               $source  hook, checkout, evidence o reconciliation.
+	 * @return array<string, mixed>|WP_Error
+	 */
+	public static function observe_payment( array $request, string $source ): array|WP_Error {
+		global $wpdb;
+
+		$normalized = self::normalize_payment_request( $request );
+		$source     = sanitize_key( $source );
+
+		if ( is_wp_error( $normalized ) || ! in_array( $source, array( 'hook', 'checkout', 'evidence', 'reconciliation' ), true ) ) {
+			return is_wp_error( $normalized ) ? $normalized : self::invalid();
+		}
+
+		if ( ! CatalogDatabase::begin() ) {
+			return self::storage_error();
+		}
+
+		$table = Schema::orders_table_name();
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE public_id = %s FOR UPDATE", $normalized['external_id'] ), ARRAY_A );
+
+		if ( ! is_array( $row ) ) {
+			CatalogDatabase::rollback();
+			return self::not_found();
+		}
+
+		if ( ! self::payment_matches_order( $normalized, $row ) ) {
+			if ( ! self::update_payment_error_row( (int) $row['id'], 'vicu_restaurante_payment_mismatch' ) || ! CatalogDatabase::commit() ) {
+				CatalogDatabase::rollback();
+				return self::storage_error();
+			}
+			OrderProjection::sync( (string) $row['public_id'] );
+
+			return new WP_Error( 'vicu_restaurante_payment_mismatch', __( 'La solicitud de pago no coincide con el pedido.', 'vicunav-restaurante' ), array( 'status' => 409 ) );
+		}
+
+		if ( $normalized['revision'] <= (int) $row['payment_revision'] ) {
+			if ( ! CatalogDatabase::commit() ) {
+				CatalogDatabase::rollback();
+				return self::storage_error();
+			}
+			return self::public_response( $row );
+		}
+
+		$targets = self::payment_targets( (string) $row['status'], $normalized['state'] );
+
+		if ( is_wp_error( $targets ) ) {
+			if ( ! self::update_payment_error_row( (int) $row['id'], 'vicu_restaurante_payment_attention' ) || ! CatalogDatabase::commit() ) {
+				CatalogDatabase::rollback();
+				return self::storage_error();
+			}
+			OrderProjection::sync( (string) $row['public_id'] );
+			return $targets;
+		}
+
+		$current_status   = (string) $row['status'];
+		$current_revision = (int) $row['revision'];
+
+		foreach ( $targets as $target ) {
+			if ( ! OrderStateMachine::allows( $current_status, $target, (string) $row['fulfillment'] ) ) {
+				CatalogDatabase::rollback();
+				return self::invalid_transition();
+			}
+
+			$new_revision = $current_revision + 1;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$updated = $wpdb->update(
+				$table,
+				array(
+					'status'     => $target,
+					'revision'   => $new_revision,
+					'updated_at' => current_time( 'mysql', true ),
+				),
+				array(
+					'id'       => (int) $row['id'],
+					'revision' => $current_revision,
+				),
+				array( '%s', '%d', '%s' ),
+				array( '%d', '%d' )
+			);
+
+			$metadata = array(
+				'payment_request_id' => $normalized['id'],
+				'payment_revision'   => $normalized['revision'],
+				'payment_state'      => $normalized['state'],
+				'source'             => $source,
+			);
+
+			if ( 1 !== $updated || ! self::insert_event( (int) $row['id'], $current_status, $target, 'payment', null, null, $metadata, $new_revision ) ) {
+				CatalogDatabase::rollback();
+				return self::storage_error();
+			}
+
+			$current_status   = $target;
+			$current_revision = $new_revision;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$updated = $wpdb->update(
+			$table,
+			array(
+				'payment_request_id'         => (string) $normalized['id'],
+				'payment_revision'           => $normalized['revision'],
+				'payment_state'              => $normalized['state'],
+				'payment_provider'           => $normalized['provider'],
+				'payment_sync_status'        => 'synced',
+				'payment_last_error'         => null,
+				'payment_last_reconciled_at' => current_time( 'mysql', true ),
+			),
+			array( 'id' => (int) $row['id'] ),
+			array( '%s', '%d', '%s', '%s', '%s', '%s', '%s' ),
+			array( '%d' )
+		);
+
+		if ( false === $updated || ! CatalogDatabase::commit() ) {
+			CatalogDatabase::rollback();
+			return self::storage_error();
+		}
+
+		OrderProjection::sync( (string) $row['public_id'] );
+		$fresh = self::row( (string) $row['public_id'] );
+
+		return null === $fresh ? self::storage_error() : self::public_response( $fresh );
+	}
+
+	/**
+	 * Normaliza la forma pública 0.3.0 de una solicitud de pago.
+	 *
+	 * @param array<string, mixed> $request Solicitud.
+	 * @return array<string, mixed>|WP_Error
+	 */
+	private static function normalize_payment_request( array $request ): array|WP_Error {
+		$reference = $request['external_reference'] ?? null;
+		$provider  = $request['provider'] ?? null;
+
+		if (
+			! is_array( $reference ) ||
+			! is_int( $request['id'] ?? null ) || 1 > $request['id'] ||
+			! is_string( $reference['type'] ?? null ) ||
+			! is_string( $reference['id'] ?? null ) ||
+			! is_int( $request['amount_minor'] ?? null ) || 1 > $request['amount_minor'] ||
+			! is_string( $request['currency'] ?? null ) || 1 !== preg_match( '/^[A-Z]{3}$/', $request['currency'] ) ||
+			! is_string( $request['state'] ?? null ) || ! in_array( $request['state'], PaymentRequestState::all(), true ) ||
+			! is_int( $request['revision'] ?? null ) || 1 > $request['revision'] ||
+			( null !== $provider && ! is_string( $provider ) )
+		) {
+			return self::invalid();
+		}
+
+		$external_type = sanitize_key( $reference['type'] );
+		$external_id   = sanitize_text_field( $reference['id'] );
+
+		if ( $reference['type'] !== $external_type || $reference['id'] !== $external_id ) {
+			return self::invalid();
+		}
+
+		return array(
+			'id'            => $request['id'],
+			'external_type' => $external_type,
+			'external_id'   => $external_id,
+			'amount_minor'  => $request['amount_minor'],
+			'currency'      => $request['currency'],
+			'state'         => $request['state'],
+			'revision'      => $request['revision'],
+			'provider'      => null === $provider ? null : substr( sanitize_key( $provider ), 0, 32 ),
+		);
+	}
+
+	/**
+	 * Comprueba referencia, monto, moneda e identidad de solicitud congelados.
+	 *
+	 * @param array<string, mixed> $request Solicitud normalizada.
+	 * @param array<string, mixed> $row     Pedido bloqueado.
+	 * @return bool
+	 */
+	private static function payment_matches_order( array $request, array $row ): bool {
+		return 'vicu_order' === $request['external_type'] &&
+			(string) $row['public_id'] === $request['external_id'] &&
+			(int) $row['total_minor'] === $request['amount_minor'] &&
+			(string) $row['currency'] === $request['currency'] &&
+			( null === $row['payment_request_id'] || '' === $row['payment_request_id'] || (int) $row['payment_request_id'] === $request['id'] );
+	}
+
+	/**
+	 * Traduce un estado de pago a cero, uno o dos arcos de pedido.
+	 *
+	 * @param string $order_status Estado del pedido.
+	 * @param string $payment_state Estado de pagos.
+	 * @return string[]|WP_Error
+	 */
+	private static function payment_targets( string $order_status, string $payment_state ): array|WP_Error {
+		if ( PaymentRequestState::PENDING === $payment_state ) {
+			return 'pendiente_pago' === $order_status ? array() : self::payment_attention();
+		}
+
+		if ( PaymentRequestState::PROOF_UPLOADED === $payment_state ) {
+			return 'pendiente_pago' === $order_status ? array( 'pago_en_revision' ) : ( 'pago_en_revision' === $order_status ? array() : self::payment_attention() );
+		}
+
+		if ( PaymentRequestState::CONFIRMED === $payment_state ) {
+			if ( 'pendiente_pago' === $order_status ) {
+				return array( 'pago_en_revision', 'confirmado' );
+			}
+
+			return 'pago_en_revision' === $order_status ? array( 'confirmado' ) : ( in_array( $order_status, array( 'confirmado', 'en_preparacion', 'listo', 'en_reparto', 'completado' ), true ) ? array() : self::payment_attention() );
+		}
+
+		if ( PaymentRequestState::REJECTED === $payment_state ) {
+			return 'pago_en_revision' === $order_status ? array( 'pendiente_pago' ) : ( 'pendiente_pago' === $order_status ? array() : self::payment_attention() );
+		}
+
+		if ( PaymentRequestState::EXPIRED === $payment_state ) {
+			return in_array( $order_status, array( 'pendiente_pago', 'pago_en_revision' ), true ) ? array( 'expirado' ) : ( 'expirado' === $order_status ? array() : self::payment_attention() );
+		}
+
+		return self::payment_attention();
+	}
+
+	/**
+	 * Construye la vista mínima usada por el adaptador de pagos.
+	 *
+	 * @param array<string, mixed> $row Pedido.
+	 * @return array<string, mixed>
+	 */
+	private static function payment_record_from_row( array $row ): array {
+		return array(
+			'internal_id'         => (int) $row['id'],
+			'public_id'           => (string) $row['public_id'],
+			'status'              => (string) $row['status'],
+			'total_minor'         => (int) $row['total_minor'],
+			'currency'            => (string) $row['currency'],
+			'payment_expires_at'  => mysql_to_rfc3339( (string) $row['payment_expires_at'] ),
+			'payment_request_id'  => null === $row['payment_request_id'] ? null : (int) $row['payment_request_id'],
+			'payment_revision'    => (int) $row['payment_revision'],
+			'payment_state'       => null === ( $row['payment_state'] ?? null ) ? null : (string) $row['payment_state'],
+			'payment_sync_status' => (string) $row['payment_sync_status'],
+		);
+	}
+
+	/**
+	 * Persiste un alerta segura sobre la fila bloqueada.
+	 *
+	 * @param int    $order_id   ID interno.
+	 * @param string $error_code Código.
+	 * @return bool
+	 */
+	private static function update_payment_error_row( int $order_id, string $error_code ): bool {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result = $wpdb->update(
+			Schema::orders_table_name(),
+			array(
+				'payment_sync_status'        => 'error',
+				'payment_last_error'         => $error_code,
+				'payment_last_reconciled_at' => current_time( 'mysql', true ),
+			),
+			array( 'id' => $order_id ),
+			array( '%s', '%s', '%s' ),
+			array( '%d' )
+		);
+
+		return false !== $result;
+	}
+
+	/**
+	 * Error que exige intervención sin inventar un arco.
+	 *
+	 * @return WP_Error
+	 */
+	private static function payment_attention(): WP_Error {
+		return new WP_Error( 'vicu_restaurante_payment_attention', __( 'El pago requiere revisión administrativa.', 'vicunav-restaurante' ), array( 'status' => 409 ) );
 	}
 
 	/**
@@ -484,6 +830,8 @@ final class OrderService {
 			$rows
 		);
 
+		$manual = ManualPaymentProvider::get_configuration();
+
 		return array(
 			'public_id'           => (string) $row['public_id'],
 			'order_number'        => (string) $row['order_number'],
@@ -495,6 +843,13 @@ final class OrderService {
 			'totals'              => self::decode( (string) $row['totals_json'] ),
 			'payment_expires_at'  => mysql_to_rfc3339( (string) $row['payment_expires_at'] ),
 			'payment_sync_status' => (string) $row['payment_sync_status'],
+			'payment'             => array(
+				'provider'         => 'manual',
+				'provider_enabled' => true === ( $manual['enabled'] ?? false ),
+				'instructions'     => RestaurantSettings::manual_payment_instructions(),
+				'state'            => null === ( $row['payment_state'] ?? null ) ? null : (string) $row['payment_state'],
+				'revision'         => (int) $row['payment_revision'],
+			),
 			'created_at'          => mysql_to_rfc3339( (string) $row['created_at'] ),
 			'updated_at'          => mysql_to_rfc3339( (string) $row['updated_at'] ),
 		);
