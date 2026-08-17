@@ -22,6 +22,8 @@ use Vicu\Restaurante\Order\OrderService;
 use Vicu\Restaurante\Rest\OrderRoutes;
 use Vicu\Restaurante\Schema;
 use Vicu\Restaurante\Settings\RestaurantSettings;
+use Vicu\Pagos\ManualPaymentProvider;
+use Vicu\Pagos\PaymentRequests;
 
 /**
  * Verifica atomicidad, idempotencia, snapshots, ownership, estados y proyección.
@@ -41,6 +43,8 @@ final class OrderTest extends WP_UnitTestCase {
 		MenuMeta::register_meta();
 		( new OrderPostType() )->register();
 		$this->truncate_domain_tables();
+		PaymentRequests::reset();
+		ManualPaymentProvider::reset();
 		update_option( CatalogRevision::OPTION_NAME, '1', false );
 		CatalogRevision::reset_request();
 		update_option( AvailabilityRevision::OPTION_NAME, '1', false );
@@ -50,11 +54,12 @@ final class OrderTest extends WP_UnitTestCase {
 		update_option(
 			RestaurantSettings::OPTION_NAME,
 			array(
-				'currency'                 => 'USD',
-				'tax_rate_bps'             => 800,
-				'tip_rates_bps'            => array( 0, 1000, 1500, 2000 ),
-				'cart_lifetime_hours'      => 72,
-				'payment_lifetime_minutes' => 30,
+				'currency'                    => 'USD',
+				'tax_rate_bps'                => 800,
+				'tip_rates_bps'               => array( 0, 1000, 1500, 2000 ),
+				'cart_lifetime_hours'         => 72,
+				'payment_lifetime_minutes'    => 30,
+				'manual_payment_instructions' => '',
 			),
 			false
 		);
@@ -95,7 +100,8 @@ final class OrderTest extends WP_UnitTestCase {
 		$this->assertSame( 1, $order['revision'] );
 		$this->assertSame( 2160, $order['totals']['total'] );
 		$this->assertSame( 64, strlen( $order['access_token'] ) );
-		$this->assertSame( 'pending', $order['payment_sync_status'] );
+		$this->assertSame( 'synced', $order['payment_sync_status'] );
+		$this->assertSame( 'pendiente', $order['payment']['state'] );
 
 		$replay = OrderService::checkout( $identity, $key, $input );
 		$this->assertNotWPError( $replay );
@@ -535,6 +541,7 @@ final class OrderTest extends WP_UnitTestCase {
 		global $wpdb;
 
 		$tables = array(
+			Schema::payment_evidence_table_name(),
 			Schema::order_events_table_name(),
 			Schema::order_items_table_name(),
 			Schema::orders_table_name(),

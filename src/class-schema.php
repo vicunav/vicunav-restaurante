@@ -157,6 +157,17 @@ final class Schema {
 	}
 
 	/**
+	 * Devuelve la tabla privada de evidencias manuales.
+	 *
+	 * @return string
+	 */
+	public static function payment_evidence_table_name(): string {
+		global $wpdb;
+
+		return $wpdb->prefix . 'vicu_rest_payment_evidence';
+	}
+
+	/**
 	 * Comprueba la existencia de una tabla interna conocida.
 	 *
 	 * @param string $table_name Nombre completo y confiable de la tabla.
@@ -169,5 +180,21 @@ final class Schema {
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared
 		return $table_name === $wpdb->get_var( $query );
+	}
+
+	/**
+	 * Comprueba una columna de una tabla interna conocida.
+	 *
+	 * @param string $table_name  Tabla completa y confiable.
+	 * @param string $column_name Columna fija del schema.
+	 * @return bool
+	 */
+	public static function column_exists( string $table_name, string $column_name ): bool {
+		global $wpdb;
+
+		$query = $wpdb->prepare( 'SHOW COLUMNS FROM %i LIKE %s', $table_name, $column_name );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.NotPrepared
+		return null !== $wpdb->get_row( $query );
 	}
 }

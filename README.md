@@ -5,12 +5,12 @@ pizzas, and reservations.
 
 ## Status
 
-REST-02I publishes plugin version 0.9.0 over public contract 1.0.0. The current runtime
-adds transactional checkout, immutable order snapshots, idempotent cart conversion,
-an audited order state machine, private order reads, and an administrative projection
-on top of the existing catalog, pricing, and cart domain. It does not yet create
-payment requests, accept payment evidence, manage reservations, include demo content,
-or depend on WooCommerce.
+REST-02J publishes plugin version 0.10.0 over public contract 1.0.0. The current
+runtime creates or recovers payment requests through the public `vicunav-pagos`
+contract, accepts private text evidence for the real manual provider, reacts to
+versioned payment events, and reconciles missed hooks without reading payment storage.
+It does not yet manage reservations, saved pizzas, blocks, demo content, or depend on
+WooCommerce.
 
 Further domain persistence, REST endpoints, admin screens, and blocks are introduced
 only through their separate atomic issues. A planned surface is not available until

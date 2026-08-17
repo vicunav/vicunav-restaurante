@@ -167,10 +167,34 @@ Esta fase añade únicamente:
 No crea solicitudes de pago ni consume eventos de `vicunav-pagos`. REST-02J es el
 siguiente issue y será propietario exclusivo de esa integración.
 
+## Alcance de REST-02J
+
+Esta fase añade únicamente:
+
+- plugin 0.10.0 y schema de instalación 7;
+- creación o recuperación idempotente de `PaymentRequests` después del commit propio,
+  con `external_type = vicu_order`, monto, moneda y vencimiento congelados;
+- evidencia textual privada con ID opaco, hash idempotente y entrega al proveedor
+  manual sin revelar el texto a pagos ni a respuestas públicas;
+- instrucciones editoriales del sitio y estado del proveedor manual dentro del pedido
+  privado;
+- consumo de hooks 1.0.0 para comprobante, confirmación, rechazo y expiración, con
+  validación de referencia, monto, moneda, revisión y arco;
+- reconciliación horaria y acciones wp-admin protegidas para recuperar hooks o commits
+  interrumpidos;
+- alertas administrativas de mismatch, detalle de sincronización y evidencia separado
+  por capabilities;
+- `POST /orders/{public_id}/payment-evidence` con ownership, token, idempotencia,
+  `no-store` y schema sin datos privados.
+
+No incorpora archivos de comprobante, bancos, reservas, pizzas guardadas, bloques ni
+contenido de demostración. REST-02K es el siguiente issue y será propietario de
+horarios, capacidad y reservas.
+
 ## Fuera de alcance actual
 
-El plugin todavía no registra bloques o assets. Tampoco contiene integración operativa
-con pagos, reservas, contenido Bonasera ni integración con LocalWP.
+El plugin todavía no registra bloques o assets. Tampoco contiene reservas, pizzas
+guardadas, contenido Bonasera ni integración con LocalWP.
 
 Esas capacidades se implementan únicamente mediante los issues atómicos posteriores
 del plan de restaurante.

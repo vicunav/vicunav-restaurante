@@ -122,6 +122,18 @@ final class RestaurantSettings {
 	}
 
 	/**
+	 * Devuelve instrucciones editoriales del proveedor manual.
+	 *
+	 * @return string
+	 */
+	public static function manual_payment_instructions(): string {
+		$settings = self::all();
+		$value    = $settings['manual_payment_instructions'] ?? '';
+
+		return is_string( $value ) ? substr( sanitize_textarea_field( $value ), 0, 2000 ) : '';
+	}
+
+	/**
 	 * Registra el option y el campo inicial del vertical.
 	 *
 	 * @return void
@@ -134,11 +146,12 @@ final class RestaurantSettings {
 				'type'              => 'array',
 				'sanitize_callback' => array( self::class, 'sanitize' ),
 				'default'           => array(
-					'currency'                 => 'USD',
-					'tax_rate_bps'             => self::DEFAULT_TAX_RATE_BPS,
-					'tip_rates_bps'            => self::DEFAULT_TIP_RATES_BPS,
-					'cart_lifetime_hours'      => self::DEFAULT_CART_LIFETIME_HOURS,
-					'payment_lifetime_minutes' => self::DEFAULT_PAYMENT_LIFETIME_MINUTES,
+					'currency'                    => 'USD',
+					'tax_rate_bps'                => self::DEFAULT_TAX_RATE_BPS,
+					'tip_rates_bps'               => self::DEFAULT_TIP_RATES_BPS,
+					'cart_lifetime_hours'         => self::DEFAULT_CART_LIFETIME_HOURS,
+					'payment_lifetime_minutes'    => self::DEFAULT_PAYMENT_LIFETIME_MINUTES,
+					'manual_payment_instructions' => '',
 				),
 				'show_in_rest'      => false,
 			)
@@ -179,6 +192,15 @@ final class RestaurantSettings {
 		);
 
 		add_settings_field(
+			'vicu_restaurante_manual_payment_instructions',
+			__( 'Instrucciones del pago manual', 'vicunav-restaurante' ),
+			array( self::class, 'render_manual_payment_instructions' ),
+			self::PAGE,
+			'vicu_restaurante_commerce',
+			array( 'label_for' => 'vicu_restaurante_manual_payment_instructions' )
+		);
+
+		add_settings_field(
 			'vicu_restaurante_tax_rate_bps',
 			__( 'Impuesto (puntos base)', 'vicunav-restaurante' ),
 			array( self::class, 'render_tax_rate' ),
@@ -201,7 +223,7 @@ final class RestaurantSettings {
 	 * Sanitiza el option completo.
 	 *
 	 * @param mixed $input Datos candidatos.
-	 * @return array{currency: string, tax_rate_bps: int, tip_rates_bps: int[], cart_lifetime_hours: int, payment_lifetime_minutes: int}
+	 * @return array{currency: string, tax_rate_bps: int, tip_rates_bps: int[], cart_lifetime_hours: int, payment_lifetime_minutes: int, manual_payment_instructions: string}
 	 */
 	public static function sanitize( mixed $input ): array {
 		$currency         = is_array( $input ) ? self::sanitize_currency( $input['currency'] ?? '' ) : '';
@@ -209,6 +231,7 @@ final class RestaurantSettings {
 		$tip_rates        = is_array( $input ) ? self::sanitize_tip_rates( $input['tip_rates_bps'] ?? array() ) : array();
 		$lifetime         = is_array( $input ) ? self::bounded_integer( $input['cart_lifetime_hours'] ?? null, 1, 720 ) : null;
 		$payment_lifetime = is_array( $input ) ? self::bounded_integer( $input['payment_lifetime_minutes'] ?? null, 5, 1440 ) : null;
+		$instructions     = is_array( $input ) && is_scalar( $input['manual_payment_instructions'] ?? '' ) ? substr( sanitize_textarea_field( wp_unslash( (string) ( $input['manual_payment_instructions'] ?? '' ) ) ), 0, 2000 ) : '';
 
 		if ( '' === $currency ) {
 			add_settings_error(
@@ -240,11 +263,12 @@ final class RestaurantSettings {
 		}
 
 		return array(
-			'currency'                 => $currency,
-			'tax_rate_bps'             => $tax_rate,
-			'tip_rates_bps'            => $tip_rates,
-			'cart_lifetime_hours'      => $lifetime,
-			'payment_lifetime_minutes' => $payment_lifetime,
+			'currency'                    => $currency,
+			'tax_rate_bps'                => $tax_rate,
+			'tip_rates_bps'               => $tip_rates,
+			'cart_lifetime_hours'         => $lifetime,
+			'payment_lifetime_minutes'    => $payment_lifetime,
+			'manual_payment_instructions' => $instructions,
 		);
 	}
 
@@ -337,6 +361,19 @@ final class RestaurantSettings {
 			'<input type="number" min="5" max="1440" id="vicu_restaurante_payment_lifetime_minutes" name="%1$s[payment_lifetime_minutes]" value="%2$d" required>',
 			esc_attr( self::OPTION_NAME ),
 			esc_attr( (string) self::payment_lifetime_minutes() )
+		);
+	}
+
+	/**
+	 * Renderiza copy del sitio sin almacenar cuentas en pagos.
+	 *
+	 * @return void
+	 */
+	public static function render_manual_payment_instructions(): void {
+		printf(
+			'<textarea class="large-text" rows="5" maxlength="2000" id="vicu_restaurante_manual_payment_instructions" name="%1$s[manual_payment_instructions]">%2$s</textarea>',
+			esc_attr( self::OPTION_NAME ),
+			esc_textarea( self::manual_payment_instructions() )
 		);
 	}
 
