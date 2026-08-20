@@ -39,6 +39,7 @@ final class CommerceBlocksTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'data-vicu-commerce-role="cart"', $output );
 		$this->assertStringContainsString( 'data-vicu-commerce-role="checkout"', $output );
 		$this->assertStringContainsString( 'data-vicu-commerce-role="order"', $output );
+		$this->assertStringContainsString( 'data-has-cart-identity="0"', $output );
 		$this->assertStringContainsString( 'Código de descuento', $output );
 		$this->assertStringContainsString( 'Crear pedido y continuar al pago manual', $output );
 		$this->assertStringContainsString( 'Referencia del pago manual', $output );

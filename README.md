@@ -5,13 +5,14 @@ pizzas, and reservations.
 
 ## Status
 
-REST-02Q publishes plugin version 0.17.0 over public contract 1.0.0. The current
+REST-02R prepares plugin version 1.0.0 over public contract 1.0.0. The current
 runtime includes dynamic menu, pizza builder, cart, manual checkout, order status,
 reservations, and authenticated saved-pizza surfaces. Accounts can save the current
 builder configuration, list, rename, delete, share, and revalidate a saved pizza before
 adding it to the cart. Server contracts remain authoritative for ownership, capacity,
 prices, totals, checkout, and state. The plugin does not contain demo content or depend
-on WooCommerce; the remaining REST-02R gate covers integrated release validation.
+on WooCommerce. The release gate and its reproducible evidence are documented in
+[`docs/release-candidate-1.0.0.md`](docs/release-candidate-1.0.0.md).
 
 Further domain persistence, REST endpoints, admin screens, and blocks are introduced
 only through their separate atomic issues. A planned surface is not available until

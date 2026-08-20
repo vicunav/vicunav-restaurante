@@ -93,6 +93,7 @@ final class PaymentIntegrationTest extends WP_UnitTestCase {
 		$this->assertSame( PaymentRequestState::PENDING, $record['payment_state'] );
 		$this->assertSame( 'synced', $record['payment_sync_status'] );
 		$this->assertSame( 'Indica la referencia de la operación.', $order['payment']['instructions'] );
+		$this->assertMatchesRegularExpression( '/T\d{2}:\d{2}:\d{2}\+00:00$/', PaymentRequests::get( 100 )['expires_at'] );
 
 		$replay = OrderService::checkout( $scenario['identity'], 'payment-checkout-0001', $scenario['input'] );
 		$this->assertNotWPError( $replay );

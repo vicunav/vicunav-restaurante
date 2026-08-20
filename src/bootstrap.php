@@ -28,6 +28,7 @@ use Vicu\Restaurante\Rest\SavedPizzaRoutes;
 use Vicu\Restaurante\Cart\CartService;
 use Vicu\Restaurante\Order\OrderPostType;
 use Vicu\Restaurante\Order\PaymentIntegration;
+use Vicu\Restaurante\Privacy\PrivacyTools;
 use Vicu\Restaurante\Reservation\ReservationPostType;
 use Vicu\Restaurante\Reservation\ReservationSettings;
 use Vicu\Restaurante\Settings\RestaurantSettings;
@@ -188,6 +189,7 @@ function bootstrap_with_dependencies( array $dependencies ): void {
 	PaymentIntegration::register_hooks();
 	RestaurantSettings::register_hooks();
 	ReservationSettings::register_hooks();
+	PrivacyTools::register_hooks();
 
 	/**
 	 * Se ejecuta cuando el contrato base del vertical restaurante está disponible.

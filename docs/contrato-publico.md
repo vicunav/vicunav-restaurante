@@ -1,11 +1,11 @@
 # Contrato público de `vicunav-restaurante`
 
-Estado: contrato 1.0.0 aprobado; REST-02Q implementa carga, compatibilidad,
+Estado: contrato 1.0.0 aprobado; REST-02R verifica carga, compatibilidad,
 instalación, menú, catálogo, pricing de pizzas, zonas, descuentos, totales, carrito,
 checkout, pedidos, integración pública con pagos, reservas, pizzas guardadas y el
 bloque público de menú, constructor de pizzas, carrito, checkout manual, estado de
-pedido, reservas y pizzas guardadas de cuenta. La validación de release se habilita
-por el issue indicado en la matriz y no se considera completa antes de él.
+pedido, reservas y pizzas guardadas de cuenta. La candidata 1.0.0 se considera lista
+solo con todos los gates de `docs/release-candidate-1.0.0.md` aprobados.
 
 ## Responsabilidad y límites
 
@@ -20,7 +20,7 @@ internas de otro paquete.
 
 ## Estado de implementación
 
-| Superficie | Issue propietario | Estado después de REST-02Q |
+| Superficie | Issue propietario | Estado después de REST-02R |
 | --- | --- | --- |
 | Versiones, autoload, dependencias y hook de carga | REST-02B | Implementado |
 | Capabilities, migraciones e instalación | REST-02C | Implementado |
@@ -38,10 +38,23 @@ internas de otro paquete.
 | Carrito, checkout y estado de pedido | REST-02O | Implementado |
 | Bloque de reservas | REST-02P | Implementado |
 | Bloque de pizzas guardadas | REST-02Q | Implementado |
-| E2E, privacidad, rendimiento y release candidata | REST-02R | Planificado |
+| E2E, privacidad, rendimiento y release candidata | REST-02R | Implementado |
 
 Una superficie planificada no es una API disponible. Cada issue actualiza esta matriz,
 implementa el contrato correspondiente y añade pruebas antes de cambiar su estado.
+
+## Privacidad de datos personales
+
+El plugin registra un exportador y un borrador en las herramientas nativas de privacidad
+de WordPress. La identidad se resuelve por correo y, cuando existe, por la cuenta local
+asociada. El exportador incluye pedidos, reservas, carritos y pizzas guardadas, pero
+nunca publica hashes, tokens, claves de ownership ni evidencia privada de pago.
+
+Una solicitud de borrado elimina carritos, sesiones y pizzas guardadas de la cuenta.
+Los pedidos y reservas terminales se conservan como autoridades operativas anonimizadas:
+se retiran contacto, dirección, instrucciones, notas, tokens recuperables y referencias
+de pago. Sus snapshots dejan de contener notas libres. Los pedidos y reservas activos se
+retienen hasta completar su ciclo y la herramienta informa el motivo al administrador.
 
 ## Compatibilidad y dependencias
 

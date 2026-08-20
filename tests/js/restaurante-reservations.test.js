@@ -1,5 +1,6 @@
 import {
 	bookingPayload,
+	ensureReservationState,
 	idempotencyKey,
 	responseAlternatives,
 	responseMessage,
@@ -72,5 +73,19 @@ describe( 'modelo cliente de reservas', () => {
 			'Conflicto.'
 		);
 		expect( responseMessage( {}, 'Error seguro' ) ).toBe( 'Error seguro' );
+	} );
+
+	test( 'recupera estado privado si una acción precede al init', () => {
+		const states = new WeakMap();
+		const element = {};
+		const first = ensureReservationState( states, element );
+
+		first.selection = { date: '2027-01-20' };
+
+		expect( ensureReservationState( states, element ) ).toBe( first );
+		expect( states.get( element ) ).toEqual( {
+			selection: { date: '2027-01-20' },
+			reservation: null,
+		} );
 	} );
 } );

@@ -7,6 +7,7 @@
 
 namespace Vicu\Restaurante\Blocks;
 
+use Vicu\Restaurante\Cart\CartSessionService;
 use Vicu\Restaurante\Settings\RestaurantSettings;
 
 /** Publica estructuras vacías; los datos privados llegan por REST sin caché. */
@@ -126,6 +127,10 @@ final class CommerceBlocks {
 	 * @return string Atributos escapados por WordPress.
 	 */
 	private static function attributes( string $role ): string {
+		// Solo se publica la existencia de una identidad, nunca la cookie opaca.
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- La presencia no se usa como credencial.
+		$has_cart_identity = is_user_logged_in() || isset( $_COOKIE[ CartSessionService::COOKIE_NAME ] );
+
 		return get_block_wrapper_attributes(
 			array(
 				'data-wp-interactive'      => 'vicunav/restaurante-commerce',
@@ -135,6 +140,7 @@ final class CommerceBlocks {
 				'data-wp-on--change'       => 'actions.handleChange',
 				'data-wp-on--submit'       => 'actions.handleSubmit',
 				'data-vicu-commerce-role'  => $role,
+				'data-has-cart-identity'   => $has_cart_identity ? '1' : '0',
 				'data-rest-cart'           => esc_url_raw( rest_url( 'vicu/v1/restaurante/cart' ) ),
 				'data-rest-carts'          => esc_url_raw( rest_url( 'vicu/v1/restaurante/carts' ) ),
 				'data-rest-cart-items'     => esc_url_raw( rest_url( 'vicu/v1/restaurante/cart/items' ) ),

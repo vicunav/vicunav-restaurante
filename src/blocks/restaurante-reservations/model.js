@@ -55,3 +55,17 @@ export const bookingPayload = ( form, selection ) => ( {
 	time: selection.time,
 	party_size: selection.partySize,
 } );
+
+/**
+ * Crea el estado privado mínimo cuando el init se difiere respecto de una acción.
+ *
+ * @param {WeakMap} states  Mapa privado de instancias.
+ * @param {Element} element Raíz del bloque.
+ */
+export const ensureReservationState = ( states, element ) => {
+	if ( ! states.has( element ) ) {
+		states.set( element, { selection: null, reservation: null } );
+	}
+
+	return states.get( element );
+};

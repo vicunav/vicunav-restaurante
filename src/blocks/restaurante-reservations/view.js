@@ -2,6 +2,7 @@ import { getElement, store, withSyncEvent } from '@wordpress/interactivity';
 
 import {
 	bookingPayload,
+	ensureReservationState,
 	idempotencyKey,
 	responseAlternatives,
 	responseMessage,
@@ -12,6 +13,7 @@ const state = new WeakMap();
 const memoryTokens = new Map();
 
 const root = () => getElement().ref.closest( '[data-vicu-reservations-root]' );
+const currentState = ( element ) => ensureReservationState( state, element );
 
 const saveSession = ( key, value ) => {
 	try {
@@ -74,7 +76,7 @@ const setError = ( element, message = '' ) => {
 
 const privateHeaders = (
 	element,
-	reservation = state.get( element )?.reservation
+	reservation = currentState( element ).reservation
 ) => {
 	if ( element.dataset.restNonce ) {
 		return { 'X-WP-Nonce': element.dataset.restNonce };
@@ -97,7 +99,7 @@ const remember = ( element, reservation ) => {
 		delete reservation.access_token;
 	}
 	saveSession( 'vicu_restaurante_last_reservation', publicId );
-	state.get( element ).reservation = reservation;
+	currentState( element ).reservation = reservation;
 };
 
 const node = ( tag, text = '', className = '' ) => {
@@ -164,7 +166,7 @@ const lookupAvailability = async ( element, form ) => {
 				party_size: String( selection.partySize ),
 			} ) }`
 		);
-		state.get( element ).selection = selection;
+		currentState( element ).selection = selection;
 		const booking = element.querySelector(
 			'[data-reservation-form="booking"]'
 		);
@@ -185,7 +187,7 @@ const lookupAvailability = async ( element, form ) => {
 };
 
 const createReservation = async ( element, form ) => {
-	const current = state.get( element );
+	const current = currentState( element );
 	const data = new FormData( form );
 	current.selection.time = String( data.get( 'time' ) || '' );
 	const keyName = `vicu_restaurante_reservation_key:${ current.selection.date }:${ current.selection.time }`;
@@ -251,7 +253,7 @@ const loadReservation = async ( element, publicId ) => {
 	if ( ! publicId ) {
 		return;
 	}
-	state.get( element ).reservation = { public_id: publicId };
+	currentState( element ).reservation = { public_id: publicId };
 	try {
 		const reservation = await request(
 			`${ element.dataset.restReservations }/${ publicId }`,
@@ -262,12 +264,12 @@ const loadReservation = async ( element, publicId ) => {
 		setStatus( element, element.dataset.reservationRestored );
 	} catch {
 		removeSession( 'vicu_restaurante_last_reservation' );
-		state.get( element ).reservation = null;
+		currentState( element ).reservation = null;
 	}
 };
 
 const cancelReservation = async ( element ) => {
-	const reservation = state.get( element ).reservation;
+	const reservation = currentState( element ).reservation;
 	if ( ! reservation ) {
 		return;
 	}
@@ -301,7 +303,7 @@ const initialize = async ( element ) => {
 		return;
 	}
 	initialized.add( element );
-	state.set( element, { selection: null, reservation: null } );
+	currentState( element );
 	await loadReservation(
 		element,
 		readSession( 'vicu_restaurante_last_reservation' )
@@ -338,7 +340,7 @@ store( 'vicunav/restaurante-reservations', {
 				resetToAvailability( element );
 			} else if ( control.dataset.reservationAction === 'new' ) {
 				removeSession( 'vicu_restaurante_last_reservation' );
-				state.get( element ).reservation = null;
+				currentState( element ).reservation = null;
 				resetToAvailability( element );
 			}
 		},
