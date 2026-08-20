@@ -1,0 +1,80 @@
+.wp-block-vicunav-restaurante-saved-pizzas {
+	box-sizing: border-box;
+	max-width: 100%;
+
+	[hidden] {
+		display: none !important;
+	}
+
+	[data-saved-pizzas-error] {
+		padding: 0.75rem;
+		border: 2px solid currentcolor;
+	}
+
+	input,
+	button,
+	a {
+		box-sizing: border-box;
+		min-height: 44px;
+		max-width: 100%;
+		padding: 0.625rem 0.75rem;
+		border: 1px solid currentcolor;
+		border-radius: 0.375rem;
+		background: transparent;
+		color: inherit;
+		font: inherit;
+	}
+
+	button,
+	a {
+		cursor: pointer;
+	}
+}
+
+.vicu-restaurante-saved-pizzas__list {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+	gap: 1rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.vicu-restaurante-saved-pizzas__item,
+.vicu-restaurante-saved-pizzas__item form,
+.vicu-restaurante-saved-pizzas__item label,
+.vicu-restaurante-saved-pizzas__actions,
+.vicu-restaurante-saved-pizzas__share,
+.vicu-restaurante-saved-pizzas__authentication {
+	display: grid;
+	gap: 0.75rem;
+}
+
+.vicu-restaurante-saved-pizzas__item {
+	padding: 1rem;
+	border: 1px solid currentcolor;
+}
+
+.wp-block-vicunav-restaurante-saved-pizzas button:focus-visible,
+.wp-block-vicunav-restaurante-saved-pizzas input:focus-visible,
+.wp-block-vicunav-restaurante-saved-pizzas a:focus-visible,
+.wp-block-vicunav-restaurante-saved-pizzas [data-saved-pizzas-error]:focus-visible {
+	outline: 3px solid currentcolor;
+	outline-offset: 3px;
+}
+
+@media (max-width: 37.5rem) {
+
+	.vicu-restaurante-saved-pizzas__list {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.wp-block-vicunav-restaurante-saved-pizzas * {
+		scroll-behavior: auto !important;
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+	}
+}

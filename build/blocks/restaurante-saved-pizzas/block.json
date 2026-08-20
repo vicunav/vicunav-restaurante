@@ -1,0 +1,38 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "vicunav/restaurante-saved-pizzas",
+  "version": "1.0.0",
+  "title": "Pizzas guardadas",
+  "category": "widgets",
+  "icon": "heart",
+  "description": "Gestiona pizzas guardadas de la cuenta autenticada.",
+  "keywords": [
+    "restaurante",
+    "pizza",
+    "cuenta"
+  ],
+  "textdomain": "vicunav-restaurante",
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "color": {
+      "background": true,
+      "text": true
+    },
+    "html": false,
+    "interactivity": true,
+    "spacing": {
+      "margin": true,
+      "padding": true
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScriptModule": "file:./view.js",
+  "render": "file:./render.php"
+}

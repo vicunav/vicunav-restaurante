@@ -13,7 +13,8 @@
 	.vicu-restaurante-pizza-builder__options,
 	.vicu-restaurante-pizza-builder__zones,
 	.vicu-restaurante-pizza-builder__toppings,
-	.vicu-restaurante-pizza-builder__summary {
+	.vicu-restaurante-pizza-builder__summary,
+	.vicu-restaurante-pizza-builder__save {
 		display: grid;
 		gap: 0.75rem;
 	}
@@ -44,7 +45,9 @@
 	.vicu-restaurante-pizza-builder__option-grid label,
 	.vicu-restaurante-pizza-builder__option-grid button,
 	.vicu-restaurante-pizza-builder__zones button,
-	.vicu-restaurante-pizza-builder__actions button {
+	.vicu-restaurante-pizza-builder__actions button,
+	.vicu-restaurante-pizza-builder__save input,
+	.vicu-restaurante-pizza-builder__save button {
 		box-sizing: border-box;
 		min-height: 44px;
 		padding: 0.75rem;
@@ -64,7 +67,8 @@
 
 	.vicu-restaurante-pizza-builder__option-grid button,
 	.vicu-restaurante-pizza-builder__zones button,
-	.vicu-restaurante-pizza-builder__actions button {
+	.vicu-restaurante-pizza-builder__actions button,
+	.vicu-restaurante-pizza-builder__save button {
 		cursor: pointer;
 	}
 

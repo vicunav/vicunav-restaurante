@@ -69,6 +69,20 @@ final class PizzaBuilderBlockTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( '<h1', $output );
 	}
 
+	/** Una cuenta obtiene el guardado nominal sin publicar su colección privada. */
+	public function test_authenticated_builder_can_save_current_configuration(): void {
+		$this->seed_catalog();
+		wp_set_current_user( self::factory()->user->create() );
+
+		$output = do_blocks( '<!-- wp:vicunav/restaurante-pizza-builder /-->' );
+
+		$this->assertStringContainsString( 'Nombre para guardar', $output );
+		$this->assertStringContainsString( 'Guardar en mi cuenta', $output );
+		$this->assertStringContainsString( 'savedPizzasUrl', $output );
+		$this->assertStringNotContainsString( 'saved_pizzas', $output );
+		wp_set_current_user( 0 );
+	}
+
 	/** Crea el catálogo mínimo con una opción agotada visible. */
 	private function seed_catalog(): void {
 		foreach ( array(

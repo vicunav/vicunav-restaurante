@@ -32,7 +32,7 @@ final class BlockRegistry {
 	public static function register_blocks(): void {
 		self::register_commerce_assets();
 
-		foreach ( array( 'restaurante-menu', 'restaurante-pizza-builder', 'restaurante-cart', 'restaurante-checkout', 'restaurante-order-status', 'restaurante-reservations' ) as $block ) {
+		foreach ( array( 'restaurante-menu', 'restaurante-pizza-builder', 'restaurante-cart', 'restaurante-checkout', 'restaurante-order-status', 'restaurante-reservations', 'restaurante-saved-pizzas' ) as $block ) {
 			$path = VICU_RESTAURANTE_PATH . 'build/blocks/' . $block;
 
 			if ( file_exists( $path . '/block.json' ) ) {
