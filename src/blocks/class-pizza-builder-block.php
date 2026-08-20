@@ -57,6 +57,7 @@ final class PizzaBuilderBlock {
 			'cartUrl'         => esc_url_raw( rest_url( 'vicu/v1/restaurante/cart' ) ),
 			'cartsUrl'        => esc_url_raw( rest_url( 'vicu/v1/restaurante/carts' ) ),
 			'cartItemsUrl'    => esc_url_raw( rest_url( 'vicu/v1/restaurante/cart/items' ) ),
+			'savedPizzasUrl'  => esc_url_raw( rest_url( 'vicu/v1/restaurante/saved-pizzas' ) ),
 			'restNonce'       => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
 			'labels'          => array(
 				'quoting'         => __( 'Confirmando precio y disponibilidad.', 'vicunav-restaurante' ),
@@ -66,6 +67,9 @@ final class PizzaBuilderBlock {
 				/* translators: %d: cantidad de líneas que contiene el carrito. */
 				'added'           => __( 'Pizza añadida. El carrito contiene %d líneas.', 'vicunav-restaurante' ),
 				'cartError'       => __( 'No pudimos añadir la pizza al carrito.', 'vicunav-restaurante' ),
+				'saving'          => __( 'Guardando la pizza en tu cuenta.', 'vicunav-restaurante' ),
+				'saved'           => __( 'Pizza guardada en tu cuenta.', 'vicunav-restaurante' ),
+				'saveError'       => __( 'No pudimos guardar la pizza.', 'vicunav-restaurante' ),
 				'maximumToppings' => __( 'Puedes elegir un máximo de 6 toppings.', 'vicunav-restaurante' ),
 			),
 		);
@@ -119,6 +123,13 @@ final class PizzaBuilderBlock {
 						<button type="submit" data-wp-bind--disabled="!state.canAdd"><?php esc_html_e( 'Añadir pizza al carrito', 'vicunav-restaurante' ); ?></button>
 						<button type="button" data-wp-on--click="actions.refreshCatalog"><?php esc_html_e( 'Actualizar opciones', 'vicunav-restaurante' ); ?></button>
 					</div>
+					<?php if ( is_user_logged_in() ) : ?>
+						<div class="vicu-restaurante-pizza-builder__save">
+							<label for="<?php echo esc_attr( $root_id ); ?>-saved-name"><?php esc_html_e( 'Nombre para guardar', 'vicunav-restaurante' ); ?></label>
+							<input id="<?php echo esc_attr( $root_id ); ?>-saved-name" data-saved-pizza-name maxlength="100" value="<?php esc_attr_e( 'Mi pizza', 'vicunav-restaurante' ); ?>" required>
+							<button type="button" data-wp-on--click="actions.savePizza" data-wp-bind--disabled="!state.canAdd"><?php esc_html_e( 'Guardar en mi cuenta', 'vicunav-restaurante' ); ?></button>
+						</div>
+					<?php endif; ?>
 				</div>
 			</form>
 			<noscript><p><?php esc_html_e( 'Activa JavaScript para confirmar el precio y añadir la pizza al carrito.', 'vicunav-restaurante' ); ?></p></noscript>

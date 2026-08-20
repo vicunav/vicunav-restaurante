@@ -176,6 +176,47 @@ const { state, actions } = store( 'vicunav/restaurante-pizza-builder', {
 				context.isBusy = false;
 			}
 		},
+		savePizza: withSyncEvent( ( event ) => {
+			event.preventDefault();
+			return actions.persistPizza( event.target );
+		} ),
+		*persistPizza( control ) {
+			const name = control
+				.closest( 'form' )
+				?.querySelector( '[data-saved-pizza-name]' );
+			if ( ! name?.reportValidity() ) {
+				return;
+			}
+			const context = getContext();
+			context.isBusy = true;
+			context.errorMessage = '';
+			context.successMessage = '';
+			context.statusMessage = context.labels.saving;
+
+			try {
+				yield quote( context );
+				if ( ! context.hasQuote ) {
+					return;
+				}
+				context.isBusy = true;
+				yield request( context.savedPizzasUrl, {
+					method: 'POST',
+					headers: { 'X-WP-Nonce': context.restNonce },
+					body: JSON.stringify( {
+						name: name.value,
+						configuration: buildConfiguration( context ),
+					} ),
+				} );
+				context.successMessage = context.labels.saved;
+				context.statusMessage = '';
+			} catch ( error ) {
+				context.errorMessage =
+					error.message || context.labels.saveError;
+				context.statusMessage = '';
+			} finally {
+				context.isBusy = false;
+			}
+		},
 		refreshCatalog() {
 			window.location.reload();
 		},

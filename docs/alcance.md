@@ -359,10 +359,38 @@ No añade pizzas guardadas de cuenta, contenido Bonasera, patterns, templates ni
 integración con LocalWP. REST-02Q es el siguiente issue y será propietario del bloque
 de pizzas guardadas.
 
+## Alcance de REST-02Q
+
+Esta fase añade únicamente:
+
+- plugin 0.17.0, conservando schema de instalación 9 y contrato 1.0.0;
+- bloque estable `vicunav/restaurante-saved-pizzas`, con `block.json`, API 3, SSR
+  seguro, Interactivity API y assets condicionales;
+- estado anónimo con enlace de login y estado autenticado que carga datos privados
+  solo mediante REST no cacheable y nonce;
+- listado de cuenta y una lectura agrupada del catálogo para nombres, sin N+1 ni
+  precios o validez calculados en JavaScript;
+- renombrado y eliminación por ownership y revisión, confirmación explícita de borrado
+  y recarga de colección ante concurrencia;
+- rotación explícita del enlace compartible, copia accesible y eliminación inmediata
+  del token del estado de colección, sin persistencia en almacenamiento del navegador;
+- revalidación mediante quote vigente antes de añadir una pizza guardada al carrito,
+  sin confiar en cantidad, revisión o importes del snapshot;
+- guardado nominal de la configuración actual desde el constructor autenticado,
+  después de quote y con nonce REST;
+- labels, regiones live/alert, foco visible, targets de 44 px, responsive desde 320 px
+  y respeto a `prefers-reduced-motion`;
+- preview de editor, build reproducible y pruebas PHP, JavaScript e integración con
+  WordPress y MySQL.
+
+No añade contenido Bonasera, patterns, templates ni integración con LocalWP.
+REST-02R es el siguiente issue y será propietario del gate integral y la release
+candidata 1.0.0.
+
 ## Fuera de alcance actual
 
-El plugin todavía no registra la vista de pizzas guardadas de cuenta. Tampoco contiene
-contenido Bonasera ni integración con LocalWP.
+El plugin todavía no declara la release 1.0.0: falta el gate integral de REST-02R.
+Tampoco contiene contenido Bonasera ni integración con LocalWP.
 
 Esas capacidades se implementan únicamente mediante los issues atómicos posteriores
 del plan de restaurante.
