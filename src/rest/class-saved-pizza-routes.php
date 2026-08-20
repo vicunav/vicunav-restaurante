@@ -140,9 +140,9 @@ final class SavedPizzaRoutes {
 	 * Exige cuenta y nonce de WordPress.
 	 *
 	 * @param WP_REST_Request $request Solicitud.
-	 * @return true|WP_Error
+	 * @return bool|WP_Error
 	 */
-	public static function allow_account( WP_REST_Request $request ): true|WP_Error {
+	public static function allow_account( WP_REST_Request $request ): bool|WP_Error {
 		$identity = CartAuthentication::resolve( $request, false );
 
 		if ( is_wp_error( $identity ) ) {
@@ -158,9 +158,9 @@ final class SavedPizzaRoutes {
 	 * Permite conectar rate limiting a enlaces compartidos.
 	 *
 	 * @param WP_REST_Request $request Solicitud.
-	 * @return true|WP_Error
+	 * @return bool|WP_Error
 	 */
-	public static function allow_shared( WP_REST_Request $request ): true|WP_Error {
+	public static function allow_shared( WP_REST_Request $request ): bool|WP_Error {
 		/**
 		 * Filtra la lectura de un enlace compartido.
 		 *

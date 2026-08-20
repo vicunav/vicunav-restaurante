@@ -115,13 +115,13 @@ final class ReservationRoutes {
 	 * Permite integrar un rate limiter sin asumir una implementación.
 	 *
 	 * @param WP_REST_Request $request Solicitud.
-	 * @return true|WP_Error
+	 * @return bool|WP_Error
 	 */
-	public static function allow_availability( WP_REST_Request $request ): true|WP_Error {
+	public static function allow_availability( WP_REST_Request $request ): bool|WP_Error {
 		/**
 		 * Filtra el acceso a consultas públicas de disponibilidad.
 		 *
-		 * @param true|WP_Error  $allowed Estado inicial.
+		 * @param bool|WP_Error  $allowed Estado inicial.
 		 * @param WP_REST_Request $request Solicitud.
 		 */
 		$allowed = apply_filters( 'vicu_restaurante_allow_reservation_availability', true, $request );
@@ -133,9 +133,9 @@ final class ReservationRoutes {
 	 * Exige nonce para cuentas y deja conectable el límite de creación invitada.
 	 *
 	 * @param WP_REST_Request $request Solicitud.
-	 * @return true|WP_Error
+	 * @return bool|WP_Error
 	 */
-	public static function allow_create( WP_REST_Request $request ): true|WP_Error {
+	public static function allow_create( WP_REST_Request $request ): bool|WP_Error {
 		$authenticated = self::authenticated( $request );
 
 		if ( is_wp_error( $authenticated ) ) {
@@ -145,7 +145,7 @@ final class ReservationRoutes {
 		/**
 		 * Filtra el acceso a creación de reservas para rate limiting o antifraude.
 		 *
-		 * @param true|WP_Error  $allowed Estado inicial.
+		 * @param bool|WP_Error  $allowed Estado inicial.
 		 * @param WP_REST_Request $request Solicitud.
 		 */
 		$allowed = apply_filters( 'vicu_restaurante_allow_reservation_creation', true, $request );
@@ -157,9 +157,9 @@ final class ReservationRoutes {
 	 * Requiere nonce de cuenta o token invitado de 64 caracteres.
 	 *
 	 * @param WP_REST_Request $request Solicitud.
-	 * @return true|WP_Error
+	 * @return bool|WP_Error
 	 */
-	public static function allow_private( WP_REST_Request $request ): true|WP_Error {
+	public static function allow_private( WP_REST_Request $request ): bool|WP_Error {
 		$authenticated = self::authenticated( $request );
 
 		if ( is_wp_error( $authenticated ) ) {
@@ -403,9 +403,9 @@ final class ReservationRoutes {
 	 * Verifica nonce cuando existe una cuenta autenticada.
 	 *
 	 * @param WP_REST_Request $request Solicitud.
-	 * @return true|WP_Error
+	 * @return bool|WP_Error
 	 */
-	private static function authenticated( WP_REST_Request $request ): true|WP_Error {
+	private static function authenticated( WP_REST_Request $request ): bool|WP_Error {
 		if ( 0 === get_current_user_id() ) {
 			return true;
 		}
@@ -428,9 +428,9 @@ final class ReservationRoutes {
 	 * Normaliza la decisión conectable del rate limiter.
 	 *
 	 * @param mixed $allowed Resultado del filtro.
-	 * @return true|WP_Error
+	 * @return bool|WP_Error
 	 */
-	private static function rate_limit_result( mixed $allowed ): true|WP_Error {
+	private static function rate_limit_result( mixed $allowed ): bool|WP_Error {
 		if ( is_wp_error( $allowed ) ) {
 			return $allowed;
 		}

@@ -226,7 +226,7 @@ final class CartService {
 		return self::mutate(
 			$identity,
 			$expected_revision,
-			static function ( array $cart ) use ( $input ): true|WP_Error {
+			static function ( array $cart ) use ( $input ): bool|WP_Error {
 				global $wpdb;
 
 				$quote = CartLinePricing::quote( $input );
@@ -307,7 +307,7 @@ final class CartService {
 		return self::mutate(
 			$identity,
 			$expected_revision,
-			static function ( array $cart ) use ( $line_public_id, $input ): true|WP_Error {
+			static function ( array $cart ) use ( $line_public_id, $input ): bool|WP_Error {
 				global $wpdb;
 
 				$quote = CartLinePricing::quote( $input );
@@ -356,7 +356,7 @@ final class CartService {
 		return self::mutate(
 			$identity,
 			$expected_revision,
-			static function ( array $cart ) use ( $line_public_id ): true|WP_Error {
+			static function ( array $cart ) use ( $line_public_id ): bool|WP_Error {
 				global $wpdb;
 
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -403,7 +403,7 @@ final class CartService {
 		return self::mutate(
 			$identity,
 			$expected_revision,
-			static function ( array $cart ) use ( $fulfillment, $zone_public_id ): true|WP_Error {
+			static function ( array $cart ) use ( $fulfillment, $zone_public_id ): bool|WP_Error {
 				global $wpdb;
 
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -487,9 +487,9 @@ final class CartService {
 	 *
 	 * @param int $internal_id      ID interno autorizado.
 	 * @param int $current_revision Revisión después de revalidar.
-	 * @return true|WP_Error
+	 * @return bool|WP_Error
 	 */
-	public static function convert_in_transaction( int $internal_id, int $current_revision ): true|WP_Error {
+	public static function convert_in_transaction( int $internal_id, int $current_revision ): bool|WP_Error {
 		global $wpdb;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -585,9 +585,9 @@ final class CartService {
 	 * Recalcula líneas y totales antes de incrementar la revisión.
 	 *
 	 * @param array<string, mixed> $cart Fila bloqueada.
-	 * @return true|WP_Error
+	 * @return bool|WP_Error
 	 */
-	private static function recalculate_locked( array $cart ): true|WP_Error {
+	private static function recalculate_locked( array $cart ): bool|WP_Error {
 		global $wpdb;
 
 		$items_table = Schema::cart_items_table_name();
@@ -680,7 +680,7 @@ final class CartService {
 		return self::mutate(
 			$identity,
 			$expected_revision,
-			static function ( array $cart ) use ( $field, $value ): true|WP_Error {
+			static function ( array $cart ) use ( $field, $value ): bool|WP_Error {
 				global $wpdb;
 
 				// El nombre de columna pertenece a una allowlist cerrada.

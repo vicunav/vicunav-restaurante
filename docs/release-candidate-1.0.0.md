@@ -38,6 +38,9 @@ El gate detectó y corrigió tres defectos de frontera antes de aprobarse:
   callback diferido de inicialización.
 - Un visitante sin identidad de carrito ya no hace una lectura REST destinada a fallar
   con 401, por lo que el estado vacío no genera errores de consola.
+- Los retornos que solo producen `true` o `WP_Error` usan `bool|WP_Error`: conservan el
+  contrato de valores y evitan la sintaxis de tipo literal disponible desde PHP 8.2,
+  incompatible con el mínimo declarado PHP 8.1.
 
 La validación real también detectó que el proveedor manual de pagos perdía su estado al
 cruzar un request de WordPress. La corrección quedó publicada en `vicunav-pagos` 0.3.1 y

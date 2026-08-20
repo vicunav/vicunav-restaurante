@@ -136,9 +136,9 @@ final class OrderRoutes {
 	 * Checkout reutiliza identidad, CSRF y origen del carrito.
 	 *
 	 * @param WP_REST_Request $request Solicitud.
-	 * @return true|WP_Error
+	 * @return bool|WP_Error
 	 */
-	public static function allow_checkout( WP_REST_Request $request ): true|WP_Error {
+	public static function allow_checkout( WP_REST_Request $request ): bool|WP_Error {
 		$identity = CartAuthentication::resolve( $request, true );
 
 		return is_wp_error( $identity ) ? $identity : true;
@@ -148,9 +148,9 @@ final class OrderRoutes {
 	 * Cuenta con nonce o invitado con token no vacío.
 	 *
 	 * @param WP_REST_Request $request Solicitud.
-	 * @return true|WP_Error
+	 * @return bool|WP_Error
 	 */
-	public static function allow_order_read( WP_REST_Request $request ): true|WP_Error {
+	public static function allow_order_read( WP_REST_Request $request ): bool|WP_Error {
 		if ( 0 < get_current_user_id() ) {
 			$identity = CartAuthentication::resolve( $request, false );
 
@@ -166,9 +166,9 @@ final class OrderRoutes {
 	 * Exige nonce y capability según el destino solicitado.
 	 *
 	 * @param WP_REST_Request $request Solicitud.
-	 * @return true|WP_Error
+	 * @return bool|WP_Error
 	 */
-	public static function allow_admin_transition( WP_REST_Request $request ): true|WP_Error {
+	public static function allow_admin_transition( WP_REST_Request $request ): bool|WP_Error {
 		$identity = CartAuthentication::resolve( $request, false );
 
 		if ( is_wp_error( $identity ) ) {

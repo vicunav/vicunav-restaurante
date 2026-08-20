@@ -61,9 +61,9 @@ final class PizzaQuoteRoute {
 	 * Permite conectar una política de rate limit sin almacenar IPs en el dominio.
 	 *
 	 * @param WP_REST_Request $request Solicitud.
-	 * @return true|WP_Error
+	 * @return bool|WP_Error
 	 */
-	public static function allow_public_quote( WP_REST_Request $request ): true|WP_Error {
+	public static function allow_public_quote( WP_REST_Request $request ): bool|WP_Error {
 		/**
 		 * Filtra si una cotización pública puede continuar.
 		 *
