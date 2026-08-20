@@ -1,0 +1,109 @@
+.wp-block-vicunav-restaurante-cart,
+.wp-block-vicunav-restaurante-checkout,
+.wp-block-vicunav-restaurante-order-status {
+	box-sizing: border-box;
+	max-width: 100%;
+
+	[hidden] {
+		display: none !important;
+	}
+
+	form,
+	.vicu-restaurante-cart__controls,
+	.vicu-restaurante-order-status__actions {
+		display: grid;
+		gap: 0.75rem;
+	}
+
+	label {
+		display: grid;
+		gap: 0.375rem;
+	}
+
+	input,
+	select,
+	textarea,
+	button {
+		box-sizing: border-box;
+		min-height: 44px;
+		max-width: 100%;
+		padding: 0.625rem 0.75rem;
+		border: 1px solid currentcolor;
+		border-radius: 0.375rem;
+		background: transparent;
+		color: inherit;
+		font: inherit;
+	}
+
+	button {
+		cursor: pointer;
+	}
+
+	button:disabled {
+		cursor: not-allowed;
+	}
+
+	button:focus-visible,
+	input:focus-visible,
+	select:focus-visible,
+	textarea:focus-visible {
+		outline: 3px solid currentcolor;
+		outline-offset: 3px;
+	}
+
+	[data-commerce-error] {
+		padding: 0.75rem;
+		border: 2px solid currentcolor;
+	}
+}
+
+.vicu-restaurante-cart__items {
+	display: grid;
+	gap: 0.75rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.vicu-restaurante-cart__item {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 0.75rem;
+	padding: 1rem;
+	border: 1px solid currentcolor;
+}
+
+.vicu-restaurante-cart__item-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.vicu-restaurante-cart__totals {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	gap: 0.5rem 1rem;
+}
+
+.vicu-restaurante-cart__totals dt,
+.vicu-restaurante-cart__totals dd {
+	margin: 0;
+}
+
+@media (max-width: 37.5rem) {
+
+	.vicu-restaurante-cart__item {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.wp-block-vicunav-restaurante-cart *,
+	.wp-block-vicunav-restaurante-checkout *,
+	.wp-block-vicunav-restaurante-order-status * {
+		scroll-behavior: auto !important;
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+	}
+}

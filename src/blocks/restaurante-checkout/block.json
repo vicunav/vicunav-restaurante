@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "vicunav/restaurante-checkout",
+  "version": "1.0.0",
+  "title": "Checkout del restaurante",
+  "category": "widgets",
+  "icon": "money-alt",
+  "description": "Crea un pedido y presenta el proveedor manual real.",
+  "textdomain": "vicunav-restaurante",
+  "supports": {
+    "align": [ "wide", "full" ],
+    "anchor": true,
+    "color": { "background": true, "text": true },
+    "html": false,
+    "interactivity": true,
+    "spacing": { "margin": true, "padding": true }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "vicu-restaurante-commerce-style",
+  "viewScriptModule": "vicu-restaurante-commerce",
+  "render": "file:./render.php"
+}

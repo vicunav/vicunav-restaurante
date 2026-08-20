@@ -1,0 +1,14 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "vicunav/restaurante-commerce-assets",
+  "version": "1.0.0",
+  "title": "Assets internos de comercio",
+  "category": "widgets",
+  "textdomain": "vicunav-restaurante",
+  "supports": {
+    "html": false,
+    "interactivity": true
+  },
+  "viewScriptModule": "file:./view.js"
+}

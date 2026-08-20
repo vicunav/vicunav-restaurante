@@ -5,13 +5,12 @@ pizzas, and reservations.
 
 ## Status
 
-REST-02N publishes plugin version 0.14.0 over public contract 1.0.0. The current
-runtime adds dynamic menu and pizza-builder blocks with server rendering, conditional
-assets, authoritative pizza quotes, and secure add-to-cart through the owned REST
-contract. It preserves account-owned saved pizzas, reservations, and payment
-integration without reading another package's storage. It does not yet register the
-cart, checkout, order-status, reservation, or account blocks, demo content, or depend
-on WooCommerce.
+REST-02O publishes plugin version 0.15.0 over public contract 1.0.0. The current
+runtime adds coordinated cart, manual-checkout, and private order-status blocks to the
+dynamic menu and pizza builder. Server contracts remain authoritative for prices,
+totals, checkout, order state, and payment evidence. It preserves account-owned saved
+pizzas and reservations without reading another package's storage. It does not yet
+register the reservation or account blocks, demo content, or depend on WooCommerce.
 
 Further domain persistence, REST endpoints, admin screens, and blocks are introduced
 only through their separate atomic issues. A planned surface is not available until
