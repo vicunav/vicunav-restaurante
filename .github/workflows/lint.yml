@@ -96,3 +96,18 @@ jobs:
 
       - name: Comprobar build versionado
         run: git diff --exit-code -- build
+
+  gate-requerido:
+    name: Composer, PHP, WPCS y PHPUnit
+    if: always()
+    needs:
+      - estandares-php
+      - bloques
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Verificar matriz completa
+        env:
+          PHP_RESULT: ${{ needs.estandares-php.result }}
+          BLOCKS_RESULT: ${{ needs.bloques.result }}
+        run: test "$PHP_RESULT" = "success" && test "$BLOCKS_RESULT" = "success"
