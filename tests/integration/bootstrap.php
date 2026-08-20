@@ -37,3 +37,32 @@ tests_add_filter(
 );
 
 require $vicu_restaurante_tests_dir . '/includes/bootstrap.php';
+
+/**
+ * Devuelve la cola de módulos con una adaptación exclusiva para WordPress 6.6 a 6.8.
+ *
+ * `WP_Script_Modules::get_queue()` es público desde WordPress 6.9. En versiones
+ * anteriores la suite inspecciona la propiedad privada para comprobar el mismo efecto
+ * sin introducir esa compatibilidad de pruebas en el runtime.
+ *
+ * @return string[] IDs encolados.
+ */
+function vicu_restaurante_test_script_module_queue(): array {
+	$modules = wp_script_modules();
+
+	if ( method_exists( $modules, 'get_queue' ) ) {
+		return $modules->get_queue();
+	}
+
+	$property   = new ReflectionProperty( $modules, 'registered' );
+	$registered = $property->getValue( $modules );
+	$queue      = array();
+
+	foreach ( is_array( $registered ) ? $registered : array() as $id => $module ) {
+		if ( true === ( $module['enqueue'] ?? false ) ) {
+			$queue[] = (string) $id;
+		}
+	}
+
+	return $queue;
+}

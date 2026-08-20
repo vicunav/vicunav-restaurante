@@ -46,17 +46,17 @@ final class CommerceBlocksTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'access_token', $output );
 		$this->assertStringNotContainsString( 'customer_phone', $output );
 		$this->assertStringNotContainsString( '<h1', $output );
-		$this->assertContains( 'vicu-restaurante-commerce', wp_script_modules()->get_queue() );
+		$this->assertContains( 'vicu-restaurante-commerce', vicu_restaurante_test_script_module_queue() );
 	}
 
 	/** Los assets compartidos solo se cargan cuando aparece una superficie de comercio. */
 	public function test_shared_frontend_assets_are_conditional(): void {
 		do_blocks( '<!-- wp:paragraph --><p>Sin comercio.</p><!-- /wp:paragraph -->' );
-		$this->assertNotContains( 'vicu-restaurante-commerce', wp_script_modules()->get_queue() );
+		$this->assertNotContains( 'vicu-restaurante-commerce', vicu_restaurante_test_script_module_queue() );
 		$this->assertFalse( wp_style_is( 'vicu-restaurante-commerce-style', 'enqueued' ) );
 
 		do_blocks( '<!-- wp:vicunav/restaurante-cart /-->' );
-		$this->assertContains( 'vicu-restaurante-commerce', wp_script_modules()->get_queue() );
+		$this->assertContains( 'vicu-restaurante-commerce', vicu_restaurante_test_script_module_queue() );
 		$this->assertTrue( wp_style_is( 'vicu-restaurante-commerce-style', 'enqueued' ) );
 	}
 }
