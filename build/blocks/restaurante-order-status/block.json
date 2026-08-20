@@ -1,0 +1,33 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "vicunav/restaurante-order-status",
+  "version": "1.0.0",
+  "title": "Estado del pedido",
+  "category": "widgets",
+  "icon": "clipboard",
+  "description": "Consulta un pedido propio y envía la referencia del pago manual.",
+  "textdomain": "vicunav-restaurante",
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "color": {
+      "background": true,
+      "text": true
+    },
+    "html": false,
+    "interactivity": true,
+    "spacing": {
+      "margin": true,
+      "padding": true
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "vicu-restaurante-commerce-style",
+  "viewScriptModule": "vicu-restaurante-commerce",
+  "render": "file:./render.php"
+}

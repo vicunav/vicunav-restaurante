@@ -1,10 +1,11 @@
 # Contrato público de `vicunav-restaurante`
 
-Estado: contrato 1.0.0 aprobado; REST-02N implementa carga, compatibilidad,
+Estado: contrato 1.0.0 aprobado; REST-02O implementa carga, compatibilidad,
 instalación, menú, catálogo, pricing de pizzas, zonas, descuentos, totales, carrito,
 checkout, pedidos, integración pública con pagos, reservas, pizzas guardadas y el
-bloque público de menú y el constructor de pizzas. Las demás superficies se habilitan
-por los issues indicados en la matriz, sin considerarse operativas antes de ellos.
+bloque público de menú, constructor de pizzas, carrito, checkout manual y estado de
+pedido. Las demás superficies se habilitan por los issues indicados en la matriz, sin
+considerarse operativas antes de ellos.
 
 ## Responsabilidad y límites
 
@@ -19,7 +20,7 @@ internas de otro paquete.
 
 ## Estado de implementación
 
-| Superficie | Issue propietario | Estado después de REST-02N |
+| Superficie | Issue propietario | Estado después de REST-02O |
 | --- | --- | --- |
 | Versiones, autoload, dependencias y hook de carga | REST-02B | Implementado |
 | Capabilities, migraciones e instalación | REST-02C | Implementado |
@@ -34,7 +35,7 @@ internas de otro paquete.
 | Pizzas guardadas | REST-02L | Implementado |
 | Bloque de menú y filtros | REST-02M | Implementado |
 | Constructor de pizzas | REST-02N | Implementado |
-| Carrito, checkout y estado de pedido | REST-02O | Planificado |
+| Carrito, checkout y estado de pedido | REST-02O | Implementado |
 | Bloque de reservas | REST-02P | Planificado |
 | Bloque de pizzas guardadas | REST-02Q | Planificado |
 | E2E, privacidad, rendimiento y release candidata | REST-02R | Planificado |
@@ -689,13 +690,12 @@ privados.
 
 ## Bloques v1
 
-`vicunav/restaurante-menu` y `vicunav/restaurante-pizza-builder` están implementados.
-Las superficies públicas restantes usan estos nombres estables y permanecen
-planificadas hasta sus issues propietarios:
+Están implementados `vicunav/restaurante-menu`,
+`vicunav/restaurante-pizza-builder`, `vicunav/restaurante-cart`,
+`vicunav/restaurante-checkout` y `vicunav/restaurante-order-status`. Las superficies
+públicas restantes usan estos nombres estables y permanecen planificadas hasta sus
+issues propietarios:
 
-- `vicunav/restaurante-cart`;
-- `vicunav/restaurante-checkout`;
-- `vicunav/restaurante-order-status`;
 - `vicunav/restaurante-delivery-zones`;
 - `vicunav/restaurante-reservations`;
 - `vicunav/restaurante-saved-pizzas`.
@@ -731,7 +731,7 @@ renderiza. El build reproducible de REST-02M mide:
 | Editor `index.js` | 1.706 | 967 |
 | Editor `index.css` | 153 | 109 |
 
-Los dos bloques implementados son dinámicos y mantienen sus assets separados de la
+Los bloques implementados son dinámicos y mantienen sus assets separados de la
 composición editorial. FSE no puede alterar pricing, estados, permisos, schemas o
 disponibilidad transaccional.
 
@@ -770,9 +770,55 @@ El build reproducible de REST-02N mide:
 | Editor `index.js` | 1.713 | 971 |
 | Editor `index.css` | 103 | 105 |
 
-Los bloques REST-02O a REST-02Q también serán dinámicos, con render de servidor y
-assets condicionales. FSE puede editar composición y contenido, pero no pricing,
-estados, permisos, schemas o disponibilidad transaccional.
+### Carrito, checkout manual y estado de pedido implementados
+
+`vicunav/restaurante-cart`, `vicunav/restaurante-checkout` y
+`vicunav/restaurante-order-status` usan API 3, render dinámico y un único store de
+Interactivity API. Los tres comparten un módulo y un stylesheet condicionales. El SSR
+solo publica formularios y regiones vacías: no incorpora líneas, contacto, dirección,
+referencia de pago, cookie, CSRF o token de invitado en HTML cacheable.
+
+El carrito se obtiene por REST privado y permite sustituir o eliminar líneas, aplicar
+o retirar descuento, elegir pickup o delivery, seleccionar una zona activa y aplicar
+solo las tasas de propina configuradas. Cada escritura envía la revisión recibida y la
+selección completa sin importes. Un conflicto recarga el carrito vigente antes de
+permitir otra acción. JavaScript presenta las líneas y los componentes de totales que
+devuelve el servidor, pero no ejecuta pricing ni fusiona items.
+
+El checkout consume el carrito vigente mediante una clave idempotente por intento.
+Recoge nombre, teléfono, correo opcional y notas acotadas; dirección e instrucciones
+solo se envían para delivery. El resultado presenta el proveedor manual real y sus
+instrucciones. No incorpora archivos, bancos hardcodeados ni los cuatro métodos
+teatrales del prototipo.
+
+El estado de pedido consulta por ownership de cuenta o por el token opaco de invitado.
+El UUID y el token solo se conservan en memoria o `sessionStorage`; nunca se añaden a
+URL, markup o almacenamiento durable. La referencia textual del pago se envía con una
+clave idempotente, permanece privada en el backend y solo se habilita cuando el estado
+y el proveedor permiten presentarla. La interfaz muestra número, estado, fulfillment,
+cantidad de líneas, total, vencimiento e instrucciones recibidas, sin inferir
+transiciones.
+
+FSE puede cambiar alineación, anchor, color y espaciado de los tres bloques, pero no
+campos privados, rutas, ownership, revisiones, totales, proveedor o estados. Los
+controles admiten teclado, foco visible y targets de 44 px; las regiones anuncian
+carga, error y éxito, el layout baja a una columna en móvil y respeta
+`prefers-reduced-motion`.
+
+El build reproducible de REST-02O comparte los dos assets de frontend entre las tres
+superficies:
+
+| Asset | Bytes minificados | Bytes gzip |
+| --- | ---: | ---: |
+| Módulo compartido `view.js` | 8.948 | 3.241 |
+| Estilos compartidos `style-index.css` | 3.937 | 769 |
+| Editor carrito `index.js` | 1.706 | 966 |
+| Editor checkout `index.js` | 786 | 488 |
+| Editor estado `index.js` | 790 | 490 |
+
+Los bloques REST-02P y REST-02Q también serán dinámicos, con render de servidor y
+assets condicionales. FSE puede editar composición y contenido, pero no permisos,
+schemas o disponibilidad transaccional.
 
 ## Gestión de cambios
 

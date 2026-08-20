@@ -298,10 +298,43 @@ No añade la vista del carrito, checkout, estado de pedidos, pizzas guardadas, c
 Bonasera, patterns, templates ni integración con LocalWP. REST-02O es el siguiente
 issue y será propietario de los bloques coordinados de comercio.
 
+## Alcance de REST-02O
+
+Esta fase añade únicamente:
+
+- plugin 0.15.0, conservando schema de instalación 9 y contrato 1.0.0;
+- bloques estables `vicunav/restaurante-cart`, `vicunav/restaurante-checkout` y
+  `vicunav/restaurante-order-status`, con `block.json`, API 3, SSR seguro y un único
+  módulo compartido de Interactivity API;
+- lectura privada del carrito y mutaciones completas de cantidad, eliminación,
+  descuento, fulfillment, zona y propina mediante revisión esperada y nonce/CSRF;
+- render textual de líneas y todos los componentes de totales recibidos del servidor,
+  sin recalcular precios ni estados en JavaScript;
+- checkout idempotente con contacto acotado, dirección obligatoria solo para delivery
+  y conversión autoritativa del carrito;
+- proveedor manual real existente, instrucciones vigentes y envío idempotente de una
+  referencia textual privada, sin archivos ni métodos teatrales;
+- consulta de pedido por ownership de cuenta o token opaco de invitado, con estado,
+  total, vencimiento y actualización explícita;
+- persistencia del UUID y token invitado solo en `sessionStorage` o memoria; nunca en
+  URL, markup, logs o almacenamiento durable del navegador;
+- conflicto que recarga la revisión vigente, regiones de estado/error, teclado, foco,
+  targets de 44 px, responsive y `prefers-reduced-motion`;
+- preview de editor, assets condicionales, build reproducible y pruebas PHP,
+  JavaScript e integración con WordPress y MySQL.
+
+Los bloques no publican contacto, dirección, referencia, cookie, CSRF ni token del
+pedido. El módulo cliente reconstruye selecciones completas para que REST las vuelva a
+validar y nunca envía importes como autoridad.
+
+No añade reservas públicas, pizzas guardadas de cuenta, contenido Bonasera, patterns,
+templates ni integración con LocalWP. REST-02P es el siguiente issue y será
+propietario del bloque de reservas.
+
 ## Fuera de alcance actual
 
-El plugin todavía no registra las vistas coordinadas de carrito, checkout, pedidos,
-reservas o cuenta. Tampoco contiene contenido Bonasera ni integración con LocalWP.
+El plugin todavía no registra las vistas públicas de reservas o pizzas guardadas de
+cuenta. Tampoco contiene contenido Bonasera ni integración con LocalWP.
 
 Esas capacidades se implementan únicamente mediante los issues atómicos posteriores
 del plan de restaurante.
