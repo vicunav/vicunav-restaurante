@@ -331,10 +331,38 @@ No añade reservas públicas, pizzas guardadas de cuenta, contenido Bonasera, pa
 templates ni integración con LocalWP. REST-02P es el siguiente issue y será
 propietario del bloque de reservas.
 
+## Alcance de REST-02P
+
+Esta fase añade únicamente:
+
+- plugin 0.16.0, conservando schema de instalación 9 y contrato 1.0.0;
+- bloque estable `vicunav/restaurante-reservations`, con `block.json`, API 3, SSR
+  seguro, Interactivity API y assets condicionales;
+- consulta pública no cacheable de disponibilidad por fecha y grupo, sin horarios,
+  aforo ni reglas duplicadas en el cliente;
+- presentación de slots disponibles o limitados y alternativas autoritativas ante un
+  conflicto de capacidad;
+- creación idempotente con nombre, teléfono, correo opcional, zona, notas, fecha,
+  hora y grupo, revalidados por el servicio transaccional existente;
+- confirmación con UUID privado, código, estado, fecha, hora y grupo, sin publicar
+  contacto;
+- recuperación y cancelación por ownership de cuenta o token invitado, con revisión
+  esperada y recarga ante concurrencia;
+- persistencia de UUID y token solo en memoria o `sessionStorage`, nunca en URL,
+  markup, logs o almacenamiento durable;
+- formularios etiquetados, regiones live/alert, foco visible, targets de 44 px,
+  responsive desde 320 px y respeto a `prefers-reduced-motion`;
+- preview de editor, build reproducible y pruebas PHP, JavaScript e integración con
+  WordPress y MySQL.
+
+No añade pizzas guardadas de cuenta, contenido Bonasera, patterns, templates ni
+integración con LocalWP. REST-02Q es el siguiente issue y será propietario del bloque
+de pizzas guardadas.
+
 ## Fuera de alcance actual
 
-El plugin todavía no registra las vistas públicas de reservas o pizzas guardadas de
-cuenta. Tampoco contiene contenido Bonasera ni integración con LocalWP.
+El plugin todavía no registra la vista de pizzas guardadas de cuenta. Tampoco contiene
+contenido Bonasera ni integración con LocalWP.
 
 Esas capacidades se implementan únicamente mediante los issues atómicos posteriores
 del plan de restaurante.

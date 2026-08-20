@@ -1,0 +1,38 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "vicunav/restaurante-reservations",
+  "version": "1.0.0",
+  "title": "Reservas del restaurante",
+  "category": "widgets",
+  "icon": "calendar-alt",
+  "description": "Consulta capacidad, crea una reserva y permite cancelarla de forma privada.",
+  "keywords": [
+    "restaurante",
+    "reservas",
+    "horarios"
+  ],
+  "textdomain": "vicunav-restaurante",
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "color": {
+      "background": true,
+      "text": true
+    },
+    "html": false,
+    "interactivity": true,
+    "spacing": {
+      "margin": true,
+      "padding": true
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScriptModule": "file:./view.js",
+  "render": "file:./render.php"
+}

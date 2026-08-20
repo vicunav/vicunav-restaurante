@@ -1,11 +1,11 @@
 # Contrato público de `vicunav-restaurante`
 
-Estado: contrato 1.0.0 aprobado; REST-02O implementa carga, compatibilidad,
+Estado: contrato 1.0.0 aprobado; REST-02P implementa carga, compatibilidad,
 instalación, menú, catálogo, pricing de pizzas, zonas, descuentos, totales, carrito,
 checkout, pedidos, integración pública con pagos, reservas, pizzas guardadas y el
-bloque público de menú, constructor de pizzas, carrito, checkout manual y estado de
-pedido. Las demás superficies se habilitan por los issues indicados en la matriz, sin
-considerarse operativas antes de ellos.
+bloque público de menú, constructor de pizzas, carrito, checkout manual, estado de
+pedido y reservas. Las demás superficies se habilitan por los issues indicados en la
+matriz, sin considerarse operativas antes de ellos.
 
 ## Responsabilidad y límites
 
@@ -20,7 +20,7 @@ internas de otro paquete.
 
 ## Estado de implementación
 
-| Superficie | Issue propietario | Estado después de REST-02O |
+| Superficie | Issue propietario | Estado después de REST-02P |
 | --- | --- | --- |
 | Versiones, autoload, dependencias y hook de carga | REST-02B | Implementado |
 | Capabilities, migraciones e instalación | REST-02C | Implementado |
@@ -36,7 +36,7 @@ internas de otro paquete.
 | Bloque de menú y filtros | REST-02M | Implementado |
 | Constructor de pizzas | REST-02N | Implementado |
 | Carrito, checkout y estado de pedido | REST-02O | Implementado |
-| Bloque de reservas | REST-02P | Planificado |
+| Bloque de reservas | REST-02P | Implementado |
 | Bloque de pizzas guardadas | REST-02Q | Planificado |
 | E2E, privacidad, rendimiento y release candidata | REST-02R | Planificado |
 
@@ -692,12 +692,12 @@ privados.
 
 Están implementados `vicunav/restaurante-menu`,
 `vicunav/restaurante-pizza-builder`, `vicunav/restaurante-cart`,
-`vicunav/restaurante-checkout` y `vicunav/restaurante-order-status`. Las superficies
+`vicunav/restaurante-checkout`, `vicunav/restaurante-order-status` y
+`vicunav/restaurante-reservations`. Las superficies
 públicas restantes usan estos nombres estables y permanecen planificadas hasta sus
 issues propietarios:
 
 - `vicunav/restaurante-delivery-zones`;
-- `vicunav/restaurante-reservations`;
 - `vicunav/restaurante-saved-pizzas`.
 
 ### Menú y filtros implementado
@@ -816,9 +816,45 @@ superficies:
 | Editor checkout `index.js` | 786 | 488 |
 | Editor estado `index.js` | 790 | 490 |
 
-Los bloques REST-02P y REST-02Q también serán dinámicos, con render de servidor y
-assets condicionales. FSE puede editar composición y contenido, pero no permisos,
-schemas o disponibilidad transaccional.
+### Bloque de reservas implementado
+
+`vicunav/restaurante-reservations` usa API 3, render dinámico e Interactivity API con
+assets condicionales. El SSR publica formularios etiquetados y regiones vacías, pero
+no reservas, contacto, código de confirmación ni token. La interfaz consulta
+`GET /reservations/availability` por fecha y grupo; solo presenta slots devueltos por
+el servidor y distingue cupos disponibles o limitados sin copiar horarios, aforo ni
+reglas de negocio en JavaScript.
+
+La creación envía los campos contractuales y una clave idempotente por intento a
+`POST /reservations`. Si el slot se ocupa durante la operación, un conflicto 409
+reemplaza la selección por las alternativas cercanas autoritativas. La confirmación
+muestra código, estado, fecha, hora y grupo; nunca presenta contacto privado. La
+cancelación usa ownership de cuenta o token invitado, envía la revisión esperada y
+recarga el estado vigente ante concurrencia.
+
+El UUID y el token invitado viven solo en memoria o `sessionStorage`. El token se
+elimina del objeto de respuesta antes de renderizar y nunca aparece en URL, markup o
+logs. Las cuentas usan nonce REST. Al volver en el mismo dispositivo, el bloque puede
+recuperar la última reserva con la credencial privada; una credencial inválida se
+descarta sin revelar si el UUID existe.
+
+FSE puede cambiar alineación, anchor, color y espaciado, pero no campos, endpoints,
+ownership, capacidad, estados o revisiones. Los controles admiten teclado, foco
+visible y targets de 44 px; las regiones anuncian carga, error y éxito, el layout baja
+a una columna en móvil y respeta `prefers-reduced-motion`.
+
+El build reproducible de REST-02P mide:
+
+| Asset | Bytes minificados | Bytes gzip |
+| --- | ---: | ---: |
+| Módulo frontend `view.js` | 5.676 | 2.193 |
+| Estilos frontend `style-index.css` | 2.274 | 624 |
+| Editor `index.js` | 1.714 | 968 |
+| Editor `index.css` | 64 | 90 |
+
+El bloque REST-02Q también será dinámico, con render de servidor y assets
+condicionales. FSE puede editar composición y contenido, pero no permisos, schemas o
+ownership de cuenta.
 
 ## Gestión de cambios
 
