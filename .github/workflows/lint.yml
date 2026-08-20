@@ -64,8 +64,6 @@ jobs:
         if: matrix.composer_mode == 'minimum'
         run: >-
           composer update
-          johnpbloch/wordpress-core
-          wp-phpunit/wp-phpunit
           --with-all-dependencies
           --prefer-lowest
           --no-interaction
