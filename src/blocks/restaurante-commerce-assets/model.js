@@ -59,3 +59,14 @@ export function responseMessage( payload, fallback ) {
 		? payload.message.trim()
 		: fallback;
 }
+
+/**
+ * Evita una lectura REST que necesariamente fallaría sin identidad de carrito.
+ *
+ * @param {string}  role        Rol coordinado del bloque.
+ * @param {boolean} hasIdentity Si WordPress observó cuenta o cookie opaca.
+ * @return {boolean} Si corresponde recuperar el carrito.
+ */
+export function shouldLoadCart( role, hasIdentity ) {
+	return hasIdentity && [ 'cart', 'checkout' ].includes( role );
+}

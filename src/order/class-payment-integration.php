@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Order;
 
+use DateTimeImmutable;
+use DateTimeZone;
 use Vicu\Pagos\PaymentRequests;
 use WP_Error;
 
@@ -80,7 +82,7 @@ final class PaymentIntegration {
 				'external_id'   => $order['public_id'],
 				'amount_minor'  => $order['total_minor'],
 				'currency'      => $order['currency'],
-				'expires_at'    => $order['payment_expires_at'],
+				'expires_at'    => self::payment_expiration( $order['payment_expires_at'] ),
 			)
 		);
 
@@ -95,6 +97,18 @@ final class PaymentIntegration {
 		$observed = OrderService::observe_payment( $request, 'checkout' );
 
 		return is_wp_error( $observed ) ? $observed : $request;
+	}
+
+	/**
+	 * Convierte el vencimiento UTC interno al RFC 3339 exigido por pagos.
+	 *
+	 * @param string $value Fecha UTC normalizada por la proyección del pedido.
+	 * @return string Fecha pública o cadena vacía si la persistencia es inválida.
+	 */
+	private static function payment_expiration( string $value ): string {
+		$date = DateTimeImmutable::createFromFormat( '!Y-m-d\TH:i:s', $value, new DateTimeZone( 'UTC' ) );
+
+		return false === $date ? '' : $date->format( DATE_RFC3339 );
 	}
 
 	/**

@@ -179,9 +179,9 @@ final class CartRoutes {
 	 * Limita la creación pública y exige origen o nonce según identidad.
 	 *
 	 * @param WP_REST_Request $request Solicitud.
-	 * @return true|WP_Error
+	 * @return bool|WP_Error
 	 */
-	public static function allow_create( WP_REST_Request $request ): true|WP_Error {
+	public static function allow_create( WP_REST_Request $request ): bool|WP_Error {
 		/**
 		 * Filtra si se permite crear o recuperar una sesión de carrito.
 		 *
@@ -207,9 +207,9 @@ final class CartRoutes {
 	 * Verifica identidad de lectura.
 	 *
 	 * @param WP_REST_Request $request Solicitud.
-	 * @return true|WP_Error
+	 * @return bool|WP_Error
 	 */
-	public static function allow_read( WP_REST_Request $request ): true|WP_Error {
+	public static function allow_read( WP_REST_Request $request ): bool|WP_Error {
 		$identity = CartAuthentication::resolve( $request, false );
 
 		return is_wp_error( $identity ) ? $identity : true;
@@ -219,9 +219,9 @@ final class CartRoutes {
 	 * Verifica nonce o sesión, CSRF y origen.
 	 *
 	 * @param WP_REST_Request $request Solicitud.
-	 * @return true|WP_Error
+	 * @return bool|WP_Error
 	 */
-	public static function allow_write( WP_REST_Request $request ): true|WP_Error {
+	public static function allow_write( WP_REST_Request $request ): bool|WP_Error {
 		$identity = CartAuthentication::resolve( $request, true );
 
 		return is_wp_error( $identity ) ? $identity : true;

@@ -45,7 +45,9 @@ final class PaymentRequests {
 			}
 		}
 
-		if ( 'vicu_order' !== $type || '' === $id || 1 > (int) ( $attributes['amount_minor'] ?? 0 ) ) {
+		$expires_at = (string) ( $attributes['expires_at'] ?? '' );
+
+		if ( 'vicu_order' !== $type || '' === $id || 1 > (int) ( $attributes['amount_minor'] ?? 0 ) || 1 !== preg_match( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})$/', $expires_at ) ) {
 			return new WP_Error( 'vicu_pagos_invalid_request', 'Inválido.', array( 'status' => 400 ) );
 		}
 
@@ -61,7 +63,7 @@ final class PaymentRequests {
 			'provider'           => null,
 			'state'              => PaymentRequestState::PENDING,
 			'revision'           => 1,
-			'expires_at'         => (string) ( $attributes['expires_at'] ?? '' ),
+			'expires_at'         => $expires_at,
 			'created_at'         => $now,
 			'updated_at'         => $now,
 		);

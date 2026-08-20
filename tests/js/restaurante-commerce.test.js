@@ -3,6 +3,7 @@ import {
 	formatMoney,
 	idempotencyKey,
 	responseMessage,
+	shouldLoadCart,
 } from '../../src/blocks/restaurante-commerce-assets/model';
 
 describe( 'modelo cliente de comercio', () => {
@@ -62,5 +63,12 @@ describe( 'modelo cliente de comercio', () => {
 			'Conflicto.'
 		);
 		expect( responseMessage( {}, 'Error seguro' ) ).toBe( 'Error seguro' );
+	} );
+
+	test( 'solo recupera carrito cuando existe identidad observable', () => {
+		expect( shouldLoadCart( 'cart', true ) ).toBe( true );
+		expect( shouldLoadCart( 'checkout', true ) ).toBe( true );
+		expect( shouldLoadCart( 'cart', false ) ).toBe( false );
+		expect( shouldLoadCart( 'order', true ) ).toBe( false );
 	} );
 } );

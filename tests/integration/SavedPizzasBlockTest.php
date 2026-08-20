@@ -66,11 +66,11 @@ final class SavedPizzasBlockTest extends WP_UnitTestCase {
 		$style  = $block->style_handles[0];
 
 		do_blocks( '<!-- wp:paragraph --><p>Sin cuenta.</p><!-- /wp:paragraph -->' );
-		$this->assertNotContains( $module, wp_script_modules()->get_queue() );
+		$this->assertNotContains( $module, vicu_restaurante_test_script_module_queue() );
 		$this->assertFalse( wp_style_is( $style, 'enqueued' ) );
 
 		do_blocks( '<!-- wp:vicunav/restaurante-saved-pizzas /-->' );
-		$this->assertContains( $module, wp_script_modules()->get_queue() );
+		$this->assertContains( $module, vicu_restaurante_test_script_module_queue() );
 		$this->assertTrue( wp_style_is( $style, 'enqueued' ) );
 	}
 }

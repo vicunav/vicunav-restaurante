@@ -8,8 +8,19 @@ permissions:
 
 jobs:
   estandares-php:
-    name: Composer, PHP, WPCS y PHPUnit
+    name: PHP ${{ matrix.php }} / WordPress ${{ matrix.wordpress }}
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: "8.1"
+            wordpress: "6.6"
+            composer_mode: minimum
+          - php: "8.4"
+            wordpress: "6.9"
+            composer_mode: locked
 
     services:
       mysql:
@@ -41,18 +52,41 @@ jobs:
       - name: Configurar PHP y Composer
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.4"
+          php-version: ${{ matrix.php }}
           tools: composer:v2
           coverage: none
+
+      - name: Instalar dependencias fijadas
+        if: matrix.composer_mode == 'locked'
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Resolver WordPress mínimo compatible
+        if: matrix.composer_mode == 'minimum'
+        run: >-
+          composer update
+          --with-all-dependencies
+          --prefer-lowest
+          --no-interaction
+          --no-progress
+
+      - name: Validar PHP
+        run: composer check
+
+  bloques:
+    name: Node.js, bloques y build versionado
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v7
+        with:
+          submodules: recursive
 
       - name: Configurar Node.js
         uses: actions/setup-node@v6
         with:
           node-version: "22"
           cache: npm
-
-      - name: Instalar dependencias
-        run: composer install --no-interaction --no-progress --prefer-dist
 
       - name: Instalar dependencias de bloques
         run: npm ci
@@ -63,5 +97,17 @@ jobs:
       - name: Comprobar build versionado
         run: git diff --exit-code -- build
 
-      - name: Validar PHP
-        run: composer check
+  gate-requerido:
+    name: Composer, PHP, WPCS y PHPUnit
+    if: always()
+    needs:
+      - estandares-php
+      - bloques
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Verificar matriz completa
+        env:
+          PHP_RESULT: ${{ needs.estandares-php.result }}
+          BLOCKS_RESULT: ${{ needs.bloques.result }}
+        run: test "$PHP_RESULT" = "success" && test "$BLOCKS_RESULT" = "success"

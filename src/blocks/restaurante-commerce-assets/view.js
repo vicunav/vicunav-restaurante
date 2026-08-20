@@ -10,6 +10,7 @@ import {
 	formatMoney,
 	idempotencyKey,
 	responseMessage,
+	shouldLoadCart,
 } from './model';
 
 let currentCart = null;
@@ -507,8 +508,10 @@ const initialize = async ( element, role ) => {
 	if ( role === 'cart' ) {
 		await loadZones( element );
 	}
-	if ( role === 'cart' || role === 'checkout' ) {
+	if ( shouldLoadCart( role, element.dataset.hasCartIdentity === '1' ) ) {
 		await loadCart( element );
+	} else if ( role === 'cart' || role === 'checkout' ) {
+		renderCommerce();
 	}
 	if ( role === 'order' ) {
 		const publicId = readSession( 'vicu_restaurante_last_order' );

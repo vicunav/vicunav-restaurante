@@ -21,9 +21,9 @@ final class MenuIngredientService {
 	 *
 	 * @param int                              $menu_item_id ID interno del CPT propietario.
 	 * @param array<int, array<string, mixed>> $relations Relaciones candidatas.
-	 * @return true|WP_Error
+	 * @return bool|WP_Error
 	 */
-	public static function replace( int $menu_item_id, array $relations ): true|WP_Error {
+	public static function replace( int $menu_item_id, array $relations ): bool|WP_Error {
 		global $wpdb;
 
 		if ( MenuItemPostType::POST_TYPE !== get_post_type( $menu_item_id ) ) {
