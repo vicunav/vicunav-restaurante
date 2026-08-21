@@ -39,6 +39,12 @@
 		cursor: pointer;
 	}
 
+	input,
+	select,
+	textarea {
+		width: 100%;
+	}
+
 	button:disabled {
 		cursor: not-allowed;
 	}
