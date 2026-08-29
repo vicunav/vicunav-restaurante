@@ -9,7 +9,9 @@ REST-02R prepares plugin version 1.0.0 over public contract 1.0.0. The current
 runtime includes dynamic menu, pizza builder, cart, manual checkout, order status,
 reservations, and authenticated saved-pizza surfaces. Accounts can save the current
 builder configuration, list, rename, delete, share, and revalidate a saved pizza before
-adding it to the cart. Server contracts remain authoritative for ownership, capacity,
+adding it to the cart. REST-02S gives all seven public blocks a neutral visual contract
+that consumes public `vicunav-*` presets with safe fallbacks and no Bonasera identity.
+Server contracts remain authoritative for ownership, capacity,
 prices, totals, checkout, and state. The plugin does not contain demo content or depend
 on WooCommerce. The release gate and its reproducible evidence are documented in
 [`docs/release-candidate-1.0.0.md`](docs/release-candidate-1.0.0.md).

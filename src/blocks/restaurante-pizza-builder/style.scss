@@ -1,9 +1,8 @@
-.wp-block-vicunav-restaurante-pizza-builder {
-	--vicu-pizza-border: 1px solid currentcolor;
-	--vicu-pizza-gap: clamp(1rem, 2vw, 1.5rem);
+@use "../visual-contract" as visual;
 
-	box-sizing: border-box;
-	max-width: 100%;
+.wp-block-vicunav-restaurante-pizza-builder {
+
+	@include visual.root;
 
 	[hidden] {
 		display: none !important;
@@ -20,19 +19,22 @@
 	}
 
 	.vicu-restaurante-pizza-builder__form {
-		gap: var(--vicu-pizza-gap);
+		gap: var(--vicu-rest-space-md);
 	}
 
 	fieldset {
 		min-width: 0;
 		margin: 0;
-		padding: 1rem;
-		border: var(--vicu-pizza-border);
-		border-radius: 0.5rem;
+		padding: var(--vicu-rest-space-sm);
+		border: 1px solid var(--vicu-rest-color-border);
+		border-radius: var(--vicu-rest-radius-card);
+		background: var(--vicu-rest-color-surface-muted);
 	}
 
 	legend {
 		padding-inline: 0.375rem;
+		font-family: var(--wp--preset--font-family--vicunav-heading, inherit);
+		font-size: var(--wp--preset--font-size--vicunav-lg, 1.25rem);
 		font-weight: 700;
 	}
 
@@ -48,14 +50,8 @@
 	.vicu-restaurante-pizza-builder__actions button,
 	.vicu-restaurante-pizza-builder__save input,
 	.vicu-restaurante-pizza-builder__save button {
-		box-sizing: border-box;
-		min-height: 44px;
-		padding: 0.75rem;
-		border: var(--vicu-pizza-border);
-		border-radius: 0.375rem;
-		background: transparent;
-		color: inherit;
-		font: inherit;
+
+		@include visual.control;
 	}
 
 	.vicu-restaurante-pizza-builder__option-grid label {
@@ -69,17 +65,22 @@
 	.vicu-restaurante-pizza-builder__zones button,
 	.vicu-restaurante-pizza-builder__actions button,
 	.vicu-restaurante-pizza-builder__save button {
-		cursor: pointer;
+
+		@include visual.button;
+	}
+
+	.vicu-restaurante-pizza-builder__option-grid button,
+	.vicu-restaurante-pizza-builder__zones button {
+		background: var(--vicu-rest-color-surface);
+		color: var(--vicu-rest-color-text);
 	}
 
 	.vicu-restaurante-pizza-builder__option-grid button.is-selected,
 	.vicu-restaurante-pizza-builder__zones button[aria-pressed="true"] {
-		font-weight: 700;
-		text-decoration: underline;
-		text-underline-offset: 0.25em;
+		background: var(--vicu-rest-color-inverse);
+		color: var(--vicu-rest-color-on-inverse);
 	}
 
-	button:disabled,
 	input:disabled + span {
 		cursor: not-allowed;
 		text-decoration: line-through;
@@ -93,15 +94,16 @@
 
 	.vicu-restaurante-pizza-builder__zones,
 	.vicu-restaurante-pizza-builder__actions {
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
 	}
 
 	.vicu-restaurante-pizza-builder__summary {
 		position: sticky;
-		bottom: 0;
-		padding: 1rem;
-		border: 2px solid currentcolor;
-		background: inherit;
+		bottom: var(--vicu-rest-space-sm);
+		padding: var(--vicu-rest-space-sm);
+		border: 2px solid var(--vicu-rest-color-inverse);
+		border-radius: var(--vicu-rest-radius-card);
+		background: var(--vicu-rest-color-surface);
 	}
 
 	.vicu-restaurante-pizza-builder__summary p {
@@ -110,29 +112,53 @@
 
 	.vicu-restaurante-pizza-builder__error,
 	.vicu-restaurante-pizza-builder__success {
-		padding: 0.75rem;
-		border: 2px solid currentcolor;
+
+		@include visual.notice;
+	}
+
+	.vicu-restaurante-pizza-builder__error {
+		border-color: var(--vicu-rest-color-danger);
+	}
+
+	.vicu-restaurante-pizza-builder__success {
+		border-color: var(--vicu-rest-color-positive);
 	}
 
 	button:focus-visible,
 	input:focus-visible {
-		outline: 3px solid currentcolor;
-		outline-offset: 3px;
+
+		@include visual.focus-ring;
+	}
+}
+
+@media (min-width: 64rem) {
+
+	.wp-block-vicunav-restaurante-pizza-builder {
+
+		.vicu-restaurante-pizza-builder__form {
+			grid-template-columns: minmax(0, 2fr) minmax(18rem, 1fr);
+			align-items: start;
+		}
+
+		.vicu-restaurante-pizza-builder__options,
+		.vicu-restaurante-pizza-builder__zones,
+		.vicu-restaurante-pizza-builder__toppings {
+			grid-column: 1;
+		}
+
+		.vicu-restaurante-pizza-builder__summary {
+			grid-column: 2;
+			grid-row: 1 / span 6;
+			top: var(--vicu-rest-space-sm);
+			bottom: auto;
+		}
 	}
 }
 
 @media (max-width: 37.5rem) {
 
-	.wp-block-vicunav-restaurante-pizza-builder {
-
-		.vicu-restaurante-pizza-builder__zones,
-		.vicu-restaurante-pizza-builder__actions {
-			grid-template-columns: 1fr;
-		}
-
-		.vicu-restaurante-pizza-builder__summary {
-			position: static;
-		}
+	.wp-block-vicunav-restaurante-pizza-builder .vicu-restaurante-pizza-builder__summary {
+		position: static;
 	}
 }
 
@@ -141,9 +167,7 @@
 	.wp-block-vicunav-restaurante-pizza-builder *,
 	.wp-block-vicunav-restaurante-pizza-builder *::before,
 	.wp-block-vicunav-restaurante-pizza-builder *::after {
-		scroll-behavior: auto !important;
-		transition-duration: 0.01ms !important;
-		animation-duration: 0.01ms !important;
-		animation-iteration-count: 1 !important;
+
+		@include visual.reduced-motion;
 	}
 }

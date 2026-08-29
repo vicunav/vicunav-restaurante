@@ -1,6 +1,8 @@
+@use "../visual-contract" as visual;
+
 .wp-block-vicunav-restaurante-reservations {
-	box-sizing: border-box;
-	max-width: 100%;
+
+	@include visual.root;
 
 	[hidden] {
 		display: none !important;
@@ -8,57 +10,82 @@
 
 	form,
 	.vicu-restaurante-reservations__fields,
-	.vicu-restaurante-reservations__actions {
+	.vicu-restaurante-reservations__actions,
+	.vicu-restaurante-reservations__confirmation,
+	[data-reservation-detail] {
 		display: grid;
 		gap: 0.75rem;
 	}
 
-	.vicu-restaurante-reservations__fields {
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	form,
+	.vicu-restaurante-reservations__confirmation {
+		max-width: 52rem;
+		padding: var(--vicu-rest-space-sm);
+		border: 1px solid var(--vicu-rest-color-border);
+		border-radius: var(--vicu-rest-radius-card);
+		background: var(--vicu-rest-color-surface-muted);
 	}
 
 	label {
 		display: grid;
 		gap: 0.375rem;
+		font-weight: 600;
 	}
 
 	input,
-	textarea,
-	button {
-		box-sizing: border-box;
-		min-height: 44px;
-		max-width: 100%;
-		padding: 0.625rem 0.75rem;
-		border: 1px solid currentcolor;
-		border-radius: 0.375rem;
-		background: transparent;
-		color: inherit;
-		font: inherit;
+	textarea {
+
+		@include visual.control;
+
+		width: 100%;
 	}
 
 	button {
-		cursor: pointer;
+
+		@include visual.button;
+	}
+
+	fieldset {
+		min-width: 0;
+		margin: 0;
+		padding: var(--vicu-rest-space-sm);
+		border: 1px solid var(--vicu-rest-color-border);
+	}
+
+	legend {
+		padding-inline: 0.375rem;
+		font-weight: 700;
+	}
+
+	[data-reservation-status] {
+		color: var(--vicu-rest-color-muted);
 	}
 
 	[data-reservation-error] {
-		padding: 0.75rem;
-		border: 2px solid currentcolor;
+
+		@include visual.notice;
+
+		border-color: var(--vicu-rest-color-danger);
 	}
-}
 
-.vicu-restaurante-reservations__slots {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
-	gap: 0.5rem;
-}
+	.vicu-restaurante-reservations__slots {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+		gap: var(--vicu-rest-space-xs);
+	}
 
-.vicu-restaurante-reservations__slot {
-	position: relative;
-	min-height: 44px;
-	padding: 0.75rem;
-	border: 1px solid currentcolor;
+	.vicu-restaurante-reservations__slot {
+		position: relative;
+		display: grid;
+		min-height: 44px;
+		gap: 0.25rem;
+		padding: 0.75rem;
+		border: 1px solid var(--vicu-rest-color-border);
+		border-radius: var(--vicu-rest-radius-control);
+		background: var(--vicu-rest-color-surface);
+	}
 
-	input {
+	.vicu-restaurante-reservations__slot input {
 		position: absolute;
 		inset: 0;
 		width: 100%;
@@ -67,37 +94,43 @@
 		cursor: pointer;
 	}
 
-	span,
-	small {
+	.vicu-restaurante-reservations__slot span,
+	.vicu-restaurante-reservations__slot small {
 		pointer-events: none;
 	}
 
-	&:has(input:checked) {
-		outline: 3px solid currentcolor;
-		outline-offset: 2px;
+	.vicu-restaurante-reservations__slot:has(input:checked) {
+		border-color: var(--vicu-rest-color-accent);
+		background: var(--vicu-rest-color-inverse);
+		color: var(--vicu-rest-color-on-inverse);
+	}
+
+	button[data-reservation-action="cancel"] {
+		border-color: var(--vicu-rest-color-danger);
+		background: transparent;
+		color: var(--vicu-rest-color-danger);
+	}
+
+	button:focus-visible,
+	input:focus-visible,
+	textarea:focus-visible,
+	[data-reservation-error]:focus-visible {
+
+		@include visual.focus-ring;
 	}
 }
 
-.wp-block-vicunav-restaurante-reservations button:focus-visible,
-.wp-block-vicunav-restaurante-reservations input:focus-visible,
-.wp-block-vicunav-restaurante-reservations textarea:focus-visible,
-.wp-block-vicunav-restaurante-reservations [data-reservation-error]:focus-visible {
-	outline: 3px solid currentcolor;
-	outline-offset: 3px;
-}
+@media (min-width: 48rem) {
 
-@media (max-width: 37.5rem) {
-
-	.wp-block-vicunav-restaurante-reservations .vicu-restaurante-reservations__fields {
-		grid-template-columns: 1fr;
+	.wp-block-vicunav-restaurante-reservations .vicu-restaurante-reservations__actions {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
 
 @media (prefers-reduced-motion: reduce) {
 
 	.wp-block-vicunav-restaurante-reservations * {
-		scroll-behavior: auto !important;
-		transition-duration: 0.01ms !important;
-		animation-duration: 0.01ms !important;
+
+		@include visual.reduced-motion;
 	}
 }

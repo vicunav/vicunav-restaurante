@@ -1,9 +1,10 @@
-.wp-block-vicunav-restaurante-menu {
-	--vicu-menu-border: 1px solid currentcolor;
-	--vicu-menu-gap: clamp(1rem, 2vw, 1.5rem);
+@use "../visual-contract" as visual;
 
-	box-sizing: border-box;
-	max-width: 100%;
+.wp-block-vicunav-restaurante-menu {
+
+	@include visual.root;
+
+	--vicu-menu-gap: clamp(1rem, 2vw, 1.5rem);
 
 	[hidden] {
 		display: none !important;
@@ -11,8 +12,11 @@
 
 	.vicu-restaurante-menu__controls {
 		display: grid;
-		gap: 1rem;
-		margin-block-end: var(--vicu-menu-gap);
+		gap: var(--vicu-rest-space-sm);
+		margin-block-end: var(--vicu-rest-space-md);
+		padding: var(--vicu-rest-space-sm);
+		border-block: 1px solid var(--vicu-rest-color-border);
+		background: var(--vicu-rest-color-surface);
 	}
 
 	.vicu-restaurante-menu__search {
@@ -22,19 +26,16 @@
 	}
 
 	.vicu-restaurante-menu__search input {
-		box-sizing: border-box;
-		min-height: 44px;
-		max-width: 100%;
-		padding: 0.625rem 0.75rem;
-		border: var(--vicu-menu-border);
-		border-radius: 0.25rem;
-		font: inherit;
+
+		@include visual.control;
+
+		width: 100%;
 	}
 
 	.vicu-restaurante-menu__dietary {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.5rem 1rem;
+		gap: var(--vicu-rest-space-xs) var(--vicu-rest-space-sm);
 		margin: 0;
 		padding: 0;
 		border: 0;
@@ -43,14 +44,14 @@
 	.vicu-restaurante-menu__dietary legend {
 		box-sizing: border-box;
 		width: 100%;
-		margin-block-end: 0.25rem;
+		font-weight: 700;
 	}
 
 	.vicu-restaurante-menu__dietary label {
 		display: inline-flex;
 		align-items: center;
 		min-height: 44px;
-		gap: 0.5rem;
+		gap: var(--vicu-rest-space-xs);
 	}
 
 	.vicu-restaurante-menu__dietary input {
@@ -60,48 +61,51 @@
 
 	.vicu-restaurante-menu__categories {
 		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
+		max-width: 100%;
+		gap: var(--vicu-rest-space-xs);
+		overflow-x: auto;
+		scrollbar-width: thin;
 	}
 
 	.vicu-restaurante-menu__categories button {
-		min-height: 44px;
-		padding: 0.625rem 1rem;
-		border: var(--vicu-menu-border);
+
+		@include visual.button;
+
+		flex: 0 0 auto;
 		border-radius: 999px;
 		background: transparent;
-		color: inherit;
-		font: inherit;
-		cursor: pointer;
+		color: var(--vicu-rest-color-text);
+		white-space: nowrap;
 	}
 
 	.vicu-restaurante-menu__categories button[aria-pressed="true"] {
-		font-weight: 700;
-		text-decoration: underline;
-		text-underline-offset: 0.25em;
+		background: var(--vicu-rest-color-inverse);
+		color: var(--vicu-rest-color-on-inverse);
 	}
 
 	.vicu-restaurante-menu__search input:focus-visible,
 	.vicu-restaurante-menu__categories button:focus-visible,
 	.vicu-restaurante-menu__dietary input:focus-visible {
-		outline: 3px solid currentcolor;
-		outline-offset: 3px;
+
+		@include visual.focus-ring;
 	}
 
 	.vicu-restaurante-menu__status,
-	.vicu-restaurante-menu__error,
-	.vicu-restaurante-menu__empty {
-		margin-block: 1rem;
+	.vicu-restaurante-menu__empty,
+	.vicu-restaurante-menu__allergen-note {
+		color: var(--vicu-rest-color-muted);
 	}
 
 	.vicu-restaurante-menu__error {
-		padding: 0.75rem;
-		border: 2px solid currentcolor;
+
+		@include visual.notice;
+
+		border-color: var(--vicu-rest-color-danger);
 	}
 
 	.vicu-restaurante-menu__grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
 		gap: var(--vicu-menu-gap);
 		margin: 0;
 		padding: 0;
@@ -113,12 +117,20 @@
 		min-width: 0;
 		flex-direction: column;
 		overflow: hidden;
-		border: var(--vicu-menu-border);
-		border-radius: 0.5rem;
+		border: 1px solid var(--vicu-rest-color-border);
+		border-radius: var(--vicu-rest-radius-card);
+		background: var(--vicu-rest-color-surface-muted);
+	}
+
+	.vicu-restaurante-menu__item:nth-child(even) {
+		border-color: var(--vicu-rest-color-inverse);
+		background: var(--vicu-rest-color-inverse);
+		color: var(--vicu-rest-color-on-inverse);
 	}
 
 	.vicu-restaurante-menu__item.is-unavailable {
 		border-style: dashed;
+		opacity: 0.7;
 	}
 
 	.vicu-restaurante-menu__image {
@@ -132,7 +144,7 @@
 	.vicu-restaurante-menu__item-content {
 		display: grid;
 		gap: 0.75rem;
-		padding: 1rem;
+		padding: var(--vicu-rest-space-sm);
 	}
 
 	.vicu-restaurante-menu__item-content > * {
@@ -148,40 +160,50 @@
 
 	.vicu-restaurante-menu__item-heading h3 {
 		margin: 0;
-		font-size: inherit;
+		font-family: var(--wp--preset--font-family--vicunav-heading, inherit);
+		font-size: var(--wp--preset--font-size--vicunav-lg, 1.25rem);
+		line-height: 1.15;
 	}
 
 	.vicu-restaurante-menu__availability,
-	.vicu-restaurante-menu__tags {
-		font-size: 0.875em;
-		font-weight: 600;
+	.vicu-restaurante-menu__tags,
+	.vicu-restaurante-menu__allergens,
+	.vicu-restaurante-menu__allergen-note {
+		font-size: var(--wp--preset--font-size--vicunav-sm, 0.875rem);
 	}
 
-	.vicu-restaurante-menu__price {
+	.vicu-restaurante-menu__availability {
+		color: var(--vicu-rest-color-positive);
 		font-weight: 700;
 	}
 
-	.vicu-restaurante-menu__allergens,
-	.vicu-restaurante-menu__allergen-note {
-		font-size: 0.875em;
+	.vicu-restaurante-menu__item:nth-child(even) .vicu-restaurante-menu__availability {
+		color: var(--vicu-rest-color-on-inverse);
+	}
+
+	.vicu-restaurante-menu__price {
+		font-size: var(--wp--preset--font-size--vicunav-lg, 1.25rem);
+		font-weight: 700;
 	}
 
 	.vicu-restaurante-menu__allergen-note {
-		margin-block-start: var(--vicu-menu-gap);
+		margin-block-start: var(--vicu-rest-space-md);
 	}
 }
 
-@media (max-width: 37.5rem) {
+@media (min-width: 48rem) {
 
 	.wp-block-vicunav-restaurante-menu {
 
-		.vicu-restaurante-menu__categories {
-			display: grid;
-			grid-template-columns: repeat(2, minmax(0, 1fr));
+		.vicu-restaurante-menu__controls {
+			grid-template-columns: minmax(16rem, 1fr) auto;
+			align-items: end;
 		}
 
-		.vicu-restaurante-menu__categories button {
-			width: 100%;
+		.vicu-restaurante-menu__categories {
+			grid-column: 1 / -1;
+			flex-wrap: wrap;
+			overflow: visible;
 		}
 	}
 }
@@ -191,9 +213,7 @@
 	.wp-block-vicunav-restaurante-menu *,
 	.wp-block-vicunav-restaurante-menu *::before,
 	.wp-block-vicunav-restaurante-menu *::after {
-		scroll-behavior: auto !important;
-		transition-duration: 0.01ms !important;
-		animation-duration: 0.01ms !important;
-		animation-iteration-count: 1 !important;
+
+		@include visual.reduced-motion;
 	}
 }
