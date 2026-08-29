@@ -1,0 +1,78 @@
+@mixin root {
+	--vicu-rest-color-text: var(--wp--preset--color--vicunav-neutral-900, #0f172a);
+	--vicu-rest-color-muted: var(--wp--preset--color--vicunav-neutral-700, #475569);
+	--vicu-rest-color-border: var(--wp--preset--color--vicunav-neutral-400, #94a3b8);
+	--vicu-rest-color-surface: var(--wp--preset--color--vicunav-neutral-100, #f8fafc);
+	--vicu-rest-color-surface-muted: var(--wp--preset--color--vicunav-neutral-200, #f1f5f9);
+	--vicu-rest-color-inverse: var(--wp--preset--color--vicunav-neutral-900, #0f172a);
+	--vicu-rest-color-on-inverse: var(--wp--preset--color--vicunav-neutral-100, #f8fafc);
+	--vicu-rest-color-accent: var(--wp--preset--color--vicunav-primary, #1d4ed8);
+	--vicu-rest-color-positive: var(--wp--preset--color--vicunav-success, #166534);
+	--vicu-rest-color-warning: var(--wp--preset--color--vicunav-warning, #9a3412);
+	--vicu-rest-color-danger: var(--wp--preset--color--vicunav-danger, #991b1b);
+	--vicu-rest-space-xs: var(--wp--preset--spacing--vicunav-space-xs, 0.5rem);
+	--vicu-rest-space-sm: var(--wp--preset--spacing--vicunav-space-sm, 1rem);
+	--vicu-rest-space-md: var(--wp--preset--spacing--vicunav-space-md, 1.5rem);
+	--vicu-rest-space-lg: var(--wp--preset--spacing--vicunav-space-lg, 2rem);
+	--vicu-rest-radius-control: 0.375rem;
+	--vicu-rest-radius-card: 0.5rem;
+
+	box-sizing: border-box;
+	max-width: 100%;
+	color: var(--vicu-rest-color-text);
+	font-family: var(--wp--preset--font-family--vicunav-body, inherit);
+	line-height: 1.55;
+}
+
+@mixin control {
+	box-sizing: border-box;
+	min-height: 44px;
+	max-width: 100%;
+	padding: 0.625rem 0.75rem;
+	border: 1px solid var(--vicu-rest-color-border);
+	border-radius: var(--vicu-rest-radius-control);
+	background: var(--vicu-rest-color-surface);
+	color: var(--vicu-rest-color-text);
+	font: inherit;
+}
+
+@mixin button {
+
+	@include control;
+
+	border-color: var(--vicu-rest-color-accent);
+	background: var(--vicu-rest-color-accent);
+	color: var(--vicu-rest-color-on-inverse);
+	font-weight: 700;
+	cursor: pointer;
+	transition: filter 0.2s ease, transform 0.2s ease;
+
+	&:disabled {
+		cursor: not-allowed;
+		opacity: 0.55;
+	}
+
+	&:hover:not(:disabled) {
+		filter: brightness(0.88);
+		transform: translateY(-1px);
+	}
+}
+
+@mixin focus-ring {
+	outline: 3px solid var(--vicu-rest-color-accent);
+	outline-offset: 3px;
+}
+
+@mixin notice {
+	margin-block: var(--vicu-rest-space-sm);
+	padding: 0.75rem 1rem;
+	border-inline-start: 0.25rem solid var(--vicu-rest-color-accent);
+	background: var(--vicu-rest-color-surface-muted);
+}
+
+@mixin reduced-motion {
+	scroll-behavior: auto !important;
+	transition-duration: 0.01ms !important;
+	animation-duration: 0.01ms !important;
+	animation-iteration-count: 1 !important;
+}

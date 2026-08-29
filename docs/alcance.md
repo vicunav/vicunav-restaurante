@@ -387,10 +387,26 @@ No añade contenido Bonasera, patterns, templates ni integración con LocalWP.
 REST-02R es el siguiente issue y será propietario del gate integral y la release
 candidata 1.0.0.
 
+## Alcance de REST-02S
+
+Esta fase añade únicamente:
+
+- contrato visual neutral para los siete bloques públicos existentes;
+- presets públicos `vicunav-*` con fallbacks neutrales y sin tokens Bonasera;
+- composición intrínseca de controles, tarjetas, totales, avisos y estados;
+- responsive probado en 1280, 1024, 768, 390 y 360 px;
+- targets mínimos de 44 px, foco visible, overflow controlado y reduced motion;
+- estilos scoped y compartidos sin cambiar APIs, markup persistido ni lógica;
+- prueba determinista del contrato y validación de editor y frontend.
+
+No añade entidades, endpoints, persistencia, reglas de negocio, contenido, identidad,
+patterns, templates, WooCommerce ni selección persistida de Global Styles.
+
 ## Fuera de alcance actual
 
-El plugin todavía no declara la release 1.0.0: falta el gate integral de REST-02R.
-Tampoco contiene contenido Bonasera ni integración con LocalWP.
+La release estable 1.0.0 no está publicada; REST-02R dejó disponible la candidata
+`v1.0.0-rc.1`. El plugin tampoco contiene contenido Bonasera ni composición propia de
+LocalWP.
 
 Esas capacidades se implementan únicamente mediante los issues atómicos posteriores
 del plan de restaurante.

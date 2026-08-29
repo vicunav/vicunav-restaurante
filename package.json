@@ -13,9 +13,10 @@
     "start": "wp-scripts start --experimental-modules",
     "audit:prod": "npm audit --omit=dev",
     "lint:js": "wp-scripts lint-js src/blocks tests/js",
-    "lint:css": "wp-scripts lint-style 'src/blocks/**/*.scss'",
-    "test:js": "wp-scripts test-unit-js",
-    "check": "npm run audit:prod && npm run lint:js && npm run lint:css && npm run test:js && npm run build"
+		"lint:css": "wp-scripts lint-style 'src/blocks/**/*.scss'",
+		"test:js": "wp-scripts test-unit-js",
+		"test:visual": "node tests/validate-visual-contract.mjs",
+		"check": "npm run audit:prod && npm run lint:js && npm run lint:css && npm run test:js && npm run test:visual && npm run build"
   },
   "devDependencies": {
     "@wordpress/block-editor": "16.2.0",

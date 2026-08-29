@@ -4,7 +4,8 @@ Estado: contrato 1.0.0 aprobado; REST-02R verifica carga, compatibilidad,
 instalación, menú, catálogo, pricing de pizzas, zonas, descuentos, totales, carrito,
 checkout, pedidos, integración pública con pagos, reservas, pizzas guardadas y el
 bloque público de menú, constructor de pizzas, carrito, checkout manual, estado de
-pedido, reservas y pizzas guardadas de cuenta. La candidata 1.0.0 se considera lista
+pedido, reservas y pizzas guardadas de cuenta. REST-02S aplica el contrato visual
+neutral de esos siete bloques sin cambiar sus APIs. La candidata 1.0.0 se considera lista
 solo con todos los gates de `docs/release-candidate-1.0.0.md` aprobados.
 
 ## Responsabilidad y límites
@@ -39,6 +40,7 @@ internas de otro paquete.
 | Bloque de reservas | REST-02P | Implementado |
 | Bloque de pizzas guardadas | REST-02Q | Implementado |
 | E2E, privacidad, rendimiento y release candidata | REST-02R | Implementado |
+| Contrato visual neutral de los siete bloques | REST-02S | Implementado |
 
 Una superficie planificada no es una API disponible. Cada issue actualiza esta matriz,
 implementa el contrato correspondiente y añade pruebas antes de cambiar su estado.
@@ -711,6 +713,24 @@ informativa restante usa este nombre estable y permanece planificada hasta su is
 propietario:
 
 - `vicunav/restaurante-delivery-zones`;
+
+### Contrato visual neutral implementado
+
+Los siete bloques públicos consumen los presets estables `vicunav-*` del theme para
+colores semánticos, neutros, espaciado y familias tipográficas. Cada uso conserva un
+fallback neutral, por lo que el plugin sigue siendo legible y operable con otro theme.
+No consume tokens `bonasera-*`, copy de la demo ni rutas editoriales.
+
+La composición intrínseca diferencia controles, tarjetas, totales, avisos y estados
+sin decidir datos o transiciones de negocio. Menú y colecciones usan grids fluidos;
+el constructor separa opciones y resumen en pantallas amplias; los formularios y
+acciones vuelven a una columna cuando el ancho lo exige. Ningún layout aumenta la
+autoridad del cliente ni modifica la salida REST.
+
+Todos los controles conservan un target mínimo de 44 px, foco visible, wrapping u
+overflow interno controlado y reducción de movimiento. Los estilos están scoped bajo
+los wrappers públicos y se cargan mediante la metadata existente tanto en frontend
+como en el editor. FSE mantiene alineación, anchor, color y espaciado editables.
 
 ### Menú y filtros implementado
 
