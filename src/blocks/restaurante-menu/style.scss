@@ -11,12 +11,8 @@
 	}
 
 	.vicu-restaurante-menu__controls {
-		display: grid;
-		gap: var(--vicu-rest-space-sm);
-		margin-block-end: var(--vicu-rest-space-md);
-		padding: var(--vicu-rest-space-sm);
-		border-block: 1px solid var(--vicu-rest-color-border);
-		background: var(--vicu-rest-color-surface);
+
+		@include visual.toolbar;
 	}
 
 	.vicu-restaurante-menu__search {
@@ -33,12 +29,8 @@
 	}
 
 	.vicu-restaurante-menu__dietary {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--vicu-rest-space-xs) var(--vicu-rest-space-sm);
-		margin: 0;
-		padding: 0;
-		border: 0;
+
+		@include visual.filter-group;
 	}
 
 	.vicu-restaurante-menu__dietary legend {
@@ -47,16 +39,27 @@
 		font-weight: 700;
 	}
 
-	.vicu-restaurante-menu__dietary label {
-		display: inline-flex;
-		align-items: center;
-		min-height: 44px;
-		gap: var(--vicu-rest-space-xs);
+	// El checkbox nativo se conserva por semántica y teclado; la etiqueta se ve
+	// como el chip real de la fuente (visual.chip), el input queda oculto pero
+	// accesible (no display:none, para no romper el foco por teclado).
+	.vicu-restaurante-menu__dietary input {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		white-space: nowrap;
 	}
 
-	.vicu-restaurante-menu__dietary input {
-		inline-size: 1.25rem;
-		block-size: 1.25rem;
+	.vicu-restaurante-menu__dietary label {
+
+		@include visual.chip;
+	}
+
+	.vicu-restaurante-menu__dietary input:checked + label,
+	.vicu-restaurante-menu__dietary label:has(input:checked) {
+		background: var(--vicu-rest-color-inverse);
+		color: var(--vicu-rest-color-on-inverse);
 	}
 
 	.vicu-restaurante-menu__categories {
@@ -69,23 +72,14 @@
 
 	.vicu-restaurante-menu__categories button {
 
-		@include visual.button;
+		@include visual.chip;
 
 		flex: 0 0 auto;
-		border-radius: 999px;
-		background: transparent;
-		color: var(--vicu-rest-color-text);
-		white-space: nowrap;
-	}
-
-	.vicu-restaurante-menu__categories button[aria-pressed="true"] {
-		background: var(--vicu-rest-color-inverse);
-		color: var(--vicu-rest-color-on-inverse);
 	}
 
 	.vicu-restaurante-menu__search input:focus-visible,
 	.vicu-restaurante-menu__categories button:focus-visible,
-	.vicu-restaurante-menu__dietary input:focus-visible {
+	.vicu-restaurante-menu__dietary input:focus-visible + label {
 
 		@include visual.focus-ring;
 	}
@@ -96,11 +90,14 @@
 		color: var(--vicu-rest-color-muted);
 	}
 
+	.vicu-restaurante-menu__empty {
+
+		@include visual.state-empty;
+	}
+
 	.vicu-restaurante-menu__error {
 
-		@include visual.notice;
-
-		border-color: var(--vicu-rest-color-danger);
+		@include visual.state-notice("danger");
 	}
 
 	.vicu-restaurante-menu__grid {
@@ -113,24 +110,10 @@
 	}
 
 	.vicu-restaurante-menu__item {
-		display: flex;
-		min-width: 0;
-		flex-direction: column;
-		overflow: hidden;
-		border: 1px solid var(--vicu-rest-color-border);
-		border-radius: var(--vicu-rest-radius-card);
-		background: var(--vicu-rest-color-surface-muted);
-	}
 
-	.vicu-restaurante-menu__item:nth-child(even) {
-		border-color: var(--vicu-rest-color-inverse);
-		background: var(--vicu-rest-color-inverse);
-		color: var(--vicu-rest-color-on-inverse);
-	}
+		@include visual.ticket-card;
 
-	.vicu-restaurante-menu__item.is-unavailable {
-		border-style: dashed;
-		opacity: 0.7;
+		position: relative;
 	}
 
 	.vicu-restaurante-menu__image {
@@ -160,8 +143,8 @@
 
 	.vicu-restaurante-menu__item-heading h3 {
 		margin: 0;
-		font-family: var(--wp--preset--font-family--vicunav-heading, inherit);
-		font-size: var(--wp--preset--font-size--vicunav-lg, 1.25rem);
+		font-family: var(--vicu-rest-font-heading);
+		font-size: var(--vicu-rest-text-lg);
 		line-height: 1.15;
 	}
 
@@ -169,7 +152,7 @@
 	.vicu-restaurante-menu__tags,
 	.vicu-restaurante-menu__allergens,
 	.vicu-restaurante-menu__allergen-note {
-		font-size: var(--wp--preset--font-size--vicunav-sm, 0.875rem);
+		font-size: var(--vicu-rest-text-sm);
 	}
 
 	.vicu-restaurante-menu__availability {
@@ -177,13 +160,20 @@
 		font-weight: 700;
 	}
 
-	.vicu-restaurante-menu__item:nth-child(even) .vicu-restaurante-menu__availability {
-		color: var(--vicu-rest-color-on-inverse);
+	// Insignia circular sobre la imagen, confirmada por inspección real de la
+	// fuente (precio en un círculo de ~57px superpuesto a la foto del platillo).
+	.vicu-restaurante-menu__price {
+
+		@include visual.badge-circle;
+
+		position: absolute;
+		inset-block-start: var(--vicu-rest-space-sm);
+		inset-inline-end: var(--vicu-rest-space-sm);
+		font-size: var(--vicu-rest-text-sm);
 	}
 
-	.vicu-restaurante-menu__price {
-		font-size: var(--wp--preset--font-size--vicunav-lg, 1.25rem);
-		font-weight: 700;
+	.vicu-restaurante-menu__item.is-unavailable .vicu-restaurante-menu__price {
+		background: var(--vicu-rest-color-muted);
 	}
 
 	.vicu-restaurante-menu__allergen-note {

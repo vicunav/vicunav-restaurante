@@ -1,3 +1,13 @@
+// Contrato visual neutral compartido por los siete bloques públicos del plugin.
+// Reescrito desde cero (no extiende el contrato anterior): auditado contra los
+// estilos computados reales de legacy/Restaurante Guasábara.dc.html en
+// vicunav-design-to-claude-demo-restaurante, y contra los slugs agnósticos que
+// publica vicunav-theme-core tras #50/#51 (theme.json + settings.custom).
+
+// Solo geometría y comportamiento neutrales: sin copy, sin media, sin clases ni
+// valores de marca — eso vive en el child theme del demo (ver
+// vicunav-theme-core/docs/child-themes.md).
+
 @mixin root {
 	--vicu-rest-color-text: var(--wp--preset--color--vicunav-neutral-900, #0f172a);
 	--vicu-rest-color-muted: var(--wp--preset--color--vicunav-neutral-700, #475569);
@@ -7,54 +17,255 @@
 	--vicu-rest-color-inverse: var(--wp--preset--color--vicunav-neutral-900, #0f172a);
 	--vicu-rest-color-on-inverse: var(--wp--preset--color--vicunav-neutral-100, #f8fafc);
 	--vicu-rest-color-accent: var(--wp--preset--color--vicunav-primary, #1d4ed8);
-	--vicu-rest-color-positive: var(--wp--preset--color--vicunav-success, #166534);
+	--vicu-rest-color-accent-soft: var(--wp--preset--color--vicunav-secondary, #2563eb);
+	--vicu-rest-color-positive: var(--wp--preset--color--vicunav-positive, #166534);
 	--vicu-rest-color-warning: var(--wp--preset--color--vicunav-warning, #9a3412);
 	--vicu-rest-color-danger: var(--wp--preset--color--vicunav-danger, #991b1b);
+	--vicu-rest-color-info: var(--wp--preset--color--vicunav-info, #0369a1);
+
+	--vicu-rest-space-2xs: var(--wp--preset--spacing--vicunav-space-xxs, 0.25rem);
 	--vicu-rest-space-xs: var(--wp--preset--spacing--vicunav-space-xs, 0.5rem);
 	--vicu-rest-space-sm: var(--wp--preset--spacing--vicunav-space-sm, 1rem);
 	--vicu-rest-space-md: var(--wp--preset--spacing--vicunav-space-md, 1.5rem);
 	--vicu-rest-space-lg: var(--wp--preset--spacing--vicunav-space-lg, 2rem);
-	--vicu-rest-radius-control: 0.375rem;
-	--vicu-rest-radius-card: 0.5rem;
+	--vicu-rest-space-xl: var(--wp--preset--spacing--vicunav-space-xl, 3rem);
+
+	--vicu-rest-radius-sharp: var(--wp--custom--vicunav--radius--none, 0px);
+	--vicu-rest-radius-control: var(--wp--custom--vicunav--radius--sm, 4px);
+	--vicu-rest-radius-card: var(--wp--custom--vicunav--radius--md, 8px);
+	--vicu-rest-radius-pill: var(--wp--custom--vicunav--radius--pill, 999px);
+	--vicu-rest-radius-round: 50%;
+
+	--vicu-rest-shadow-card: var(--wp--preset--shadow--vicunav-shadow-card, 0 2px 6px rgba(15, 23, 42, 0.14));
+	--vicu-rest-shadow-card-hover: var(--wp--preset--shadow--vicunav-shadow-card-hover, 0 8px 20px rgba(15, 23, 42, 0.18));
+	--vicu-rest-shadow-panel: var(--wp--preset--shadow--vicunav-shadow-panel, 0 12px 28px rgba(15, 23, 42, 0.22));
+
+	--vicu-rest-motion-fast: var(--wp--custom--vicunav--motion--duration--fast, 120ms);
+	--vicu-rest-motion-base: var(--wp--custom--vicunav--motion--duration--base, 200ms);
+
+	--vicu-rest-font-heading: var(--wp--preset--font-family--vicunav-heading, inherit);
+	--vicu-rest-font-body: var(--wp--preset--font-family--vicunav-body, inherit);
+	--vicu-rest-text-xs: var(--wp--preset--font-size--vicunav-xxs, 0.8125rem);
+	--vicu-rest-text-sm: var(--wp--preset--font-size--vicunav-sm, 0.875rem);
+	--vicu-rest-text-md: var(--wp--preset--font-size--vicunav-md, 1rem);
+	--vicu-rest-text-lg: var(--wp--preset--font-size--vicunav-lg, 1.5rem);
 
 	box-sizing: border-box;
 	max-width: 100%;
 	color: var(--vicu-rest-color-text);
-	font-family: var(--wp--preset--font-family--vicunav-body, inherit);
+	font-family: var(--vicu-rest-font-body);
+	font-size: var(--vicu-rest-text-md);
 	line-height: 1.55;
+
+	*,
+	*::before,
+	*::after {
+		box-sizing: inherit;
+	}
 }
 
+// Control de formulario genérico (input, select, textarea).
 @mixin control {
-	box-sizing: border-box;
 	min-height: 44px;
 	max-width: 100%;
-	padding: 0.625rem 0.75rem;
+	padding: 0.6875rem 0.875rem;
 	border: 1px solid var(--vicu-rest-color-border);
-	border-radius: var(--vicu-rest-radius-control);
+	border-radius: var(--vicu-rest-radius-sharp);
 	background: var(--vicu-rest-color-surface);
 	color: var(--vicu-rest-color-text);
 	font: inherit;
+	font-size: var(--vicu-rest-text-sm);
 }
 
+// Botón de acción primaria. Radio píldora confirmado por inspección real de la
+// fuente (Ordenar/Ver menú del hero, botones del menú y del builder).
 @mixin button {
-
-	@include control;
-
-	border-color: var(--vicu-rest-color-accent);
-	background: var(--vicu-rest-color-accent);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--vicu-rest-space-xs);
+	min-height: 44px;
+	padding: 0.625rem 1.25rem;
+	border: 0;
+	border-radius: var(--vicu-rest-radius-pill);
+	background: var(--vicu-rest-color-inverse);
 	color: var(--vicu-rest-color-on-inverse);
+	font: inherit;
+	font-size: var(--vicu-rest-text-sm);
 	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	white-space: nowrap;
 	cursor: pointer;
-	transition: filter 0.2s ease, transform 0.2s ease;
+	transition: opacity var(--vicu-rest-motion-base) ease, transform var(--vicu-rest-motion-fast) ease;
 
 	&:disabled {
 		cursor: not-allowed;
-		opacity: 0.55;
+		opacity: 0.5;
 	}
 
 	&:hover:not(:disabled) {
-		filter: brightness(0.88);
-		transform: translateY(-1px);
+		opacity: 0.72;
+	}
+
+	&:active:not(:disabled) {
+		transform: translateY(1px);
+	}
+}
+
+// Variante de botón de contorno (secundaria), confirmada en el hero.
+
+@mixin button-outline {
+
+	@include button;
+
+	background: transparent;
+	color: var(--vicu-rest-color-text);
+	border: 1px solid var(--vicu-rest-color-text);
+}
+
+// Chip seleccionable (filtro, categoría). Radio píldora, dos estados,
+// medidos sobre los chips reales de categoría y dieta del menú.
+
+@mixin chip {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 37px;
+	padding: 0.5rem 1rem;
+	border: 0;
+	border-radius: var(--vicu-rest-radius-pill);
+	background: var(--vicu-rest-color-surface-muted);
+	color: var(--vicu-rest-color-muted);
+	font: inherit;
+	font-size: var(--vicu-rest-text-xs);
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: background var(--vicu-rest-motion-base) ease, color var(--vicu-rest-motion-base) ease;
+
+	&[aria-pressed="true"],
+	&.is-active {
+		background: var(--vicu-rest-color-inverse);
+		color: var(--vicu-rest-color-on-inverse);
+	}
+}
+
+// Barra de herramientas (búsqueda + filtros) que corona una superficie de
+// catálogo (menú, pizzas, mis pizzas).
+
+@mixin toolbar {
+	display: grid;
+	gap: var(--vicu-rest-space-sm);
+	margin-block-end: var(--vicu-rest-space-md);
+	padding: var(--vicu-rest-space-sm);
+	background: var(--vicu-rest-color-surface);
+}
+
+@mixin filter-group {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--vicu-rest-space-xs);
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+// Tarjeta "ticket": esquinas rectas, no redondeadas (confirmado por
+// inspección real, distingue este contrato del de los chips), con sombra
+// suave. Usada por menú, catálogo de pizzas y pizzas guardadas.
+
+@mixin ticket-card {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	overflow: hidden;
+	border-radius: var(--vicu-rest-radius-sharp);
+	background: var(--vicu-rest-color-surface-muted);
+	box-shadow: var(--vicu-rest-shadow-card);
+	transition: box-shadow var(--vicu-rest-motion-base) ease;
+
+	&:hover {
+		box-shadow: var(--vicu-rest-shadow-card-hover);
+	}
+
+	&.is-unavailable {
+		opacity: 0.6;
+	}
+}
+
+// Insignia circular sobre la media de una ticket-card (precio, destacado).
+
+@mixin badge-circle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 3.5625rem;
+	min-height: 3.5625rem;
+	padding: var(--vicu-rest-space-2xs);
+	border-radius: var(--vicu-rest-radius-round);
+	background: var(--vicu-rest-color-inverse);
+	color: var(--vicu-rest-color-on-inverse);
+	font-weight: 700;
+	text-align: center;
+}
+
+// Insignia rectangular pequeña superpuesta a la media (ej. "más pedido").
+@mixin badge-pill-overlay {
+	padding: 0.1875rem 0.5625rem;
+	border-radius: var(--vicu-rest-radius-pill);
+	background: color-mix(in srgb, var(--vicu-rest-color-accent-soft) 90%, transparent);
+	color: var(--vicu-rest-color-on-inverse);
+	font-size: 0.59375rem;
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+// Tarjeta de opción seleccionable (toppings del builder, horarios de reserva,
+// método de entrega). Distinta de la ticket-card: es un control, no contenido.
+@mixin option-card {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--vicu-rest-space-sm);
+	min-height: 44px;
+	padding: var(--vicu-rest-space-sm);
+	border: 1px solid var(--vicu-rest-color-border);
+	border-radius: var(--vicu-rest-radius-card);
+	background: var(--vicu-rest-color-surface);
+	cursor: pointer;
+	transition: border-color var(--vicu-rest-motion-base) ease, background var(--vicu-rest-motion-base) ease;
+
+	&[aria-checked="true"],
+	&.is-selected {
+		border-color: var(--vicu-rest-color-accent);
+		background: var(--vicu-rest-color-surface-muted);
+	}
+
+	&[aria-disabled="true"],
+	&.is-disabled {
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+}
+
+// Fila de resumen (carrito, checkout, cotización de pizza): etiqueta a la
+// izquierda, valor a la derecha.
+@mixin summary-row {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: var(--vicu-rest-space-sm);
+	padding-block: var(--vicu-rest-space-xs);
+
+	&.is-total {
+		padding-block-start: var(--vicu-rest-space-sm);
+		border-block-start: 1px solid var(--vicu-rest-color-border);
+		font-weight: 700;
+		font-size: var(--vicu-rest-text-lg);
 	}
 }
 
@@ -63,11 +274,59 @@
 	outline-offset: 3px;
 }
 
-@mixin notice {
+// Estados funcionales compartidos. Los cuatro colores semánticos son genéricos
+// (ver docs/contrato-visual.md); este mixin solo aporta geometría y jerarquía.
+@mixin state-notice($tone: "info") {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--vicu-rest-space-xs);
 	margin-block: var(--vicu-rest-space-sm);
 	padding: 0.75rem 1rem;
-	border-inline-start: 0.25rem solid var(--vicu-rest-color-accent);
+	border-inline-start: 0.25rem solid var(--vicu-rest-color-info);
+	border-radius: var(--vicu-rest-radius-control);
 	background: var(--vicu-rest-color-surface-muted);
+	color: var(--vicu-rest-color-text);
+
+	@if $tone == "positive" {
+		border-inline-start-color: var(--vicu-rest-color-positive);
+	} @else if $tone == "warning" {
+		border-inline-start-color: var(--vicu-rest-color-warning);
+	} @else if $tone == "danger" {
+		border-inline-start-color: var(--vicu-rest-color-danger);
+	}
+}
+
+@mixin state-empty {
+	padding: var(--vicu-rest-space-lg) var(--vicu-rest-space-sm);
+	color: var(--vicu-rest-color-muted);
+	text-align: center;
+}
+
+@mixin state-loading {
+	position: relative;
+	color: var(--vicu-rest-color-muted);
+	pointer-events: none;
+
+	&::after {
+		content: "";
+		display: inline-block;
+		inline-size: 1em;
+		block-size: 1em;
+		margin-inline-start: 0.5em;
+		border: 2px solid currentcolor;
+		border-inline-end-color: transparent;
+		border-radius: var(--vicu-rest-radius-round);
+		animation: vicu-rest-spin var(--vicu-rest-motion-base) linear infinite;
+		animation-duration: 900ms;
+		vertical-align: -0.15em;
+	}
+}
+
+@keyframes vicu-rest-spin {
+
+	to {
+		transform: rotate(360deg);
+	}
 }
 
 @mixin reduced-motion {
