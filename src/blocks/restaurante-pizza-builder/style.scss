@@ -44,21 +44,27 @@
 		gap: 0.75rem;
 	}
 
-	.vicu-restaurante-pizza-builder__option-grid label,
-	.vicu-restaurante-pizza-builder__option-grid button,
-	.vicu-restaurante-pizza-builder__zones button,
-	.vicu-restaurante-pizza-builder__actions button,
 	.vicu-restaurante-pizza-builder__save input,
 	.vicu-restaurante-pizza-builder__save button {
 
 		@include visual.control;
 	}
 
+	// Toppings/tamaño/masa: tarjeta de opción seleccionable (radio/checkbox real
+	// oculto por accesibilidad; la etiqueta es la tarjeta visual).
 	.vicu-restaurante-pizza-builder__option-grid label {
-		display: flex;
-		align-items: center;
-		gap: 0.625rem;
-		cursor: pointer;
+
+		@include visual.option-card;
+	}
+
+	.vicu-restaurante-pizza-builder__option-grid label:has(input:checked) {
+		border-color: var(--vicu-rest-color-accent);
+		background: var(--vicu-rest-color-surface-muted);
+	}
+
+	.vicu-restaurante-pizza-builder__option-grid label:has(input:disabled) {
+		cursor: not-allowed;
+		opacity: 0.5;
 	}
 
 	.vicu-restaurante-pizza-builder__option-grid button,
