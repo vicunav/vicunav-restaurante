@@ -81,13 +81,13 @@
 	}
 
 	.vicu-restaurante-cart__item {
+
+		@include visual.ticket-card;
+
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
 		gap: var(--vicu-rest-space-sm);
 		padding: var(--vicu-rest-space-sm);
-		border: 1px solid var(--vicu-rest-color-border);
-		border-radius: var(--vicu-rest-radius-card);
-		background: var(--vicu-rest-color-surface-muted);
 	}
 
 	.vicu-restaurante-cart__item p {
