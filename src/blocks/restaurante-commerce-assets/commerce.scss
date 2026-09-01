@@ -66,9 +66,7 @@
 
 	[data-commerce-error] {
 
-		@include visual.notice;
-
-		border-color: var(--vicu-rest-color-danger);
+		@include visual.state-notice("danger");
 	}
 }
 

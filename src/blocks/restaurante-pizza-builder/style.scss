@@ -110,18 +110,14 @@
 		margin: 0;
 	}
 
-	.vicu-restaurante-pizza-builder__error,
-	.vicu-restaurante-pizza-builder__success {
-
-		@include visual.notice;
-	}
-
 	.vicu-restaurante-pizza-builder__error {
-		border-color: var(--vicu-rest-color-danger);
+
+		@include visual.state-notice("danger");
 	}
 
 	.vicu-restaurante-pizza-builder__success {
-		border-color: var(--vicu-rest-color-positive);
+
+		@include visual.state-notice("positive");
 	}
 
 	button:focus-visible,
