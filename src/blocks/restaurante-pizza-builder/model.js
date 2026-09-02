@@ -186,40 +186,78 @@ export function pizzaSizeScale( sizeName = '' ) {
 }
 
 /**
- * Aproximación visual del color de la salsa a partir de su nombre. El
- * catálogo real no guarda un color por opción (es editable desde el admin);
- * esto es una aproximación razonable, no un valor de diseño exacto.
+ * Grosor visible de masa (en % de inset para la capa de salsa) y color por
+ * tipo de masa, tomados del propio diseño de origen
+ * (`PIZZA_MASA_VISUAL` en el .dc.html: napolitana 8%, fina 4.5%, sin
+ * gluten 9.5%). El catálogo real de este demo usa los mismos nombres que
+ * el diseño ("Napolitana", "Fina y crujiente", "Sin gluten"), así que el
+ * match por palabra clave reproduce el diseño exacto, no solo una
+ * aproximación; para un catálogo con nombres distintos cae a la masa
+ * napolitana por defecto.
  *
- * @param {string} sauceName Nombre de la salsa seleccionada.
- * @return {string} Declaraciones CSS para la capa de salsa.
+ * @param {string} crustName Nombre de la masa seleccionada.
+ * @return {{color: string, crustPct: number}} Color y grosor de masa.
  */
-export function pizzaSauceStyle( sauceName = '' ) {
-	const name = sauceName.toLowerCase();
-	if ( name.includes( 'sin salsa' ) ) {
-		return 'display:none;';
+export function pizzaCrustVisual( crustName = '' ) {
+	const name = crustName.toLowerCase();
+	if ( name.includes( 'sin gluten' ) ) {
+		return { color: '#c9a568', crustPct: 9.5 };
 	}
-	if ( name.includes( 'pesto' ) ) {
-		return 'background:#6b7f4a;';
+	if ( name.includes( 'fina' ) || name.includes( 'crujiente' ) ) {
+		return { color: '#d9a24a', crustPct: 4.5 };
 	}
-	if ( name.includes( 'blanca' ) || name.includes( 'ajo' ) ) {
-		return 'background:#f3ead8;';
-	}
-	return 'background:#a8432b;';
+	return { color: '#e3b873', crustPct: 8 };
 }
 
 /**
- * Aproximación visual del color/visibilidad del queso a partir de su
- * nombre, con el mismo criterio y límite que {@link pizzaSauceStyle}.
+ * Color de la capa de salsa por nombre, tomado del diseño de origen
+ * (`PIZZA_SALSA_VISUAL`). "Sin salsa" no oculta la capa: el diseño la
+ * pinta con el tono de masa desnuda (`sinsalsa: '#e6c98f'`), para que la
+ * pizza siga mostrando el aro de masa y no un círculo plano sin ninguna
+ * distinción. Mismo criterio de match por nombre que
+ * {@link pizzaCrustVisual}.
+ *
+ * @param {string} sauceName Nombre de la salsa seleccionada.
+ * @return {string} Color CSS de la capa de salsa.
+ */
+export function pizzaSauceColor( sauceName = '' ) {
+	const name = sauceName.toLowerCase();
+	if ( name.includes( 'sin salsa' ) ) {
+		return '#e6c98f';
+	}
+	if ( name.includes( 'pesto' ) ) {
+		return '#5b7a45';
+	}
+	if ( name.includes( 'blanca' ) || name.includes( 'ajo' ) ) {
+		return '#efe6d3';
+	}
+	return '#a8432b';
+}
+
+/**
+ * Color/opacidad de la capa de queso por nombre, tomado del diseño de
+ * origen (`PIZZA_CHEESE_VISUAL`). "Sin queso" sí se oculta (opacidad 0,
+ * igual que el diseño: `sinqueso: 'transparent'`), dejando ver la salsa
+ * debajo en vez de un color propio.
  *
  * @param {string} cheeseName Nombre del queso seleccionado.
- * @return {string} Declaraciones CSS para la capa de queso.
+ * @return {{color: string, visible: boolean}} Color y visibilidad de la capa de queso.
  */
-export function pizzaCheeseStyle( cheeseName = '' ) {
+export function pizzaCheeseColor( cheeseName = '' ) {
 	const name = cheeseName.toLowerCase();
 	if ( name.includes( 'sin queso' ) ) {
-		return 'display:none;';
+		return { color: 'transparent', visible: false };
 	}
-	return 'background:#f5e6a8;';
+	if ( name.includes( 'fior di latte' ) ) {
+		return { color: '#fbf6e6', visible: true };
+	}
+	if ( name.includes( 'burrata' ) ) {
+		return { color: '#fffdf5', visible: true };
+	}
+	if ( name.includes( 'vegano' ) ) {
+		return { color: '#f2e9c8', visible: true };
+	}
+	return { color: '#fcefc0', visible: true };
 }
 
 /**

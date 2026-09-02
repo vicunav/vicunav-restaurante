@@ -97,10 +97,10 @@ final class PizzaBuilderBlock {
 				<div class="vicu-restaurante-pizza-builder__layout">
 					<aside class="vicu-restaurante-pizza-builder__preview">
 						<div class="vicu-restaurante-pizza-builder__pizza" data-wp-bind--style="state.pizzaVisualStyle" aria-hidden="true">
-							<div class="vicu-restaurante-pizza-builder__pizza-crust"></div>
+							<div class="vicu-restaurante-pizza-builder__pizza-crust" data-wp-bind--style="state.pizzaCrustStyle"></div>
 							<div class="vicu-restaurante-pizza-builder__pizza-sauce" data-wp-bind--style="state.pizzaSauceStyle"></div>
 							<div class="vicu-restaurante-pizza-builder__pizza-cheese" data-wp-bind--style="state.pizzaCheeseStyle"></div>
-							<div class="vicu-restaurante-pizza-builder__pizza-divider" data-wp-bind--hidden="!state.showHalfDivider"></div>
+							<div class="vicu-restaurante-pizza-builder__pizza-divider" data-wp-bind--style="state.pizzaDividerStyle"></div>
 							<div class="vicu-restaurante-pizza-builder__pizza-dots" data-wp-watch="actions.renderPizzaDots"></div>
 						</div>
 						<div class="vicu-restaurante-pizza-builder__badges">

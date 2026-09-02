@@ -8,10 +8,11 @@ import {
 import {
 	buildConfiguration,
 	crustContainsGluten,
-	pizzaCheeseStyle,
+	pizzaCheeseColor,
+	pizzaCrustVisual,
 	pizzaDietary,
 	pizzaDots,
-	pizzaSauceStyle,
+	pizzaSauceColor,
 	pizzaSizeScale,
 	pizzaToppingsByZone,
 	responseMessage,
@@ -145,21 +146,41 @@ const { state, actions } = store( 'vicunav/restaurante-pizza-builder', {
 			const size = context.catalogById.sizes[ context.sizeId ];
 			return `--vicu-pizza-scale:${ pizzaSizeScale( size?.name ) };`;
 		},
+		get pizzaCrustStyle() {
+			const context = getContext();
+			const crust = context.catalogById.crusts[ context.crustId ];
+			return `background:${ pizzaCrustVisual( crust?.name ).color };`;
+		},
 		get pizzaSauceStyle() {
 			const context = getContext();
+			const crust = context.catalogById.crusts[ context.crustId ];
 			const sauce = context.catalogById.sauces[ context.sauceId ];
-			return pizzaSauceStyle( sauce?.name );
+			const { crustPct } = pizzaCrustVisual( crust?.name );
+			return `inset:${ crustPct }%;background:${ pizzaSauceColor(
+				sauce?.name
+			) };`;
 		},
 		get pizzaCheeseStyle() {
 			const context = getContext();
+			const crust = context.catalogById.crusts[ context.crustId ];
 			const cheese = context.catalogById.cheeses[ context.cheeseId ];
-			return pizzaCheeseStyle( cheese?.name );
+			const { crustPct } = pizzaCrustVisual( crust?.name );
+			const { color, visible } = pizzaCheeseColor( cheese?.name );
+			return `inset:${ crustPct + 3.5 }%;background:${ color };opacity:${
+				visible ? 1 : 0
+			};`;
 		},
-		get showHalfDivider() {
+		get pizzaDividerStyle() {
 			const context = getContext();
-			return Object.values( context.toppings ).some(
+			const hasHalf = Object.values( context.toppings ).some(
 				( zone ) => zone !== 'whole'
 			);
+			if ( ! hasHalf ) {
+				return 'display:none;';
+			}
+			const crust = context.catalogById.crusts[ context.crustId ];
+			const { crustPct } = pizzaCrustVisual( crust?.name );
+			return `inset:${ crustPct }% 50%;`;
 		},
 		get isVegetarian() {
 			const context = getContext();
