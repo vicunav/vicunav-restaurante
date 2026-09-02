@@ -2,10 +2,11 @@ import {
 	buildConfiguration,
 	crustContainsGluten,
 	MAX_TOPPINGS,
-	pizzaCheeseStyle,
+	pizzaCheeseColor,
+	pizzaCrustVisual,
 	pizzaDietary,
 	pizzaDots,
-	pizzaSauceStyle,
+	pizzaSauceColor,
 	pizzaSizeScale,
 	pizzaToppingsByZone,
 	responseMessage,
@@ -112,16 +113,49 @@ describe( 'vista previa de la pizza', () => {
 		expect( pizzaSizeScale() ).toBe( 1 );
 	} );
 
-	test( 'pizzaSauceStyle aproxima color por palabra clave y oculta "sin salsa"', () => {
-		expect( pizzaSauceStyle( 'Sin salsa' ) ).toBe( 'display:none;' );
-		expect( pizzaSauceStyle( 'Pesto' ) ).toContain( '#6b7f4a' );
-		expect( pizzaSauceStyle( 'Blanca al ajo' ) ).toContain( '#f3ead8' );
-		expect( pizzaSauceStyle( 'San Marzano' ) ).toContain( '#a8432b' );
+	test( 'pizzaCrustVisual usa color y grosor exactos del diseño de origen por tipo de masa', () => {
+		expect( pizzaCrustVisual( 'Napolitana' ) ).toEqual( {
+			color: '#e3b873',
+			crustPct: 8,
+		} );
+		expect( pizzaCrustVisual( 'Fina y crujiente' ) ).toEqual( {
+			color: '#d9a24a',
+			crustPct: 4.5,
+		} );
+		expect( pizzaCrustVisual( 'Sin gluten' ) ).toEqual( {
+			color: '#c9a568',
+			crustPct: 9.5,
+		} );
 	} );
 
-	test( 'pizzaCheeseStyle oculta la capa solo cuando el nombre dice "sin queso"', () => {
-		expect( pizzaCheeseStyle( 'Sin queso' ) ).toBe( 'display:none;' );
-		expect( pizzaCheeseStyle( 'Mozzarella' ) ).toContain( 'background' );
+	test( 'pizzaSauceColor usa el color exacto del diseño y no oculta "sin salsa"', () => {
+		expect( pizzaSauceColor( 'Sin salsa' ) ).toBe( '#e6c98f' );
+		expect( pizzaSauceColor( 'Pesto' ) ).toBe( '#5b7a45' );
+		expect( pizzaSauceColor( 'Blanca al ajo' ) ).toBe( '#efe6d3' );
+		expect( pizzaSauceColor( 'San Marzano' ) ).toBe( '#a8432b' );
+	} );
+
+	test( 'pizzaCheeseColor oculta la capa solo cuando el nombre dice "sin queso"', () => {
+		expect( pizzaCheeseColor( 'Sin queso' ) ).toEqual( {
+			color: 'transparent',
+			visible: false,
+		} );
+		expect( pizzaCheeseColor( 'Mozzarella' ) ).toEqual( {
+			color: '#fcefc0',
+			visible: true,
+		} );
+		expect( pizzaCheeseColor( 'Fior di latte' ) ).toEqual( {
+			color: '#fbf6e6',
+			visible: true,
+		} );
+		expect( pizzaCheeseColor( 'Burrata' ) ).toEqual( {
+			color: '#fffdf5',
+			visible: true,
+		} );
+		expect( pizzaCheeseColor( 'Queso vegano' ) ).toEqual( {
+			color: '#f2e9c8',
+			visible: true,
+		} );
 	} );
 
 	test( 'crustContainsGluten solo es falso ante "sin gluten" explícito', () => {

@@ -52,32 +52,34 @@
 		aspect-ratio: 1 / 1;
 	}
 
+	// El color y el inset (grosor visible de masa) de estas tres capas se
+	// calculan en JS a partir de la masa/salsa/queso seleccionados
+	// (pizzaCrustVisual/pizzaSauceColor/pizzaCheeseColor en model.js, con los
+	// valores reales del diseño de origen) y llegan por data-wp-bind--style;
+	// aquí solo vive la geometría que no cambia con la selección.
 	.vicu-restaurante-pizza-builder__pizza-crust {
 		position: absolute;
 		inset: 0;
 		border-radius: var(--vicu-rest-radius-round);
-		background: color-mix(in srgb, var(--vicu-rest-color-accent-soft) 35%, #e8c88a);
+		transition: background var(--vicu-rest-motion-base) ease;
 	}
 
 	.vicu-restaurante-pizza-builder__pizza-sauce {
 		position: absolute;
-		inset: 9%;
 		border-radius: var(--vicu-rest-radius-round);
 		box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.08);
-		transition: background var(--vicu-rest-motion-base) ease;
+		transition: inset var(--vicu-rest-motion-base) ease, background var(--vicu-rest-motion-base) ease;
 	}
 
 	.vicu-restaurante-pizza-builder__pizza-cheese {
 		position: absolute;
-		inset: 12.5%;
 		border-radius: var(--vicu-rest-radius-round);
 		box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.08);
-		transition: background var(--vicu-rest-motion-base) ease, opacity var(--vicu-rest-motion-base) ease;
+		transition: inset var(--vicu-rest-motion-base) ease, background var(--vicu-rest-motion-base) ease, opacity var(--vicu-rest-motion-base) ease;
 	}
 
 	.vicu-restaurante-pizza-builder__pizza-divider {
 		position: absolute;
-		inset: 9% 50%;
 		width: 1.5px;
 		background: rgba(0, 0, 0, 0.25);
 	}
