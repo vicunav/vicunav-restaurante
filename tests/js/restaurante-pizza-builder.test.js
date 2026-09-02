@@ -1,7 +1,15 @@
 import {
 	buildConfiguration,
+	crustContainsGluten,
 	MAX_TOPPINGS,
+	pizzaCheeseStyle,
+	pizzaDietary,
+	pizzaDots,
+	pizzaSauceStyle,
+	pizzaSizeScale,
+	pizzaToppingsByZone,
 	responseMessage,
+	stableHash,
 	toggleTopping,
 } from '../../src/blocks/restaurante-pizza-builder/model';
 
@@ -70,5 +78,95 @@ describe( 'modelo del constructor de pizzas', () => {
 			'<p></p>'
 		);
 		expect( responseMessage( {}, 'Error seguro' ) ).toBe( 'Error seguro' );
+	} );
+} );
+
+describe( 'vista previa de la pizza', () => {
+	test( 'stableHash es determinista para el mismo UUID', () => {
+		const id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+		expect( stableHash( id ) ).toBe( stableHash( id ) );
+		expect( stableHash( id ) ).not.toBe( stableHash( id + 'x' ) );
+	} );
+
+	test( 'pizzaDots coloca 4 puntos para una zona completa y 2 por mitad', () => {
+		const whole = pizzaDots( { a: 'whole' } );
+		expect( whole ).toHaveLength( 4 );
+		whole.forEach( ( dot ) => {
+			expect( dot.style ).toMatch( /position:absolute;left:/ );
+		} );
+
+		const halves = pizzaDots( { a: 'left', b: 'right' } );
+		expect( halves ).toHaveLength( 4 );
+	} );
+
+	test( 'pizzaDots es estable entre llamadas para la misma selección', () => {
+		const toppings = { a: 'whole', b: 'left' };
+		expect( pizzaDots( toppings ) ).toEqual( pizzaDots( toppings ) );
+	} );
+
+	test( 'pizzaSizeScale lee el diámetro en cm del nombre y lo acota', () => {
+		expect( pizzaSizeScale( 'Mediana (30 cm)' ) ).toBeCloseTo( 1 );
+		expect( pizzaSizeScale( 'Personal (22 cm)' ) ).toBeCloseTo( 22 / 30 );
+		expect( pizzaSizeScale( 'Familiar (60 cm)' ) ).toBeCloseTo( 1.3 );
+		expect( pizzaSizeScale( 'Sin unidad declarada' ) ).toBe( 1 );
+		expect( pizzaSizeScale() ).toBe( 1 );
+	} );
+
+	test( 'pizzaSauceStyle aproxima color por palabra clave y oculta "sin salsa"', () => {
+		expect( pizzaSauceStyle( 'Sin salsa' ) ).toBe( 'display:none;' );
+		expect( pizzaSauceStyle( 'Pesto' ) ).toContain( '#6b7f4a' );
+		expect( pizzaSauceStyle( 'Blanca al ajo' ) ).toContain( '#f3ead8' );
+		expect( pizzaSauceStyle( 'San Marzano' ) ).toContain( '#a8432b' );
+	} );
+
+	test( 'pizzaCheeseStyle oculta la capa solo cuando el nombre dice "sin queso"', () => {
+		expect( pizzaCheeseStyle( 'Sin queso' ) ).toBe( 'display:none;' );
+		expect( pizzaCheeseStyle( 'Mozzarella' ) ).toContain( 'background' );
+	} );
+
+	test( 'crustContainsGluten solo es falso ante "sin gluten" explícito', () => {
+		expect( crustContainsGluten( 'Napolitana' ) ).toBe( true );
+		expect( crustContainsGluten( 'Sin gluten' ) ).toBe( false );
+		expect( crustContainsGluten( 'SIN GLUTEN' ) ).toBe( false );
+	} );
+
+	test( 'pizzaDietary combina dietas de queso y toppings seleccionados', () => {
+		const catalog = {
+			cheese1: { dietaryTags: [ 'vegetarian' ], allergens: [ 'milk' ] },
+			veg1: { dietaryTags: [ 'vegetarian' ] },
+			meat1: { dietaryTags: [] },
+		};
+
+		expect( pizzaDietary( 'cheese1', { veg1: 'whole' }, catalog ) ).toEqual(
+			{ isVegetarian: true, hasDairy: true }
+		);
+
+		expect(
+			pizzaDietary( 'cheese1', { meat1: 'whole' }, catalog )
+		).toEqual( { isVegetarian: false, hasDairy: true } );
+
+		expect( pizzaDietary( '', {}, catalog ) ).toEqual( {
+			isVegetarian: true,
+			hasDairy: false,
+		} );
+	} );
+
+	test( 'pizzaToppingsByZone agrupa nombres por zona y omite vacías', () => {
+		const catalog = {
+			a: { name: 'Pepperoni' },
+			b: { name: 'Aceitunas negras' },
+			c: { name: 'Pimentón' },
+		};
+
+		expect(
+			pizzaToppingsByZone(
+				{ a: 'whole', b: 'whole', c: 'left' },
+				catalog
+			)
+		).toEqual( {
+			whole: 'Pepperoni, Aceitunas negras',
+			left: 'Pimentón',
+			right: '',
+		} );
 	} );
 } );

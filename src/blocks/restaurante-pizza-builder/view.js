@@ -1,6 +1,39 @@
-import { getContext, store, withSyncEvent } from '@wordpress/interactivity';
+import {
+	getContext,
+	getElement,
+	store,
+	withSyncEvent,
+} from '@wordpress/interactivity';
 
-import { buildConfiguration, responseMessage, toggleTopping } from './model';
+import {
+	buildConfiguration,
+	crustContainsGluten,
+	pizzaCheeseStyle,
+	pizzaDietary,
+	pizzaDots,
+	pizzaSauceStyle,
+	pizzaSizeScale,
+	pizzaToppingsByZone,
+	responseMessage,
+	toggleTopping,
+} from './model';
+
+const ZONE_SUFFIXES = { left: 'IZQ', right: 'DER' };
+
+/**
+ * El queso y los toppings son ambos ingredientes con UUID globalmente único,
+ * así que fusionar sus mapas es seguro y le da a pizzaDietary() un único
+ * catálogo donde resolver cualquiera de los dos.
+ *
+ * @param {Object} context Contexto reactivo del bloque.
+ * @return {Object} Mapa combinado UUID -> metadatos dietarios.
+ */
+function dietaryCatalog( context ) {
+	return {
+		...context.catalogById.cheeses,
+		...context.catalogById.toppings,
+	};
+}
 
 const request = async ( url, options = {} ) => {
 	const response = await fetch( url, {
@@ -96,9 +129,94 @@ const { state, actions } = store( 'vicunav/restaurante-pizza-builder', {
 			const context = getContext();
 			return context.toppings[ context.ingredientId ] || '';
 		},
+		get toppingZoneSuffix() {
+			const context = getContext();
+			const zone = context.toppings[ context.ingredientId ];
+			return zone && ZONE_SUFFIXES[ zone ]
+				? `· ${ ZONE_SUFFIXES[ zone ] }`
+				: '';
+		},
 		get canAdd() {
 			const context = getContext();
 			return context.hasQuote && ! context.isBusy;
+		},
+		get pizzaVisualStyle() {
+			const context = getContext();
+			const size = context.catalogById.sizes[ context.sizeId ];
+			return `--vicu-pizza-scale:${ pizzaSizeScale( size?.name ) };`;
+		},
+		get pizzaSauceStyle() {
+			const context = getContext();
+			const sauce = context.catalogById.sauces[ context.sauceId ];
+			return pizzaSauceStyle( sauce?.name );
+		},
+		get pizzaCheeseStyle() {
+			const context = getContext();
+			const cheese = context.catalogById.cheeses[ context.cheeseId ];
+			return pizzaCheeseStyle( cheese?.name );
+		},
+		get showHalfDivider() {
+			const context = getContext();
+			return Object.values( context.toppings ).some(
+				( zone ) => zone !== 'whole'
+			);
+		},
+		get isVegetarian() {
+			const context = getContext();
+			return pizzaDietary(
+				context.cheeseId,
+				context.toppings,
+				dietaryCatalog( context )
+			).isVegetarian;
+		},
+		get hasDairy() {
+			const context = getContext();
+			return pizzaDietary(
+				context.cheeseId,
+				context.toppings,
+				dietaryCatalog( context )
+			).hasDairy;
+		},
+		get hasGluten() {
+			const context = getContext();
+			const crust = context.catalogById.crusts[ context.crustId ];
+			return crustContainsGluten( crust?.name );
+		},
+		get pizzaSummaryHeader() {
+			const context = getContext();
+			const names = [
+				context.catalogById.sizes[ context.sizeId ]?.name,
+				context.catalogById.crusts[ context.crustId ]?.name,
+				context.catalogById.sauces[ context.sauceId ]?.name,
+				context.catalogById.cheeses[ context.cheeseId ]?.name,
+			].filter( Boolean );
+			return names.join( ' · ' );
+		},
+		get wholeToppingsText() {
+			const context = getContext();
+			return pizzaToppingsByZone(
+				context.toppings,
+				context.catalogById.toppings
+			).whole;
+		},
+		get leftToppingsText() {
+			const context = getContext();
+			return pizzaToppingsByZone(
+				context.toppings,
+				context.catalogById.toppings
+			).left;
+		},
+		get rightToppingsText() {
+			const context = getContext();
+			return pizzaToppingsByZone(
+				context.toppings,
+				context.catalogById.toppings
+			).right;
+		},
+		get toppingsHint() {
+			const context = getContext();
+			const count = Object.keys( context.toppings ).length;
+			return `${ count }/6 toppings seleccionados — elige una zona y toca un topping para colocarlo ahí.`;
 		},
 	},
 	actions: {
@@ -219,6 +337,23 @@ const { state, actions } = store( 'vicunav/restaurante-pizza-builder', {
 		},
 		refreshCatalog() {
 			window.location.reload();
+		},
+		renderPizzaDots() {
+			const { ref } = getElement();
+			if ( ! ref ) {
+				return;
+			}
+			const context = getContext();
+			const dots = pizzaDots( context.toppings );
+			ref.replaceChildren(
+				...dots.map( ( dot ) => {
+					const span = document.createElement( 'span' );
+					span.className =
+						'vicu-restaurante-pizza-builder__pizza-dot';
+					span.style.cssText = dot.style;
+					return span;
+				} )
+			);
 		},
 	},
 } );
