@@ -1,0 +1,56 @@
+@use "../visual-contract" as visual;
+
+.wp-block-vicunav-restaurante-delivery-coverage {
+
+	@include visual.root;
+
+	[hidden] {
+		display: none !important;
+	}
+
+	.vicu-restaurante-delivery-coverage__form {
+		display: grid;
+		gap: var(--vicu-rest-space-sm);
+	}
+
+	.vicu-restaurante-delivery-coverage__row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--vicu-rest-space-sm);
+	}
+
+	input {
+
+		@include visual.control;
+
+		flex: 1 1 16rem;
+	}
+
+	button {
+
+		@include visual.button;
+
+		flex: 0 0 auto;
+	}
+
+	.vicu-restaurante-delivery-coverage__result {
+		margin: 0;
+		font-size: var(--vicu-rest-text-sm);
+	}
+
+	button:focus-visible,
+	input:focus-visible {
+
+		@include visual.focus-ring;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.wp-block-vicunav-restaurante-delivery-coverage *,
+	.wp-block-vicunav-restaurante-delivery-coverage *::before,
+	.wp-block-vicunav-restaurante-delivery-coverage *::after {
+
+		@include visual.reduced-motion;
+	}
+}
