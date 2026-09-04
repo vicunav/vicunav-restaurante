@@ -3,6 +3,18 @@
  */
 
 /**
+ * Construye la selección que REST revalidará para agregar un plato normal
+ * (sin configuración de pizza) al carrito.
+ *
+ * @param {string} publicId UUID público del item de menú.
+ * @param {number} quantity Cantidad candidata.
+ * @return {Object} Selección aceptada por CartLinePricing::quote().
+ */
+export function buildAddToCartPayload( publicId, quantity = 1 ) {
+	return { type: 'menu', menu_item_id: publicId, quantity };
+}
+
+/**
  * Normaliza copy para una búsqueda tolerante a mayúsculas y acentos.
  *
  * @param {string} value Texto candidato.
@@ -228,8 +240,102 @@ function itemElement( item, root ) {
 		);
 	}
 
+	const addButton = createElement(
+		'button',
+		'vicu-restaurante-menu__add',
+		root.dataset.addLabel
+	);
+	addButton.type = 'button';
+	addButton.dataset.menuAdd = '';
+	addButton.dataset.publicId = item.public_id;
+	addButton.disabled = ! item.available;
+	content.append( addButton );
+
 	card.append( content );
 	return card;
+}
+
+/**
+ * Encabezados de autorización del carrito: nonce si hay sesión, o el CSRF
+ * opaco que el propio carrito entrega para invitados.
+ *
+ * @param {HTMLElement} root Raíz del bloque.
+ * @param {Object}      cart Carrito ya resuelto, si existe.
+ * @return {Object} Encabezados adicionales para la mutación.
+ */
+function cartHeaders( root, cart ) {
+	if ( root.dataset.restNonce ) {
+		return { 'X-WP-Nonce': root.dataset.restNonce };
+	}
+
+	return cart?.csrf_token ? { 'X-Vicu-Csrf': cart.csrf_token } : {};
+}
+
+/**
+ * Obtiene el carrito activo propio o crea uno nuevo cuando todavía no existe.
+ *
+ * @param {HTMLElement} root    Raíz del bloque.
+ * @param {Function}    request Implementación de fetch inyectable.
+ * @return {Promise<Object>} Carrito resuelto.
+ */
+async function getOrCreateCart( root, request ) {
+	const headers = root.dataset.restNonce
+		? { 'X-WP-Nonce': root.dataset.restNonce }
+		: {};
+
+	const existing = await request( root.dataset.cartUrl, { headers } );
+	if ( existing.ok ) {
+		return existing.json();
+	}
+	if ( 401 !== existing.status && 404 !== existing.status ) {
+		throw new Error( `HTTP ${ existing.status }` );
+	}
+
+	const created = await request( root.dataset.cartsUrl, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json', ...headers },
+		body: '{}',
+	} );
+	if ( ! created.ok ) {
+		throw new Error( `HTTP ${ created.status }` );
+	}
+	return created.json();
+}
+
+/**
+ * Agrega un plato del menú al carrito activo, creándolo si hace falta.
+ *
+ * @param {HTMLElement} root     Raíz del bloque.
+ * @param {string}      publicId UUID público del item de menú.
+ * @param {Function}    request  Implementación de fetch inyectable.
+ * @return {Promise<Object>} Carrito actualizado.
+ */
+export async function addItemToCart(
+	root,
+	publicId,
+	request = window.fetch.bind( window )
+) {
+	const cart = await getOrCreateCart( root, request );
+	const response = await request( root.dataset.cartItemsUrl, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			...cartHeaders( root, cart ),
+		},
+		body: JSON.stringify( {
+			expected_revision: cart.revision,
+			item: buildAddToCartPayload( publicId ),
+		} ),
+	} );
+	const payload = await response.json().catch( () => ( {} ) );
+	if ( ! response.ok ) {
+		const error = new Error(
+			payload?.message?.trim() || root.dataset.addErrorMessage
+		);
+		error.status = response.status;
+		throw error;
+	}
+	return payload;
 }
 
 /**
@@ -288,6 +394,47 @@ export async function refreshMenu(
 }
 
 /**
+ * Agrega un plato al hacer clic en su botón, con retroalimentación visible
+ * y accesible durante la solicitud y ante error.
+ *
+ * @param {HTMLElement} root    Raíz del bloque.
+ * @param {HTMLElement} button  Botón "Agregar" pulsado.
+ * @param {Function}    request Implementación de fetch inyectable.
+ * @return {Promise<void>} Finalización de la solicitud.
+ */
+async function handleAddToCart( root, button, request ) {
+	const status = root.querySelector( '[data-menu-status]' );
+	const error = root.querySelector( '[data-menu-error]' );
+	const originalLabel = root.dataset.addLabel;
+
+	button.disabled = true;
+	button.textContent = root.dataset.addingLabel || originalLabel;
+	if ( error ) {
+		error.hidden = true;
+		error.textContent = '';
+	}
+
+	try {
+		await addItemToCart( root, button.dataset.publicId, request );
+		button.textContent = root.dataset.addedLabel || originalLabel;
+		if ( status ) {
+			status.textContent = root.dataset.addedLabel || originalLabel;
+		}
+		setTimeout( () => {
+			button.textContent = originalLabel;
+			button.disabled = false;
+		}, 1500 );
+	} catch ( caught ) {
+		button.textContent = originalLabel;
+		button.disabled = false;
+		if ( error ) {
+			error.hidden = false;
+			error.textContent = caught.message || root.dataset.addErrorMessage;
+		}
+	}
+}
+
+/**
  * Inicializa delegación de eventos y refresh una sola vez.
  *
  * @param {HTMLElement} root    Raíz del bloque.
@@ -308,14 +455,24 @@ export function initializeMenu( root, request ) {
 		}
 	} );
 	root.addEventListener( 'click', ( event ) => {
-		const button = event.target.closest( '[data-menu-category]' );
-		if ( ! button || ! root.contains( button ) ) {
+		const categoryButton = event.target.closest( '[data-menu-category]' );
+		if ( categoryButton && root.contains( categoryButton ) ) {
+			root.querySelectorAll( '[data-menu-category]' ).forEach(
+				( option ) => {
+					option.setAttribute(
+						'aria-pressed',
+						String( option === categoryButton )
+					);
+				}
+			);
+			applyFilters( root );
 			return;
 		}
-		root.querySelectorAll( '[data-menu-category]' ).forEach( ( option ) => {
-			option.setAttribute( 'aria-pressed', String( option === button ) );
-		} );
-		applyFilters( root );
+
+		const addButton = event.target.closest( '[data-menu-add]' );
+		if ( addButton && root.contains( addButton ) && ! addButton.disabled ) {
+			handleAddToCart( root, addButton, request );
+		}
 	} );
 
 	return refreshMenu( root, request );

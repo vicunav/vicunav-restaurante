@@ -40,6 +40,14 @@ final class MenuBlock {
 				'data-result-singular'   => __( 'resultado', 'vicunav-restaurante' ),
 				'data-result-plural'     => __( 'resultados', 'vicunav-restaurante' ),
 				'data-catalog-revision'  => (string) $catalog['revision'],
+				'data-cart-url'          => esc_url_raw( rest_url( 'vicu/v1/restaurante/cart' ) ),
+				'data-carts-url'         => esc_url_raw( rest_url( 'vicu/v1/restaurante/carts' ) ),
+				'data-cart-items-url'    => esc_url_raw( rest_url( 'vicu/v1/restaurante/cart/items' ) ),
+				'data-rest-nonce'        => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
+				'data-add-label'         => __( 'Agregar', 'vicunav-restaurante' ),
+				'data-adding-label'      => __( 'Agregando…', 'vicunav-restaurante' ),
+				'data-added-label'       => __( 'Agregado', 'vicunav-restaurante' ),
+				'data-add-error-message' => __( 'No pudimos agregar el plato.', 'vicunav-restaurante' ),
 			)
 		);
 
@@ -129,6 +137,7 @@ final class MenuBlock {
 				<?php if ( array() !== $allergens ) : ?>
 					<p class="vicu-restaurante-menu__allergens"><strong><?php esc_html_e( 'Alérgenos:', 'vicunav-restaurante' ); ?></strong> <?php echo esc_html( implode( ', ', $allergens ) ); ?></p>
 				<?php endif; ?>
+				<button type="button" class="vicu-restaurante-menu__add" data-menu-add data-public-id="<?php echo esc_attr( (string) $item['public_id'] ); ?>" <?php echo $item['available'] ? '' : 'disabled'; ?>><?php esc_html_e( 'Agregar', 'vicunav-restaurante' ); ?></button>
 			</div>
 		</li>
 		<?php
