@@ -176,6 +176,18 @@
 		background: var(--vicu-rest-color-muted);
 	}
 
+	.vicu-restaurante-menu__add {
+
+		@include visual.button;
+
+		justify-self: start;
+	}
+
+	.vicu-restaurante-menu__add:focus-visible {
+
+		@include visual.focus-ring;
+	}
+
 	.vicu-restaurante-menu__allergen-note {
 		margin-block-start: var(--vicu-rest-space-md);
 	}
