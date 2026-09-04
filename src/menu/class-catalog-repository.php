@@ -209,7 +209,7 @@ final class CatalogRepository {
 
 		$public_id = MenuMeta::sanitize_public_id( get_post_meta( $post->ID, MenuMeta::PUBLIC_ID, true ) );
 		$currency  = MenuMeta::sanitize_currency( get_post_meta( $post->ID, MenuMeta::CURRENCY, true ) );
-		$title     = trim( wp_strip_all_tags( get_the_title( $post ) ) );
+		$title     = trim( wp_strip_all_tags( $post->post_title ) );
 		$terms     = get_the_terms( $post, MenuCategory::TAXONOMY );
 
 		if ( '' === $public_id || '' === $currency || '' === $title || ! is_array( $terms ) || 1 !== count( $terms ) ) {
