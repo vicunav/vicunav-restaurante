@@ -80,6 +80,53 @@ describe( 'bloque de menú', () => {
 		);
 	} );
 
+	test( 'al refrescar, recorta el catálogo fresco a la categoría bloqueada del bloque', async () => {
+		document.body.innerHTML = `
+			<section data-vicu-menu-root data-rest-url="/menu" data-menu-category-lock="pizze" data-add-label="Agregar">
+				<div data-menu-status></div><p data-menu-error hidden></p><p data-menu-empty hidden></p>
+				<ul data-menu-items></ul>
+			</section>`;
+		const root = document.querySelector( '[data-vicu-menu-root]' );
+		const request = jest.fn().mockResolvedValue( {
+			ok: true,
+			json: async () => ( {
+				revision: 3,
+				items: [
+					{
+						public_id: 'a',
+						name: 'Margherita',
+						description: '',
+						category: 'pizze',
+						price_minor: 800,
+						currency: 'USD',
+						available: true,
+						dietary_tags: [],
+						allergens: [],
+					},
+					{
+						public_id: 'b',
+						name: 'Penne',
+						description: '',
+						category: 'pasta',
+						price_minor: 750,
+						currency: 'USD',
+						available: true,
+						dietary_tags: [],
+						allergens: [],
+					},
+				],
+				categories: [],
+			} ),
+		} );
+
+		await initializeMenu( root, request );
+
+		const names = Array.from(
+			root.querySelectorAll( '[data-menu-item] h3' )
+		).map( ( heading ) => heading.textContent );
+		expect( names ).toEqual( [ 'Margherita' ] );
+	} );
+
 	test( 'construye la selección de carrito para un plato normal', () => {
 		expect( buildAddToCartPayload( 'abc-123' ) ).toEqual( {
 			type: 'menu',

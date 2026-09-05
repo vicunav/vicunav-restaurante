@@ -375,10 +375,15 @@ export async function refreshMenu(
 			throw new Error( 'Respuesta de catálogo inválida.' );
 		}
 
+		const categoryLock = root.dataset.menuCategoryLock || '';
+		const scopedItems = categoryLock
+			? catalog.items.filter( ( item ) => item.category === categoryLock )
+			: catalog.items;
+
 		const list = root.querySelector( '[data-menu-items]' );
 		if ( list ) {
 			list.replaceChildren(
-				...catalog.items.map( ( item ) => itemElement( item, root ) )
+				...scopedItems.map( ( item ) => itemElement( item, root ) )
 			);
 		}
 		root.dataset.catalogRevision = String( catalog.revision );

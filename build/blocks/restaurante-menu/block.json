@@ -13,6 +13,16 @@
     "platos"
   ],
   "textdomain": "vicunav-restaurante",
+  "attributes": {
+    "category": {
+      "type": "string",
+      "default": ""
+    },
+    "showControls": {
+      "type": "boolean",
+      "default": true
+    }
+  },
   "supports": {
     "align": [
       "wide",
