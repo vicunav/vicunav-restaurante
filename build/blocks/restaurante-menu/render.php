@@ -7,4 +7,4 @@
 
 use Vicu\Restaurante\Blocks\MenuBlock;
 
-echo MenuBlock::render(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+echo MenuBlock::render( is_array( $attributes ?? null ) ? $attributes : array() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

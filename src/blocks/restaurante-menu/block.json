@@ -9,6 +9,16 @@
   "description": "Muestra el menú estructurado con búsqueda, categorías y disponibilidad.",
   "keywords": [ "restaurante", "menú", "platos" ],
   "textdomain": "vicunav-restaurante",
+  "attributes": {
+    "category": {
+      "type": "string",
+      "default": ""
+    },
+    "showControls": {
+      "type": "boolean",
+      "default": true
+    }
+  },
   "supports": {
     "align": [ "wide", "full" ],
     "anchor": true,

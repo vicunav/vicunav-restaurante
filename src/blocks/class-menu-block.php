@@ -14,63 +14,81 @@ use Vicu\Restaurante\Menu\CatalogRepository;
  */
 final class MenuBlock {
 	/**
-	 * Renderiza el catálogo completo como fallback progresivo.
+	 * Renderiza el catálogo completo como fallback progresivo, o un recorte por
+	 * categoría (ej. la vitrina de pizzas listas de la página de pizzas) cuando
+	 * el bloque se inserta con el atributo `category`.
 	 *
+	 * @param array<string, mixed> $block_attributes Atributos del bloque.
 	 * @return string
 	 */
-	public static function render(): string {
+	public static function render( array $block_attributes = array() ): string {
+		$category      = isset( $block_attributes['category'] ) && is_string( $block_attributes['category'] )
+			? sanitize_key( $block_attributes['category'] )
+			: '';
+		$show_controls = ! isset( $block_attributes['showControls'] ) || (bool) $block_attributes['showControls'];
+
 		$catalog = ( new CatalogRepository() )->all();
-		$items   = $catalog['items'];
+		$items   = '' === $category
+			? $catalog['items']
+			: array_values(
+				array_filter(
+					$catalog['items'],
+					static fn( array $item ): bool => $category === $item['category']
+				)
+			);
 		$root_id = wp_unique_id( 'vicu-restaurante-menu-' );
 
 		$attributes = get_block_wrapper_attributes(
 			array(
-				'id'                     => $root_id,
-				'data-vicu-menu-root'    => '',
-				'data-rest-url'          => esc_url_raw( rest_url( 'vicu/v1/restaurante/menu' ) ),
-				'data-loading-message'   => __( 'Actualizando el menú.', 'vicunav-restaurante' ),
-				'data-error-message'     => __( 'No pudimos actualizar el menú. Mostramos la última versión disponible.', 'vicunav-restaurante' ),
-				'data-empty-message'     => __( 'No encontramos platos con estos filtros.', 'vicunav-restaurante' ),
-				'data-available-label'   => __( 'Disponible', 'vicunav-restaurante' ),
-				'data-unavailable-label' => __( 'Agotado', 'vicunav-restaurante' ),
-				'data-allergens-label'   => __( 'Alérgenos:', 'vicunav-restaurante' ),
-				'data-spicy-label'       => __( 'Picante', 'vicunav-restaurante' ),
-				'data-vegan-label'       => __( 'Vegano', 'vicunav-restaurante' ),
-				'data-vegetarian-label'  => __( 'Vegetariano', 'vicunav-restaurante' ),
-				'data-result-singular'   => __( 'resultado', 'vicunav-restaurante' ),
-				'data-result-plural'     => __( 'resultados', 'vicunav-restaurante' ),
-				'data-catalog-revision'  => (string) $catalog['revision'],
-				'data-cart-url'          => esc_url_raw( rest_url( 'vicu/v1/restaurante/cart' ) ),
-				'data-carts-url'         => esc_url_raw( rest_url( 'vicu/v1/restaurante/carts' ) ),
-				'data-cart-items-url'    => esc_url_raw( rest_url( 'vicu/v1/restaurante/cart/items' ) ),
-				'data-rest-nonce'        => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
-				'data-add-label'         => __( 'Agregar', 'vicunav-restaurante' ),
-				'data-adding-label'      => __( 'Agregando…', 'vicunav-restaurante' ),
-				'data-added-label'       => __( 'Agregado', 'vicunav-restaurante' ),
-				'data-add-error-message' => __( 'No pudimos agregar el plato.', 'vicunav-restaurante' ),
+				'id'                      => $root_id,
+				'data-vicu-menu-root'     => '',
+				'data-menu-category-lock' => $category,
+				'data-rest-url'           => esc_url_raw( rest_url( 'vicu/v1/restaurante/menu' ) ),
+				'data-loading-message'    => __( 'Actualizando el menú.', 'vicunav-restaurante' ),
+				'data-error-message'      => __( 'No pudimos actualizar el menú. Mostramos la última versión disponible.', 'vicunav-restaurante' ),
+				'data-empty-message'      => __( 'No encontramos platos con estos filtros.', 'vicunav-restaurante' ),
+				'data-available-label'    => __( 'Disponible', 'vicunav-restaurante' ),
+				'data-unavailable-label'  => __( 'Agotado', 'vicunav-restaurante' ),
+				'data-allergens-label'    => __( 'Alérgenos:', 'vicunav-restaurante' ),
+				'data-spicy-label'        => __( 'Picante', 'vicunav-restaurante' ),
+				'data-vegan-label'        => __( 'Vegano', 'vicunav-restaurante' ),
+				'data-vegetarian-label'   => __( 'Vegetariano', 'vicunav-restaurante' ),
+				'data-result-singular'    => __( 'resultado', 'vicunav-restaurante' ),
+				'data-result-plural'      => __( 'resultados', 'vicunav-restaurante' ),
+				'data-catalog-revision'   => (string) $catalog['revision'],
+				'data-cart-url'           => esc_url_raw( rest_url( 'vicu/v1/restaurante/cart' ) ),
+				'data-carts-url'          => esc_url_raw( rest_url( 'vicu/v1/restaurante/carts' ) ),
+				'data-cart-items-url'     => esc_url_raw( rest_url( 'vicu/v1/restaurante/cart/items' ) ),
+				'data-rest-nonce'         => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
+				'data-add-label'          => __( 'Agregar', 'vicunav-restaurante' ),
+				'data-adding-label'       => __( 'Agregando…', 'vicunav-restaurante' ),
+				'data-added-label'        => __( 'Agregado', 'vicunav-restaurante' ),
+				'data-add-error-message'  => __( 'No pudimos agregar el plato.', 'vicunav-restaurante' ),
 			)
 		);
 
 		ob_start();
 		?>
 		<section <?php echo $attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> aria-label="<?php esc_attr_e( 'Menú del restaurante', 'vicunav-restaurante' ); ?>">
-			<div class="vicu-restaurante-menu__controls" data-menu-controls>
-				<div class="vicu-restaurante-menu__search">
-					<label for="<?php echo esc_attr( $root_id ); ?>-search"><?php esc_html_e( 'Buscar en el menú', 'vicunav-restaurante' ); ?></label>
-					<input id="<?php echo esc_attr( $root_id ); ?>-search" type="search" inputmode="search" autocomplete="off" data-menu-search>
+			<?php if ( $show_controls ) : ?>
+				<div class="vicu-restaurante-menu__controls" data-menu-controls>
+					<div class="vicu-restaurante-menu__search">
+						<label for="<?php echo esc_attr( $root_id ); ?>-search"><?php esc_html_e( 'Buscar en el menú', 'vicunav-restaurante' ); ?></label>
+						<input id="<?php echo esc_attr( $root_id ); ?>-search" type="search" inputmode="search" autocomplete="off" data-menu-search>
+					</div>
+					<fieldset class="vicu-restaurante-menu__dietary">
+						<legend><?php esc_html_e( 'Preferencias', 'vicunav-restaurante' ); ?></legend>
+						<label><input type="checkbox" value="vegetarian" data-menu-dietary> <?php esc_html_e( 'Vegetariano', 'vicunav-restaurante' ); ?></label>
+						<label><input type="checkbox" value="spicy" data-menu-dietary> <?php esc_html_e( 'Picante', 'vicunav-restaurante' ); ?></label>
+					</fieldset>
+					<div class="vicu-restaurante-menu__categories" aria-label="<?php esc_attr_e( 'Categorías del menú', 'vicunav-restaurante' ); ?>" data-menu-categories>
+						<?php echo self::category_button( '', __( 'Todos', 'vicunav-restaurante' ), '' === $category ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						<?php foreach ( $catalog['categories'] as $menu_category ) : ?>
+							<?php echo self::category_button( (string) $menu_category['slug'], (string) $menu_category['name'], $category === $menu_category['slug'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						<?php endforeach; ?>
+					</div>
 				</div>
-				<fieldset class="vicu-restaurante-menu__dietary">
-					<legend><?php esc_html_e( 'Preferencias', 'vicunav-restaurante' ); ?></legend>
-					<label><input type="checkbox" value="vegetarian" data-menu-dietary> <?php esc_html_e( 'Vegetariano', 'vicunav-restaurante' ); ?></label>
-					<label><input type="checkbox" value="spicy" data-menu-dietary> <?php esc_html_e( 'Picante', 'vicunav-restaurante' ); ?></label>
-				</fieldset>
-				<div class="vicu-restaurante-menu__categories" aria-label="<?php esc_attr_e( 'Categorías del menú', 'vicunav-restaurante' ); ?>" data-menu-categories>
-					<?php echo self::category_button( '', __( 'Todos', 'vicunav-restaurante' ), true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-					<?php foreach ( $catalog['categories'] as $category ) : ?>
-						<?php echo self::category_button( (string) $category['slug'], (string) $category['name'], false ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-					<?php endforeach; ?>
-				</div>
-			</div>
+			<?php endif; ?>
 
 			<div class="vicu-restaurante-menu__status" role="status" aria-live="polite" aria-atomic="true" data-menu-status></div>
 			<p class="vicu-restaurante-menu__error" role="alert" data-menu-error hidden></p>
