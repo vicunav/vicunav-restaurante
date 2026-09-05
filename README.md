@@ -66,7 +66,10 @@ Contributions follow one issue, branch, pull request, and squash-merge per chang
 [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 The versioned integration surface and implementation matrix are documented in
-[`docs/contrato-publico.md`](docs/contrato-publico.md).
+[`docs/contrato-publico.md`](docs/contrato-publico.md). Managing the pizza
+builder's dynamic catalog (sizes, crusts, sauces, cheeses, toppings) from
+wp-admin is documented in
+[`docs/panel-administrativo.md`](docs/panel-administrativo.md).
 
 ## License
 
