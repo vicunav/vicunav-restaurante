@@ -158,7 +158,15 @@ final class ReservationTest extends WP_UnitTestCase {
 
 	/** REST publica schemas válidos, no-store y ownership por token. */
 	public function test_rest_creation_read_and_cancel_are_private(): void {
-		$response = $this->dispatch( 'POST', '/vicu/v1/restaurante/reservations', $this->input( '18:00', 2 ), array( 'Idempotency-Key' => 'reservation-rest-key-01' ) );
+		$response = $this->dispatch(
+			'POST',
+			'/vicu/v1/restaurante/reservations',
+			$this->input( '18:00', 2 ),
+			array(
+				'Idempotency-Key' => 'reservation-rest-key-01',
+				'Origin'          => home_url( '/' ),
+			)
+		);
 		$this->assertSame( 201, $response->get_status() );
 		$this->assertSame( 'no-store, max-age=0', $response->get_headers()['Cache-Control'] );
 		$this->assertTrue( rest_validate_value_from_schema( $response->get_data(), ReservationRoutes::reservation_schema() ) );
@@ -172,6 +180,23 @@ final class ReservationTest extends WP_UnitTestCase {
 		$cancel = $this->dispatch( 'POST', '/vicu/v1/restaurante/reservations/' . $id . '/cancel', array( 'expected_revision' => 1 ), $headers );
 		$this->assertSame( 200, $cancel->get_status() );
 		$this->assertSame( 'cancelada', $cancel->get_data()['status'] );
+	}
+
+	/** Una creación de invitado sin origen propio o con origen ajeno se rechaza. */
+	public function test_rest_creation_requires_same_origin_for_guests(): void {
+		$without_origin = $this->dispatch( 'POST', '/vicu/v1/restaurante/reservations', $this->input( '18:00', 2 ), array( 'Idempotency-Key' => 'reservation-no-origin-001' ) );
+		$this->assertSame( 403, $without_origin->get_status() );
+
+		$wrong_origin = $this->dispatch(
+			'POST',
+			'/vicu/v1/restaurante/reservations',
+			$this->input( '18:00', 2 ),
+			array(
+				'Idempotency-Key' => 'reservation-wrong-origin-001',
+				'Origin'          => 'https://example.invalid',
+			)
+		);
+		$this->assertSame( 403, $wrong_origin->get_status() );
 	}
 
 	/** Un rate limiter conectado puede cerrar disponibilidad y creación. */
@@ -190,7 +215,15 @@ final class ReservationTest extends WP_UnitTestCase {
 		$this->assertSame( 429, $availability->get_status() );
 
 		add_filter( 'vicu_restaurante_allow_reservation_creation', $deny );
-		$creation = $this->dispatch( 'POST', '/vicu/v1/restaurante/reservations', $this->input( '18:00', 2 ), array( 'Idempotency-Key' => 'reservation-denied-001' ) );
+		$creation = $this->dispatch(
+			'POST',
+			'/vicu/v1/restaurante/reservations',
+			$this->input( '18:00', 2 ),
+			array(
+				'Idempotency-Key' => 'reservation-denied-001',
+				'Origin'          => home_url( '/' ),
+			)
+		);
 		remove_filter( 'vicu_restaurante_allow_reservation_creation', $deny );
 		$this->assertSame( 429, $creation->get_status() );
 	}
