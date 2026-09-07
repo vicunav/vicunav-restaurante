@@ -8,6 +8,7 @@
 namespace Vicu\Restaurante\Rest;
 
 use Vicu\Core\Rest;
+use Vicu\Restaurante\Cart\CartAuthentication;
 use Vicu\Restaurante\Reservation\ReservationAvailability;
 use Vicu\Restaurante\Reservation\ReservationService;
 use WP_Error;
@@ -130,7 +131,8 @@ final class ReservationRoutes {
 	}
 
 	/**
-	 * Exige nonce para cuentas y deja conectable el límite de creación invitada.
+	 * Exige nonce para cuentas, mismo origen para invitados y deja conectable el
+	 * límite de creación invitada.
 	 *
 	 * @param WP_REST_Request $request Solicitud.
 	 * @return bool|WP_Error
@@ -140,6 +142,14 @@ final class ReservationRoutes {
 
 		if ( is_wp_error( $authenticated ) ) {
 			return $authenticated;
+		}
+
+		if ( 0 === get_current_user_id() && ! CartAuthentication::same_origin( $request ) ) {
+			return new WP_Error(
+				'vicu_restaurante_forbidden',
+				__( 'La solicitud no está autorizada.', 'vicunav-restaurante' ),
+				array( 'status' => 403 )
+			);
 		}
 
 		/**
