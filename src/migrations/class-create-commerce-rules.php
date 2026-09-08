@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Migrations;
 
+defined( 'ABSPATH' ) || exit;
+
 use Vicu\Restaurante\Commerce\PricingRevision;
 use Vicu\Restaurante\Schema;
 

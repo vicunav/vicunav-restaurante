@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Catalog;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Mantiene un validador monotónico dentro de las transacciones del catálogo.
  */

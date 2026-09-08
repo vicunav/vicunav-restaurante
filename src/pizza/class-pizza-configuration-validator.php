@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Pizza;
 
+defined( 'ABSPATH' ) || exit;
+
 use WP_Error;
 
 /**

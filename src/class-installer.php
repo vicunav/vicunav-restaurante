@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante;
 
+defined( 'ABSPATH' ) || exit;
+
 use Throwable;
 use Vicu\Restaurante\Migrations\CreateMigrationLedger;
 use Vicu\Restaurante\Migrations\InitializeMenuCatalog;

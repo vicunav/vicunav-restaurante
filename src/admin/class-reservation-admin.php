@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Admin;
 
+defined( 'ABSPATH' ) || exit;
+
 use Vicu\Restaurante\Reservation\ReservationPostType;
 use Vicu\Restaurante\Reservation\ReservationProjection;
 use Vicu\Restaurante\Reservation\ReservationService;

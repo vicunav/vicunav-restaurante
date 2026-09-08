@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Rest;
 
+defined( 'ABSPATH' ) || exit;
+
 use Vicu\Core\Rest;
 use Vicu\Restaurante\Cart\CartAuthentication;
 use Vicu\Restaurante\Order\OrderService;

@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Menu;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Invalida respuestas estables una sola vez por solicitud de escritura.
  */

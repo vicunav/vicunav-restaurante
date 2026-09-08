@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Blocks;
 
+defined( 'ABSPATH' ) || exit;
+
 use Vicu\Restaurante\Menu\CatalogRepository;
 
 /**

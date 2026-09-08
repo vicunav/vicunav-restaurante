@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Reservation;
 
+defined( 'ABSPATH' ) || exit;
+
 use Vicu\Core\PostType;
 
 /**

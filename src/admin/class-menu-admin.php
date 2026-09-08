@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Admin;
 
+defined( 'ABSPATH' ) || exit;
+
 use Vicu\Restaurante\Menu\MenuItemPostType;
 use Vicu\Restaurante\Menu\MenuMeta;
 

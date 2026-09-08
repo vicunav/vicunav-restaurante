@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Catalog;
 
+defined( 'ABSPATH' ) || exit;
+
 use Vicu\Restaurante\Menu\MenuMeta;
 use WP_Error;
 

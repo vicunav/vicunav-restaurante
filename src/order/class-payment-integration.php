@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Order;
 
+defined( 'ABSPATH' ) || exit;
+
 use DateTimeImmutable;
 use DateTimeZone;
 use Vicu\Pagos\PaymentRequests;

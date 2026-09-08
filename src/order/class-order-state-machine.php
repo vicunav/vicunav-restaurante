@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Order;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Conserva transiciones v1 fuera de controladores y presentación.
  */

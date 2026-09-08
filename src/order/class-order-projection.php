@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Order;
 
+defined( 'ABSPATH' ) || exit;
+
 use WP_Query;
 
 /**

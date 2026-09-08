@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Order;
 
+defined( 'ABSPATH' ) || exit;
+
 use Vicu\Pagos\ManualPaymentProvider;
 use Vicu\Pagos\PaymentRequestState;
 use Vicu\Restaurante\Cart\CartService;

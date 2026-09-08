@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Pizza;
 
+defined( 'ABSPATH' ) || exit;
+
 use Vicu\Restaurante\Catalog\AvailabilityRevision;
 use Vicu\Restaurante\Catalog\CatalogDatabase;
 use Vicu\Restaurante\Catalog\IngredientService;
