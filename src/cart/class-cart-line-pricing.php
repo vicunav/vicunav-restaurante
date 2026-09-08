@@ -26,6 +26,13 @@ final class CartLinePricing {
 	public const TYPES = array( 'menu', 'pizza' );
 
 	/**
+	 * Memoiza la resolución de post interno dentro del mismo request.
+	 *
+	 * @var array<string, int>
+	 */
+	private static array $menu_post_id_cache = array();
+
+	/**
 	 * Cotiza una selección externa o una selección persistida.
 	 *
 	 * @param array<string, mixed> $input Selección candidata.
@@ -170,6 +177,10 @@ final class CartLinePricing {
 	 * @return int
 	 */
 	private static function menu_post_id( string $public_id ): int {
+		if ( array_key_exists( $public_id, self::$menu_post_id_cache ) ) {
+			return self::$menu_post_id_cache[ $public_id ];
+		}
+
 		// El UUID exacto es un lookup interno acotado y no se expone en la respuesta.
 		// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_key,WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 		$query = new WP_Query(
@@ -185,7 +196,9 @@ final class CartLinePricing {
 		);
 		// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_key,WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 
-		return isset( $query->posts[0] ) ? (int) $query->posts[0] : 0;
+		self::$menu_post_id_cache[ $public_id ] = isset( $query->posts[0] ) ? (int) $query->posts[0] : 0;
+
+		return self::$menu_post_id_cache[ $public_id ];
 	}
 
 	/**
