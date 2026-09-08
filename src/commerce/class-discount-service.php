@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Commerce;
 
+defined( 'ABSPATH' ) || exit;
+
 use DateTimeImmutable;
 use Vicu\Restaurante\Catalog\CatalogDatabase;
 use Vicu\Restaurante\Schema;

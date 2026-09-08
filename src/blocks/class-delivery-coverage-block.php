@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Blocks;
 
+defined( 'ABSPATH' ) || exit;
+
 use Vicu\Restaurante\Settings\RestaurantSettings;
 
 /** Publica únicamente estructura y el endpoint de zonas; la tarifa la decide el servidor. */

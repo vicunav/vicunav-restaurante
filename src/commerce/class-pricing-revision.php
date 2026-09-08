@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Commerce;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Invalida consumidores cuando cambia una regla autoritativa.
  */

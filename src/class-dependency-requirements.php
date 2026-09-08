@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Inspecciona versiones y clases públicas sin leer persistencia ajena.
  *

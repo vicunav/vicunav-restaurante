@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Admin;
 
+defined( 'ABSPATH' ) || exit;
+
 use Vicu\Restaurante\Order\OrderPostType;
 use Vicu\Restaurante\Order\OrderProjection;
 use Vicu\Restaurante\Order\OrderService;

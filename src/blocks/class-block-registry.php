@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Blocks;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Registra cada bloque desde metadata compilada compatible con WordPress 6.6.
  */

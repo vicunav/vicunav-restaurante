@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Settings;
 
+defined( 'ABSPATH' ) || exit;
+
 use Vicu\Core\Settings;
 use Vicu\Restaurante\Commerce\PricingRevision;
 

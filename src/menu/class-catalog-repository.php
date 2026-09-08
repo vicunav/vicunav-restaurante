@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Menu;
 
+defined( 'ABSPATH' ) || exit;
+
 use WP_Post;
 use WP_Query;
 use WP_Term;

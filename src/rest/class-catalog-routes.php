@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Rest;
 
+defined( 'ABSPATH' ) || exit;
+
 use Vicu\Core\Rest;
 use Vicu\Restaurante\Catalog\AvailabilityRevision;
 use Vicu\Restaurante\Catalog\IngredientService;

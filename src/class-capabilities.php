@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Concede capabilities únicamente durante la instalación controlada.
  *

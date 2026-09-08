@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Migrations;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Cada versión implementa comprobación, subida y compensación.
  *

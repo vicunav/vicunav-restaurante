@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Blocks;
 
+defined( 'ABSPATH' ) || exit;
+
 use Vicu\Restaurante\Catalog\AvailabilityRevision;
 use Vicu\Restaurante\Catalog\IngredientService;
 use Vicu\Restaurante\Catalog\PizzaOptionService;

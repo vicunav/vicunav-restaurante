@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Privacy;
 
+defined( 'ABSPATH' ) || exit;
+
 use Vicu\Restaurante\Order\OrderStateMachine;
 use Vicu\Restaurante\Reservation\ReservationStateMachine;
 use Vicu\Restaurante\Schema;

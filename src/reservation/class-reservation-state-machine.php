@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Reservation;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Congela los estados, arcos y consumo de capacidad de reservas v1.
  */

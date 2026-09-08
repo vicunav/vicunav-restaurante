@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Blocks;
 
+defined( 'ABSPATH' ) || exit;
+
 use Vicu\Restaurante\Cart\CartSessionService;
 use Vicu\Restaurante\Settings\RestaurantSettings;
 

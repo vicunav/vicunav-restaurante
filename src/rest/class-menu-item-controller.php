@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Rest;
 
+defined( 'ABSPATH' ) || exit;
+
 use WP_Error;
 use WP_REST_Posts_Controller;
 use WP_REST_Request;

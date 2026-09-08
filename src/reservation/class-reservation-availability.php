@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Reservation;
 
+defined( 'ABSPATH' ) || exit;
+
 use DateInterval;
 use DateTimeImmutable;
 use DateTimeZone;

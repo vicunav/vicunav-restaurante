@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Commerce;
 
+defined( 'ABSPATH' ) || exit;
+
 use Vicu\Restaurante\Catalog\CatalogDatabase;
 use Vicu\Restaurante\Schema;
 use WP_Error;

@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante;
 
+defined( 'ABSPATH' ) || exit;
+
 /**
  * Resuelve tablas con el prefijo efectivo del sitio.
  *

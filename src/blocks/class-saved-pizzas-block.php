@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Blocks;
 
+defined( 'ABSPATH' ) || exit;
+
 /** Publica estructura sin incorporar recursos privados al HTML cacheable. */
 final class SavedPizzasBlock {
 	/** Renderiza el estado de cuenta y las regiones que hidrata REST. */

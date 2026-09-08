@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Commerce;
 
+defined( 'ABSPATH' ) || exit;
+
 use Vicu\Restaurante\Settings\RestaurantSettings;
 use WP_Error;
 

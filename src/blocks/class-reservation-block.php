@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Blocks;
 
+defined( 'ABSPATH' ) || exit;
+
 /** Publica únicamente estructura y endpoints; toda capacidad se decide en servidor. */
 final class ReservationBlock {
 	/** Renderiza consulta, creación, confirmación y cancelación propietaria. */

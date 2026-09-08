@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Cart;
 
+defined( 'ABSPATH' ) || exit;
+
 use Vicu\Restaurante\Catalog\IngredientService;
 use Vicu\Restaurante\Catalog\MenuIngredientService;
 use Vicu\Restaurante\Menu\CatalogRepository;

@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\SavedPizza;
 
+defined( 'ABSPATH' ) || exit;
+
 use Throwable;
 use Vicu\Restaurante\Catalog\AvailabilityRevision;
 use Vicu\Restaurante\Catalog\CatalogDatabase;

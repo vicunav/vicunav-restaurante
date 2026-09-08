@@ -7,6 +7,8 @@
 
 namespace Vicu\Restaurante\Catalog;
 
+defined( 'ABSPATH' ) || exit;
+
 use Vicu\Restaurante\Menu\CatalogRevision;
 use Vicu\Restaurante\Menu\MenuItemPostType;
 use Vicu\Restaurante\Schema;
