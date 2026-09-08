@@ -19,6 +19,13 @@ use WP_Error;
  */
 final class MenuIngredientService {
 	/**
+	 * Memoiza lecturas dentro del mismo request; nunca sobrevive entre requests.
+	 *
+	 * @var array<int, array<int, array<string, mixed>>>
+	 */
+	private static array $cache = array();
+
+	/**
 	 * Sustituye el conjunto completo de relaciones de un item.
 	 *
 	 * @param int                              $menu_item_id ID interno del CPT propietario.
@@ -86,6 +93,7 @@ final class MenuIngredientService {
 			return CatalogDatabase::storage_error();
 		}
 
+		unset( self::$cache[ $menu_item_id ] );
 		CatalogRevision::bump();
 
 		return true;
@@ -98,6 +106,10 @@ final class MenuIngredientService {
 	 * @return array<int, array<string, mixed>>
 	 */
 	public static function for_menu_item( int $menu_item_id ): array {
+		if ( array_key_exists( $menu_item_id, self::$cache ) ) {
+			return self::$cache[ $menu_item_id ];
+		}
+
 		global $wpdb;
 
 		$relations   = Schema::menu_ingredients_table_name();
@@ -122,7 +134,7 @@ final class MenuIngredientService {
 		);
 		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-		return array_map(
+		self::$cache[ $menu_item_id ] = array_map(
 			static function ( array $row ): array {
 				return array(
 					'ingredient_public_id'   => (string) $row['ingredient_public_id'],
@@ -133,6 +145,8 @@ final class MenuIngredientService {
 			},
 			$rows
 		);
+
+		return self::$cache[ $menu_item_id ];
 	}
 
 	/**

@@ -17,6 +17,13 @@ use WP_Error;
  */
 final class IngredientService {
 	/**
+	 * Memoiza lecturas dentro del mismo request; nunca sobrevive entre requests.
+	 *
+	 * @var array<string, array<string, mixed>|null>
+	 */
+	private static array $cache = array();
+
+	/**
 	 * Crea un ingrediente y una única revisión global.
 	 *
 	 * @param array<string, mixed> $input Datos completos.
@@ -119,6 +126,8 @@ final class IngredientService {
 		);
 		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
+		unset( self::$cache[ $public_id ] );
+
 		if ( 1 !== $updated ) {
 			CatalogDatabase::rollback();
 			$latest = self::find( $public_id );
@@ -143,6 +152,10 @@ final class IngredientService {
 	 * @return array<string, mixed>|null
 	 */
 	public static function find( string $public_id ): ?array {
+		if ( array_key_exists( $public_id, self::$cache ) ) {
+			return self::$cache[ $public_id ];
+		}
+
 		global $wpdb;
 
 		$table = Schema::ingredients_table_name();
@@ -155,7 +168,9 @@ final class IngredientService {
 		);
 		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
-		return is_array( $row ) ? self::format( $row ) : null;
+		self::$cache[ $public_id ] = is_array( $row ) ? self::format( $row ) : null;
+
+		return self::$cache[ $public_id ];
 	}
 
 	/**
