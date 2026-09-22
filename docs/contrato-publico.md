@@ -42,6 +42,7 @@ internas de otro paquete.
 | E2E, privacidad, rendimiento y release candidata | REST-02R | Implementado |
 | Contrato visual neutral de los siete bloques | REST-02S | Implementado |
 | Acciones compactas de cabecera (carrito y cuenta) | #46 | Implementado |
+| Reproducción 1:1 de carrito y checkout | #49 | Implementado |
 
 Una superficie planificada no es una API disponible. Cada issue actualiza esta matriz,
 implementa el contrato correspondiente y añade pruebas antes de cambiar su estado.
@@ -848,6 +849,65 @@ superficies:
 | Editor carrito `index.js` | 1.706 | 966 |
 | Editor checkout `index.js` | 786 | 488 |
 | Editor estado `index.js` | 790 | 490 |
+
+### Reproducción 1:1 de carrito y checkout (#49)
+
+`vicunav/restaurante-cart` reproduce la jerarquía de la fuente congelada
+(`vicunav-design-to-claude-demo-restaurante@1e1f627`, `CartScreen.js`/`CartLine.js`): una
+sola columna en móvil y dos columnas (ítems 1.4fr | panel lateral 1fr) desde 768px,
+líneas planas con separador `hairline` (no tarjetas), un stepper de cantidad circular de
+44 px, un toggle segmentado de tipo de entrega (`role="radiogroup"`, dos botones
+`role="radio"`), chips de propina generados dinámicamente desde
+`RestaurantSettings::tip_rates_bps()` (la fuente fija 0/10/15/20 %, el plugin conserva su
+configuración real por restaurante) y un panel de totales plano sin bordes internos,
+con el porcentaje de impuesto calculado en cliente a partir de `tax_total` y el subtotal
+neto de descuento. El estado vacío incorpora un CTA real a la página de menú.
+
+Una pizza de línea muestra su resumen legible (tamaño, masa, salsa, queso y toppings)
+a partir de `snapshot.components`, con acciones **Duplicar** (nueva línea vía
+`POST /cart/items` con la misma configuración y cantidad 1) y **Quitar**. Una línea de
+menú no incluye imagen: el snapshot del dominio no expone una URL de imagen por línea de
+carrito, a diferencia del prototipo; tampoco reproduce las acciones **Editar** de pizza
+del prototipo, que exigirían prellenar el constructor de pizzas desde el carrito — ambas
+quedan fuera de este issue y documentadas para una unidad futura si se requieren.
+
+Un código de descuento inválido o vencido ahora se anuncia (`role="alert"`): el dominio
+responde 200 con `discount_code` en null sin exponer un error propio, así que el cliente
+compara el código enviado contra el `discount_code` devuelto y muestra
+"Código inválido o expirado." solo cuando difieren — sin cambiar el contrato REST.
+
+`vicunav/restaurante-checkout` adopta el ancho angosto (30 rem) y centrado de la fuente,
+la única variante de layout en todos los viewports que usa `CheckoutScreen.js`. Conserva
+los campos reales adicionales (correo, notas, dirección e instrucciones condicionales de
+delivery) que la fuente omite deliberadamente por ser "client-only theater" sin backend
+real (`docs/CODEX_HANDOFF.md` de la fuente, §17): el checkout del plugin sí crea un
+pedido idempotente real con proveedor de pago manual, así que ese superconjunto de campos
+es un requisito de dominio, no una desviación visual. El resultado "pedido creado" se
+presenta centrado sobre el fondo de página, sin panel bordeado, igual que
+`.checkout-screen--confirmed` de la fuente.
+
+`vicunav/restaurante-order-status` no se tocó en esta unidad (ver #51).
+
+Cada acceso de navegación cruzada (carrito vacío → menú, carrito → checkout) es un
+atributo de bloque editable (`menuUrl`, `checkoutUrl`, sin valor por defecto): la
+composición FSE decide el destino real, igual que el resto de bloques del plugin.
+
+Verificado en Chrome real contra la fuente viva (`getComputedStyle`: 44×44 px, mismo
+`border-radius`, mismo `gap` de 8px entre acciones) y contra `vicunav-demo-restaurante.local`
+con datos reales de sesión: alta desde el menú, alta y duplicado de pizza personalizada,
+cambio de tipo de entrega y zona, código de descuento inválido y válido, y creación real
+de un pedido (`R-20260922-5EEAFB96`, estado `pendiente_pago`) con limpieza del carrito
+tras checkout — sin capturas de página completa reemplazadas por checks estructurales.
+
+El build reproducible mide (módulo y estilos ahora compartidos también con
+`vicunav/restaurante-header-actions`):
+
+| Asset | Bytes minificados | Bytes gzip |
+| --- | ---: | ---: |
+| Módulo compartido `view.js` | 11.358 | 3.982 |
+| Estilos compartidos `style-index.css` | 25.055 | 2.885 |
+| Editor carrito `index.js` | 2.643 | 1.263 |
+| Editor checkout `index.js` | 786 | 488 |
 
 ### Bloque de reservas implementado
 

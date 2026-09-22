@@ -304,19 +304,113 @@
 }
 
 // Fila de resumen (carrito, checkout, cotización de pizza): etiqueta a la
-// izquierda, valor a la derecha.
+// izquierda, valor a la derecha. Sin separador entre filas normales y el
+// total (confirmado por inspección real: la distinción es solo tipográfica).
 @mixin summary-row {
 	display: flex;
 	align-items: baseline;
 	justify-content: space-between;
 	gap: var(--vicu-rest-space-sm);
-	padding-block: var(--vicu-rest-space-xs);
+	color: var(--vicu-rest-color-muted);
 
 	&.is-total {
-		padding-block-start: var(--vicu-rest-space-sm);
-		border-block-start: 1px solid var(--vicu-rest-color-border);
-		font-weight: 700;
+		font-weight: 800;
 		font-size: var(--vicu-rest-text-lg);
+		color: var(--vicu-rest-color-text);
+	}
+}
+
+// Panel de resumen de precios (carrito, checkout): fondo tenue, filas
+// apiladas, sin tabla ni bordes internos.
+@mixin summary-panel {
+	display: flex;
+	flex-direction: column;
+	gap: var(--vicu-rest-space-xs);
+	padding: var(--vicu-rest-space-sm);
+	background: var(--vicu-rest-color-surface-muted);
+}
+
+// Stepper compacto de cantidad (carrito): cápsula con dos icon-button
+// circulares de 44 px y el número entre ambos.
+@mixin stepper {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--vicu-rest-space-xs);
+	padding: 0.25rem;
+	border-radius: var(--vicu-rest-radius-pill);
+	background: color-mix(in srgb, var(--vicu-rest-color-text) 8%, transparent);
+
+	button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 44px;
+		min-height: 44px;
+		padding: 0;
+		border: 0;
+		border-radius: var(--vicu-rest-radius-round);
+		background: var(--vicu-rest-color-inverse);
+		color: var(--vicu-rest-color-on-inverse);
+		font: inherit;
+		font-weight: 800;
+		cursor: pointer;
+
+		&:disabled {
+			cursor: not-allowed;
+			opacity: 0.5;
+		}
+	}
+
+	span {
+		min-width: 1.5rem;
+		font-weight: 700;
+		text-align: center;
+	}
+}
+
+// Toggle segmentado de dos opciones excluyentes (tipo de entrega).
+@mixin segmented-toggle {
+	display: flex;
+	border: 1.5px solid var(--vicu-rest-color-text);
+
+	button {
+		flex: 1;
+		border: 0;
+		padding: 0.625rem;
+		min-height: 44px;
+		background: transparent;
+		color: var(--vicu-rest-color-text);
+		font: inherit;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		cursor: pointer;
+
+		&[aria-checked="true"] {
+			background: var(--vicu-rest-color-inverse);
+			color: var(--vicu-rest-color-on-inverse);
+		}
+	}
+}
+
+// Enlace de texto discreto (quitar línea, quitar descuento, editar/duplicar
+// pizza): sin fondo ni borde, subrayado, pero con target táctil de 44 px —
+// la fuente usa texto plano sin target mínimo; se corrige aquí a propósito.
+@mixin text-action {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+	padding-inline: 0.25rem;
+	border: 0;
+	background: none;
+	color: var(--vicu-rest-color-muted);
+	font: inherit;
+	font-size: var(--vicu-rest-text-sm);
+	text-decoration: underline;
+	cursor: pointer;
+
+	&:hover {
+		color: var(--vicu-rest-color-text);
 	}
 }
 

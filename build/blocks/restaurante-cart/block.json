@@ -8,6 +8,16 @@
   "icon": "cart",
   "description": "Muestra y modifica el carrito propietario del restaurante.",
   "textdomain": "vicunav-restaurante",
+  "attributes": {
+    "menuUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "checkoutUrl": {
+      "type": "string",
+      "default": ""
+    }
+  },
   "supports": {
     "align": [
       "wide",
