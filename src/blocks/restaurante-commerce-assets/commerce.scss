@@ -72,100 +72,216 @@
 
 .wp-block-vicunav-restaurante-cart {
 
-	.vicu-restaurante-cart__items {
+	.vicu-restaurante-cart__empty {
 		display: grid;
-		gap: 0.75rem;
+		gap: var(--vicu-rest-space-sm);
+		padding-block: var(--vicu-rest-space-xl);
+		text-align: center;
+	}
+
+	.vicu-restaurante-cart__empty-cta {
+
+		@include visual.button;
+
+		justify-self: center;
+		text-decoration: none;
+	}
+
+	.vicu-restaurante-cart__layout {
+		display: grid;
+		gap: var(--vicu-rest-space-lg);
+		grid-template-columns: minmax(0, 1fr);
+		align-items: start;
+	}
+
+	.vicu-restaurante-cart__items {
 		margin: 0;
 		padding: 0;
 		list-style: none;
 	}
 
 	.vicu-restaurante-cart__item {
-
-		@include visual.ticket-card;
-
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) auto;
+		display: flex;
 		gap: var(--vicu-rest-space-sm);
-		padding: var(--vicu-rest-space-sm);
+		align-items: flex-start;
+		padding-block: var(--vicu-rest-space-sm);
+		border-block-end: 1px solid var(--vicu-rest-color-border);
 	}
 
-	.vicu-restaurante-cart__item p {
-		margin-block: 0.25rem;
+	.vicu-restaurante-cart__item-meta {
+		flex: 1;
+		min-width: 0;
+		display: grid;
+		gap: 0.375rem;
+	}
+
+	.vicu-restaurante-cart__item-meta p {
+		margin: 0;
+	}
+
+	.vicu-restaurante-cart__item-name {
+		font-weight: 700;
+	}
+
+	.vicu-restaurante-cart__item-detail {
+		color: var(--vicu-rest-color-muted);
+		font-size: var(--vicu-rest-text-xs);
 	}
 
 	.vicu-restaurante-cart__item-actions {
 		display: flex;
 		flex-wrap: wrap;
-		align-content: start;
-		gap: var(--vicu-rest-space-xs);
+		gap: var(--vicu-rest-space-sm);
 	}
 
 	.vicu-restaurante-cart__item-actions button {
-		min-width: 44px;
-		padding-inline: 0.75rem;
+
+		@include visual.text-action;
 	}
 
-	.vicu-restaurante-cart__item-actions button[data-commerce-action="remove-item"],
-	button[data-commerce-action="remove-discount"] {
-		border-color: var(--vicu-rest-color-danger);
-		background: transparent;
-		color: var(--vicu-rest-color-danger);
+	.vicu-restaurante-cart__item-qty {
+
+		@include visual.stepper;
 	}
 
-	.vicu-restaurante-cart__totals {
+	.vicu-restaurante-cart__item-totals {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) auto;
-		gap: var(--vicu-rest-space-xs) var(--vicu-rest-space-sm);
-		padding: var(--vicu-rest-space-sm);
-		border-block: 2px solid var(--vicu-rest-color-inverse);
+		gap: 0.25rem;
+		justify-items: end;
+		text-align: right;
 	}
 
-	.vicu-restaurante-cart__totals dt,
-	.vicu-restaurante-cart__totals dd {
+	.vicu-restaurante-cart__item-totals p {
 		margin: 0;
 	}
 
-	.vicu-restaurante-cart__totals dd {
+	.vicu-restaurante-cart__item-total {
 		font-weight: 700;
+	}
+
+	.vicu-restaurante-cart__item-remove {
+
+		@include visual.text-action;
+	}
+
+	.vicu-restaurante-cart__sidebar {
+		display: grid;
+		gap: var(--vicu-rest-space-md);
+		align-content: start;
+	}
+
+	.vicu-restaurante-cart__field {
+		display: grid;
+		gap: 0.375rem;
+	}
+
+	.vicu-restaurante-cart__field-label {
+		font-weight: 600;
+	}
+
+	.vicu-restaurante-cart__order-type {
+
+		@include visual.segmented-toggle;
+	}
+
+	.vicu-restaurante-cart__tip {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--vicu-rest-space-xs);
+	}
+
+	.vicu-restaurante-cart__tip button {
+
+		@include visual.chip;
+	}
+
+	.vicu-restaurante-cart__discount-row {
+		display: flex;
+		gap: var(--vicu-rest-space-xs);
+	}
+
+	.vicu-restaurante-cart__discount-row input {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.vicu-restaurante-cart__discount-row button {
+
+		@include visual.button-outline;
+	}
+
+	.vicu-restaurante-cart__discount-applied {
+		display: flex;
+		align-items: center;
+		gap: var(--vicu-rest-space-xs);
+		margin: 0;
+		color: var(--vicu-rest-color-muted);
+		font-size: var(--vicu-rest-text-sm);
+	}
+
+	.vicu-restaurante-cart__discount-applied button {
+
+		@include visual.text-action;
+
+		min-height: auto;
+		padding-inline: 0;
+	}
+
+	.vicu-restaurante-cart__totals {
+
+		@include visual.summary-panel;
+	}
+
+	.vicu-restaurante-cart__totals-row {
+
+		@include visual.summary-row;
+	}
+
+	.vicu-restaurante-cart__checkout-cta {
+
+		@include visual.button;
+
+		width: 100%;
+		text-decoration: none;
 	}
 }
 
-.wp-block-vicunav-restaurante-checkout,
 .wp-block-vicunav-restaurante-order-status {
 
-	.vicu-restaurante-checkout__form,
 	.vicu-restaurante-order-status__lookup,
 	.vicu-restaurante-order-status__actions {
 		max-width: 48rem;
 	}
 }
 
-@media (min-width: 48rem) {
+// La fuente centra el checkout en una sola columna angosta (480px) en
+// cualquier viewport — no hay breakpoint propio para esta pantalla.
+.wp-block-vicunav-restaurante-checkout {
 
-	.wp-block-vicunav-restaurante-cart .vicu-restaurante-cart__controls {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
+	.vicu-restaurante-checkout__form,
+	[data-checkout-summary],
+	[data-checkout-result] {
+		max-width: 30rem;
+		margin-inline: auto;
 	}
 
-	.wp-block-vicunav-restaurante-cart .vicu-restaurante-cart__discount {
-		grid-column: 1 / -1;
-		grid-template-columns: minmax(12rem, 1fr) auto auto;
-		align-items: end;
-	}
-
-	.wp-block-vicunav-restaurante-cart .vicu-restaurante-cart__discount label {
-		grid-column: 1 / -1;
+	// El resultado "pedido creado" no es un panel bordeado: es texto
+	// centrado sobre el fondo de página, igual que la fuente.
+	[data-checkout-result]:not(:empty) {
+		padding: var(--vicu-rest-space-lg) var(--vicu-rest-space-sm);
+		border: 0;
+		background: none;
+		text-align: center;
+		max-width: 32.5rem;
 	}
 }
 
-@media (max-width: 37.5rem) {
+// La fuente pasa el carrito de 1 a 2 columnas (items 1.4fr | sidebar 1fr)
+// exactamente en 768px — único breakpoint que afecta esta pantalla.
+@media (min-width: 48rem) {
 
-	.wp-block-vicunav-restaurante-cart .vicu-restaurante-cart__item {
-		grid-template-columns: 1fr;
-	}
-
-	.wp-block-vicunav-restaurante-cart .vicu-restaurante-cart__item-actions button {
-		flex: 1 1 44px;
+	.wp-block-vicunav-restaurante-cart .vicu-restaurante-cart__layout {
+		grid-template-columns: minmax(0, 1.4fr) minmax(17.5rem, 1fr);
 	}
 }
 
