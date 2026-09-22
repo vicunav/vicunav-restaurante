@@ -15,6 +15,7 @@ const publicBlocks = [
 	'restaurante-order-status',
 	'restaurante-reservations',
 	'restaurante-saved-pizzas',
+	'restaurante-header-actions',
 ];
 
 for (const block of publicBlocks) {
@@ -74,4 +75,4 @@ for (const identityColor of ['#faebd7', '#0d0d0d', '#4a3b33', '#9daaaa']) {
 	}
 }
 
-console.log('Contrato visual neutral de los siete bloques validado.');
+console.log('Contrato visual neutral de los ocho bloques validado.');

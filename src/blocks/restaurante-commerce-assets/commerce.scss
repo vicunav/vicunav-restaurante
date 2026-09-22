@@ -173,8 +173,37 @@
 
 	.wp-block-vicunav-restaurante-cart *,
 	.wp-block-vicunav-restaurante-checkout *,
-	.wp-block-vicunav-restaurante-order-status * {
+	.wp-block-vicunav-restaurante-order-status *,
+	.wp-block-vicunav-restaurante-header-actions * {
 
 		@include visual.reduced-motion;
+	}
+}
+
+.wp-block-vicunav-restaurante-header-actions {
+
+	@include visual.root;
+
+	display: flex;
+	align-items: center;
+	gap: var(--vicu-rest-space-xs);
+
+	.vicu-restaurante-header-actions__action {
+
+		@include visual.icon-button;
+	}
+
+	.vicu-restaurante-header-actions__action:focus-visible {
+
+		@include visual.focus-ring;
+	}
+
+	.vicu-restaurante-header-actions__badge {
+
+		@include visual.badge-counter;
+	}
+
+	.vicu-restaurante-header-actions__badge[hidden] {
+		display: none;
 	}
 }

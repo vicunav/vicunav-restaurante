@@ -68,5 +68,18 @@ export function responseMessage( payload, fallback ) {
  * @return {boolean} Si corresponde recuperar el carrito.
  */
 export function shouldLoadCart( role, hasIdentity ) {
-	return hasIdentity && [ 'cart', 'checkout' ].includes( role );
+	return hasIdentity && [ 'cart', 'checkout', 'header' ].includes( role );
+}
+
+/**
+ * Suma las cantidades del carrito para el contador compacto de cabecera.
+ *
+ * @param {Object|null} cart Carrito actual o null si no hay identidad.
+ * @return {number} Cantidad total de artículos.
+ */
+export function cartItemCount( cart ) {
+	if ( ! cart || ! Array.isArray( cart.items ) ) {
+		return 0;
+	}
+	return cart.items.reduce( ( sum, item ) => sum + item.quantity, 0 );
 }

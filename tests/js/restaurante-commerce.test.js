@@ -1,4 +1,5 @@
 import {
+	cartItemCount,
 	cartItemPayload,
 	formatMoney,
 	idempotencyKey,
@@ -68,7 +69,19 @@ describe( 'modelo cliente de comercio', () => {
 	test( 'solo recupera carrito cuando existe identidad observable', () => {
 		expect( shouldLoadCart( 'cart', true ) ).toBe( true );
 		expect( shouldLoadCart( 'checkout', true ) ).toBe( true );
+		expect( shouldLoadCart( 'header', true ) ).toBe( true );
 		expect( shouldLoadCart( 'cart', false ) ).toBe( false );
+		expect( shouldLoadCart( 'header', false ) ).toBe( false );
 		expect( shouldLoadCart( 'order', true ) ).toBe( false );
+	} );
+
+	test( 'suma cantidades para el contador compacto de cabecera', () => {
+		expect( cartItemCount( null ) ).toBe( 0 );
+		expect( cartItemCount( { items: [] } ) ).toBe( 0 );
+		expect(
+			cartItemCount( {
+				items: [ { quantity: 2 }, { quantity: 1 } ],
+			} )
+		).toBe( 3 );
 	} );
 } );
