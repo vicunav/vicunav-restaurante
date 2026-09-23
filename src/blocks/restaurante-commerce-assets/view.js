@@ -6,6 +6,7 @@ import {
 } from '@wordpress/interactivity';
 
 import {
+	cartItemCount,
 	cartItemPayload,
 	formatMoney,
 	idempotencyKey,
@@ -120,10 +121,33 @@ const loadZones = async ( element ) => {
 const renderCommerce = () => {
 	allRoots( 'cart' ).forEach( renderCart );
 	allRoots( 'checkout' ).forEach( renderCheckout );
+	allRoots( 'header' ).forEach( renderHeader );
 	if ( currentOrder ) {
 		allRoots( 'order' ).forEach( ( element ) =>
 			renderOrder( element, currentOrder )
 		);
+	}
+};
+
+const renderHeader = ( element ) => {
+	const badge = element.querySelector( '[data-header-cart-count]' );
+	const link = element.querySelector( '[data-header-cart-link]' );
+	const announcement = element.querySelector( '[data-header-cart-announce]' );
+	const count = cartItemCount( currentCart );
+	const label =
+		count > 0
+			? element.dataset.cartWithItemsLabel.replace( '%d', count )
+			: element.dataset.cartEmptyLabel;
+
+	if ( badge ) {
+		badge.textContent = String( count );
+		badge.hidden = count === 0;
+	}
+	if ( link ) {
+		link.setAttribute( 'aria-label', label );
+	}
+	if ( announcement ) {
+		announcement.textContent = label;
 	}
 };
 
@@ -510,7 +534,7 @@ const initialize = async ( element, role ) => {
 	}
 	if ( shouldLoadCart( role, element.dataset.hasCartIdentity === '1' ) ) {
 		await loadCart( element );
-	} else if ( role === 'cart' || role === 'checkout' ) {
+	} else if ( role === 'cart' || role === 'checkout' || role === 'header' ) {
 		renderCommerce();
 	}
 	if ( role === 'order' ) {

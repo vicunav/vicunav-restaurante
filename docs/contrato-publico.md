@@ -41,6 +41,7 @@ internas de otro paquete.
 | Bloque de pizzas guardadas | REST-02Q | Implementado |
 | E2E, privacidad, rendimiento y release candidata | REST-02R | Implementado |
 | Contrato visual neutral de los siete bloques | REST-02S | Implementado |
+| Acciones compactas de cabecera (carrito y cuenta) | #46 | Implementado |
 
 Una superficie planificada no es una API disponible. Cada issue actualiza esta matriz,
 implementa el contrato correspondiente y añade pruebas antes de cambiar su estado.
@@ -708,9 +709,9 @@ privados.
 Están implementados `vicunav/restaurante-menu`,
 `vicunav/restaurante-pizza-builder`, `vicunav/restaurante-cart`,
 `vicunav/restaurante-checkout`, `vicunav/restaurante-order-status`,
-`vicunav/restaurante-reservations` y `vicunav/restaurante-saved-pizzas`. La superficie
-informativa restante usa este nombre estable y permanece planificada hasta su issue
-propietario:
+`vicunav/restaurante-reservations`, `vicunav/restaurante-saved-pizzas` y
+`vicunav/restaurante-header-actions`. La superficie informativa restante usa este
+nombre estable y permanece planificada hasta su issue propietario:
 
 - `vicunav/restaurante-delivery-zones`;
 
@@ -930,6 +931,44 @@ El build reproducible de REST-02Q mide:
 REST-02R conserva como gate separado la validación E2E, accesible, privada, de
 rendimiento y compatibilidad antes de publicar 1.0.0. FSE puede editar composición y
 contenido, pero no permisos, schemas o comportamiento transaccional.
+
+### Acciones de cabecera implementadas
+
+`vicunav/restaurante-header-actions` usa API 3, render dinámico y participa del mismo
+store de Interactivity API que carrito, checkout y estado de pedido (rol `header`
+dentro de `vicunav/restaurante-commerce`). El SSR nunca incluye el contenido del
+carrito: publica un contador oculto en cero y un enlace de cuenta cuyo destino depende
+solo de `is_user_logged_in()`.
+
+El bloque expone dos accesos: uno al carrito (con contador en vivo) y uno a la cuenta o
+pizzas guardadas. El contador se hidrata leyendo el mismo carrito ya cargado por
+cualquier otro bloque de comercio en la página — no dispara una lectura REST propia
+adicional — y se actualiza junto con cualquier mutación de carrito visible en la misma
+página mediante una región `role="status"` con `aria-live="polite"`. Sin identidad de
+carrito observable, el bloque no intenta la lectura REST y muestra el contador vacío.
+
+Una cuenta autenticada recibe el destino configurado en `accountUrl` y `X-WP-Nonce`
+publicado por el store compartido; un visitante recibe `wp_login_url()` con retorno a
+la página actual o a `accountUrl` si se configuró. `cartUrl` y `accountUrl` son
+atributos editables por bloque (sin valor por defecto propio): la composición FSE
+decide a qué página apunta cada acción, ya que el plugin no asume rutas fijas del
+demo.
+
+FSE puede cambiar alineación, anchor, color y espaciado, además de `cartUrl` y
+`accountUrl` desde el panel del bloque. Los dos accesos son objetivos táctiles de
+44×44 px con foco visible; ninguno depende de JavaScript para navegar, ya que ambos
+son enlaces `<a>` reales.
+
+El bloque no añade un módulo ni estilos frontend propios: extiende el módulo y el
+stylesheet ya compartidos por carrito, checkout y estado de pedido. El build
+reproducible mide:
+
+| Asset | Bytes minificados | Bytes gzip |
+| --- | ---: | ---: |
+| Módulo compartido `view.js` (con el rol `header`) | 9.502 | 3.451 |
+| Estilos compartidos `style-index.css` (con las acciones de cabecera) | 17.637 | 2.393 |
+| Editor `index.js` | 1.771 | 796 |
+| Editor `index.css` | 66 | 92 |
 
 ## Gestión de cambios
 

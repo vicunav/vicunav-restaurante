@@ -1,4 +1,4 @@
-// Contrato visual neutral compartido por los siete bloques públicos del plugin.
+// Contrato visual neutral compartido por los ocho bloques públicos del plugin.
 // Reescrito desde cero (no extiende el contrato anterior): auditado contra los
 // estilos computados reales de legacy/Restaurante Guasábara.dc.html en
 // vicunav-design-to-claude-demo-restaurante, y contra los slugs agnósticos que
@@ -194,6 +194,57 @@
 	&.is-unavailable {
 		opacity: 0.6;
 	}
+}
+
+// Botón circular de icono (acciones compactas de cabecera: carrito, cuenta).
+// 44×44 px fijo en todos los viewports — la fuente reduce a 34px en su
+// variante oscura, un defecto de target táctil que no se preserva aquí.
+
+@mixin icon-button {
+	display: inline-flex;
+	position: relative;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0;
+	border: 1px solid var(--vicu-rest-color-border);
+	border-radius: var(--vicu-rest-radius-round);
+	background: var(--vicu-rest-color-surface);
+	color: var(--vicu-rest-color-text);
+	text-decoration: none;
+	cursor: pointer;
+	transition: opacity var(--vicu-rest-motion-base) ease;
+
+	&:hover {
+		opacity: 0.72;
+	}
+
+	svg {
+		width: 18px;
+		height: 18px;
+	}
+}
+
+// Insignia numérica pequeña superpuesta a un icon-button (contador de
+// carrito). Distinta de badge-pill-overlay: circular, no rectangular, y
+// dimensionada para uno o dos dígitos.
+@mixin badge-counter {
+	position: absolute;
+	top: -4px;
+	right: -4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 18px;
+	height: 18px;
+	padding: 0 4px;
+	border-radius: var(--vicu-rest-radius-pill);
+	background: var(--vicu-rest-color-accent-soft);
+	color: var(--vicu-rest-color-on-inverse);
+	font-size: 0.65625rem;
+	font-weight: 800;
+	line-height: 1;
 }
 
 // Insignia circular sobre la media de una ticket-card (precio, destacado).

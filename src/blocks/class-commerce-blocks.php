@@ -125,39 +125,43 @@ final class CommerceBlocks {
 	/**
 	 * Atributos compartidos sin datos privados de carrito, pedido o contacto.
 	 *
-	 * @param string $role Rol coordinado del bloque.
+	 * @param string $role  Rol coordinado del bloque.
+	 * @param array  $extra Atributos adicionales propios del bloque llamante.
 	 * @return string Atributos escapados por WordPress.
 	 */
-	private static function attributes( string $role ): string {
+	public static function attributes( string $role, array $extra = array() ): string {
 		// Solo se publica la existencia de una identidad, nunca la cookie opaca.
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- La presencia no se usa como credencial.
 		$has_cart_identity = is_user_logged_in() || isset( $_COOKIE[ CartSessionService::COOKIE_NAME ] );
 
 		return get_block_wrapper_attributes(
-			array(
-				'data-wp-interactive'      => 'vicunav/restaurante-commerce',
-				'data-wp-context'          => wp_json_encode( array( 'role' => $role ) ),
-				'data-wp-init'             => 'actions.initialize',
-				'data-wp-on--click'        => 'actions.handleClick',
-				'data-wp-on--change'       => 'actions.handleChange',
-				'data-wp-on--submit'       => 'actions.handleSubmit',
-				'data-vicu-commerce-role'  => $role,
-				'data-has-cart-identity'   => $has_cart_identity ? '1' : '0',
-				'data-rest-cart'           => esc_url_raw( rest_url( 'vicu/v1/restaurante/cart' ) ),
-				'data-rest-carts'          => esc_url_raw( rest_url( 'vicu/v1/restaurante/carts' ) ),
-				'data-rest-cart-items'     => esc_url_raw( rest_url( 'vicu/v1/restaurante/cart/items' ) ),
-				'data-rest-cart-discount'  => esc_url_raw( rest_url( 'vicu/v1/restaurante/cart/discount' ) ),
-				'data-rest-fulfillment'    => esc_url_raw( rest_url( 'vicu/v1/restaurante/cart/fulfillment' ) ),
-				'data-rest-tip'            => esc_url_raw( rest_url( 'vicu/v1/restaurante/cart/tip' ) ),
-				'data-rest-zones'          => esc_url_raw( rest_url( 'vicu/v1/restaurante/delivery-zones' ) ),
-				'data-rest-orders'         => esc_url_raw( rest_url( 'vicu/v1/restaurante/orders' ) ),
-				'data-rest-nonce'          => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
-				'data-locale'              => str_replace( '_', '-', determine_locale() ),
-				'data-loading-message'     => __( 'Actualizando.', 'vicunav-restaurante' ),
-				'data-error-message'       => __( 'No pudimos completar la operación.', 'vicunav-restaurante' ),
-				'data-conflict-message'    => __( 'Los datos cambiaron. Mostramos la versión más reciente.', 'vicunav-restaurante' ),
-				'data-empty-message'       => __( 'Tu carrito está vacío.', 'vicunav-restaurante' ),
-				'data-order-saved-message' => __( 'Pedido creado. Guarda su identificador para consultarlo.', 'vicunav-restaurante' ),
+			array_merge(
+				array(
+					'data-wp-interactive'      => 'vicunav/restaurante-commerce',
+					'data-wp-context'          => wp_json_encode( array( 'role' => $role ) ),
+					'data-wp-init'             => 'actions.initialize',
+					'data-wp-on--click'        => 'actions.handleClick',
+					'data-wp-on--change'       => 'actions.handleChange',
+					'data-wp-on--submit'       => 'actions.handleSubmit',
+					'data-vicu-commerce-role'  => $role,
+					'data-has-cart-identity'   => $has_cart_identity ? '1' : '0',
+					'data-rest-cart'           => esc_url_raw( rest_url( 'vicu/v1/restaurante/cart' ) ),
+					'data-rest-carts'          => esc_url_raw( rest_url( 'vicu/v1/restaurante/carts' ) ),
+					'data-rest-cart-items'     => esc_url_raw( rest_url( 'vicu/v1/restaurante/cart/items' ) ),
+					'data-rest-cart-discount'  => esc_url_raw( rest_url( 'vicu/v1/restaurante/cart/discount' ) ),
+					'data-rest-fulfillment'    => esc_url_raw( rest_url( 'vicu/v1/restaurante/cart/fulfillment' ) ),
+					'data-rest-tip'            => esc_url_raw( rest_url( 'vicu/v1/restaurante/cart/tip' ) ),
+					'data-rest-zones'          => esc_url_raw( rest_url( 'vicu/v1/restaurante/delivery-zones' ) ),
+					'data-rest-orders'         => esc_url_raw( rest_url( 'vicu/v1/restaurante/orders' ) ),
+					'data-rest-nonce'          => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
+					'data-locale'              => str_replace( '_', '-', determine_locale() ),
+					'data-loading-message'     => __( 'Actualizando.', 'vicunav-restaurante' ),
+					'data-error-message'       => __( 'No pudimos completar la operación.', 'vicunav-restaurante' ),
+					'data-conflict-message'    => __( 'Los datos cambiaron. Mostramos la versión más reciente.', 'vicunav-restaurante' ),
+					'data-empty-message'       => __( 'Tu carrito está vacío.', 'vicunav-restaurante' ),
+					'data-order-saved-message' => __( 'Pedido creado. Guarda su identificador para consultarlo.', 'vicunav-restaurante' ),
+				),
+				$extra
 			)
 		);
 	}

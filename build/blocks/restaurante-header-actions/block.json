@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "vicunav/restaurante-header-actions",
+  "version": "1.0.0",
+  "title": "Acciones de cabecera del restaurante",
+  "category": "widgets",
+  "icon": "cart",
+  "description": "Acciones compactas de cabecera: acceso al carrito con contador en vivo y acceso a la cuenta o pizzas guardadas.",
+  "textdomain": "vicunav-restaurante",
+  "attributes": {
+    "cartUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "accountUrl": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "supports": {
+    "anchor": true,
+    "color": {
+      "background": true,
+      "text": true
+    },
+    "html": false,
+    "interactivity": true,
+    "spacing": {
+      "margin": true,
+      "padding": true
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "vicu-restaurante-commerce-style",
+  "viewScriptModule": "vicu-restaurante-commerce",
+  "render": "file:./render.php"
+}
