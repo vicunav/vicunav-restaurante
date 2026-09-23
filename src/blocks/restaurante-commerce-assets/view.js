@@ -151,98 +151,202 @@ const renderHeader = ( element ) => {
 	}
 };
 
-const renderCart = ( element ) => {
-	const list = element.querySelector( '[data-cart-items]' );
-	const empty = element.querySelector( '[data-cart-empty]' );
-	const controls = element.querySelector( '[data-cart-controls]' );
-	const totals = element.querySelector( '[data-cart-totals]' );
-	list.replaceChildren();
+/**
+ * Resume una pizza guardada en el carrito a partir de sus componentes
+ * cotizados (únicos datos con nombre legible que expone el snapshot).
+ *
+ * @param {Object} components Componentes cotizados de la pizza.
+ * @return {string} Resumen legible o cadena vacía.
+ */
+const pizzaSummary = ( components ) => {
+	if ( ! components ) {
+		return '';
+	}
+	const parts = [
+		components.size?.name,
+		components.crust?.name,
+		components.sauce?.name,
+		components.cheese?.name,
+	].filter( Boolean );
+	if ( Array.isArray( components.toppings ) && components.toppings.length ) {
+		parts.push(
+			components.toppings.map( ( topping ) => topping.name ).join( ', ' )
+		);
+	}
+	return parts.join( ' · ' );
+};
 
-	if ( ! currentCart || currentCart.items.length === 0 ) {
-		empty.hidden = false;
-		controls.hidden = true;
-		totals.hidden = true;
-		setStatus( element, '' );
-		return;
+const stepperNode = ( item ) => {
+	const wrapper = node( 'div', '', 'vicu-restaurante-cart__item-qty' );
+	wrapper.setAttribute( 'role', 'group' );
+	wrapper.setAttribute(
+		'aria-label',
+		`Cantidad de ${ item.snapshot.name || 'producto' }`
+	);
+	const decrement = button( '−', 'decrement', item.line_id );
+	decrement.setAttribute( 'aria-label', 'Quitar uno' );
+	const count = node( 'span', String( item.quantity ) );
+	count.setAttribute( 'aria-live', 'polite' );
+	const increment = button( '+', 'increment', item.line_id );
+	increment.setAttribute( 'aria-label', 'Agregar uno' );
+	wrapper.append( decrement, count, increment );
+	return wrapper;
+};
+
+const cartLineNode = ( item, currency, locale ) => {
+	const row = node( 'li', '', 'vicu-restaurante-cart__item' );
+	const meta = node( 'div', '', 'vicu-restaurante-cart__item-meta' );
+	meta.append(
+		node(
+			'p',
+			item.snapshot.name || 'Producto',
+			'vicu-restaurante-cart__item-name'
+		)
+	);
+
+	const detail =
+		item.type === 'pizza'
+			? pizzaSummary( item.snapshot.components )
+			: item.snapshot.note || '';
+	if ( detail ) {
+		meta.append(
+			node( 'p', detail, 'vicu-restaurante-cart__item-detail' )
+		);
 	}
 
-	empty.hidden = true;
-	controls.hidden = false;
-	totals.hidden = false;
-	const currency = currentCart.totals.currency;
-	const locale = element.dataset.locale;
-
-	currentCart.items.forEach( ( item ) => {
-		const row = node( 'li', '', 'vicu-restaurante-cart__item' );
-		const content = node( 'div' );
-		content.append( node( 'strong', item.snapshot.name || 'Producto' ) );
-		content.append(
-			node(
-				'p',
-				`${ item.quantity } × ${ formatMoney(
-					item.unit_price_minor,
-					currency,
-					locale
-				) }`
-			)
-		);
-		content.append(
-			node( 'p', formatMoney( item.line_total_minor, currency, locale ) )
-		);
+	if ( item.type === 'pizza' ) {
 		const actions = node(
 			'div',
 			'',
 			'vicu-restaurante-cart__item-actions'
 		);
 		actions.append(
-			button( '−', 'decrement', item.line_id ),
-			button( '+', 'increment', item.line_id ),
+			button( 'Duplicar', 'duplicate-pizza-line', item.line_id ),
 			button( 'Quitar', 'remove-item', item.line_id )
 		);
-		row.append( content, actions );
-		list.append( row );
+		meta.append( actions );
+	}
+
+	meta.append( stepperNode( item ) );
+
+	const totalsCol = node( 'div', '', 'vicu-restaurante-cart__item-totals' );
+	totalsCol.append(
+		node(
+			'p',
+			formatMoney( item.line_total_minor, currency, locale ),
+			'vicu-restaurante-cart__item-total'
+		)
+	);
+	if ( item.type !== 'pizza' ) {
+		const remove = button( 'Quitar', 'remove-item', item.line_id );
+		remove.className = 'vicu-restaurante-cart__item-remove';
+		totalsCol.append( remove );
+	}
+
+	row.append( meta, totalsCol );
+	return row;
+};
+
+const renderCart = ( element ) => {
+	const list = element.querySelector( '[data-cart-items]' );
+	const empty = element.querySelector( '[data-cart-empty]' );
+	const layout = element.querySelector( '[data-cart-layout]' );
+	list.replaceChildren();
+
+	if ( ! currentCart || currentCart.items.length === 0 ) {
+		empty.hidden = false;
+		layout.hidden = true;
+		setStatus( element, '' );
+		return;
+	}
+
+	empty.hidden = true;
+	layout.hidden = false;
+	const totals = element.querySelector( '[data-cart-totals]' );
+	const currency = currentCart.totals.currency;
+	const locale = element.dataset.locale;
+
+	currentCart.items.forEach( ( item ) => {
+		list.append( cartLineNode( item, currency, locale ) );
 	} );
 
-	const fulfillment = element.querySelector( '[data-cart-fulfillment]' );
+	element
+		.querySelectorAll( '[data-commerce-action="set-fulfillment"]' )
+		.forEach( ( control ) => {
+			control.setAttribute(
+				'aria-checked',
+				control.dataset.fulfillment === currentCart.fulfillment
+					? 'true'
+					: 'false'
+			);
+		} );
+
 	const zoneField = element.querySelector( '[data-cart-zone-field]' );
 	const zone = element.querySelector( '[data-cart-zone]' );
-	const tip = element.querySelector( '[data-cart-tip]' );
-	fulfillment.value = currentCart.fulfillment;
 	zoneField.hidden = currentCart.fulfillment !== 'delivery';
 	zone.replaceChildren();
-	deliveryZones.forEach( ( item ) => {
+	deliveryZones.forEach( ( zoneItem ) => {
 		const option = node(
 			'option',
-			`${ item.name } (${ formatMoney(
-				item.fee_minor,
+			`${ zoneItem.name } (${ formatMoney(
+				zoneItem.fee_minor,
 				currency,
 				locale
 			) })`
 		);
-		option.value = item.public_id;
+		option.value = zoneItem.public_id;
 		zone.append( option );
 	} );
 	zone.value = currentCart.delivery_zone_id || '';
-	tip.value = String( currentCart.tip_rate_bps );
+
+	element
+		.querySelectorAll( '[data-commerce-action="set-tip"]' )
+		.forEach( ( control ) => {
+			control.setAttribute(
+				'aria-pressed',
+				Number( control.dataset.tipRate ) === currentCart.tip_rate_bps
+					? 'true'
+					: 'false'
+			);
+		} );
+
+	const discountApplied = element.querySelector(
+		'[data-cart-discount-applied]'
+	);
+	const discountCode = element.querySelector( '[data-cart-discount-code]' );
+	discountApplied.hidden = ! currentCart.discount_code;
+	discountCode.textContent = currentCart.discount_code || '';
+
 	renderTotals( totals, currentCart.totals, locale );
 	setStatus( element, '' );
 };
 
 const renderTotals = ( target, totals, locale ) => {
 	target.replaceChildren();
+	const taxBase = totals.subtotal_minor - totals.discount_total;
+	const taxRatePercent =
+		taxBase > 0 ? Math.round( ( totals.tax_total / taxBase ) * 100 ) : 0;
 	const rows = [
-		[ 'Subtotal', totals.subtotal_minor ],
-		[ 'Descuento', -totals.discount_total ],
-		[ 'Impuestos', totals.tax_total ],
-		[ 'Propina', totals.tip_total ],
-		[ 'Delivery', totals.delivery_total ],
-		[ 'Total', totals.total ],
+		[ 'Subtotal', totals.subtotal_minor, false ],
+		[ 'Descuento', -totals.discount_total, false ],
+		[ `Impuesto (${ taxRatePercent }%)`, totals.tax_total, false ],
+		[ 'Propina', totals.tip_total, false ],
+		[ 'Delivery', totals.delivery_total, false ],
+		[ 'Total', totals.total, true ],
 	];
-	rows.forEach( ( [ label, value ] ) => {
-		target.append(
-			node( 'dt', label ),
-			node( 'dd', formatMoney( value, totals.currency, locale ) )
+	rows.forEach( ( [ label, value, isTotal ] ) => {
+		const row = node(
+			'div',
+			'',
+			isTotal
+				? 'vicu-restaurante-cart__totals-row is-total'
+				: 'vicu-restaurante-cart__totals-row'
 		);
+		row.append(
+			node( 'span', label ),
+			node( 'span', formatMoney( value, totals.currency, locale ) )
+		);
+		target.append( row );
 	} );
 };
 
@@ -297,6 +401,28 @@ const mutateCart = async ( element, url, method, payload = null ) => {
 	}
 };
 
+/**
+ * Aplica un código de descuento y detecta el rechazo silencioso del
+ * dominio: la API responde 200 con `discount_code` en null cuando el
+ * código no existe o dejó de estar vigente, sin devolver un error propio.
+ *
+ * @param {Object} element Raíz del bloque.
+ * @param {string} code    Código ingresado por la persona.
+ */
+const applyDiscount = async ( element, code ) => {
+	const normalizedCode = ( code || '' ).trim().toUpperCase();
+	await mutateCart( element, element.dataset.restCartDiscount, 'PUT', {
+		code: normalizedCode,
+	} );
+	if (
+		normalizedCode &&
+		currentCart &&
+		currentCart.discount_code !== normalizedCode
+	) {
+		setError( element, element.dataset.invalidDiscountMessage );
+	}
+};
+
 const changeQuantity = ( element, lineId, delta ) => {
 	const item = currentCart?.items.find(
 		( candidate ) => candidate.line_id === lineId
@@ -319,6 +445,31 @@ const changeQuantity = ( element, lineId, delta ) => {
 			item: cartItemPayload( item, item.quantity + delta ),
 		}
 	);
+};
+
+const setFulfillment = ( element, fulfillment ) => {
+	const deliveryZoneId =
+		fulfillment === 'delivery'
+			? currentCart?.delivery_zone_id ||
+			  deliveryZones[ 0 ]?.public_id ||
+			  ''
+			: null;
+	return mutateCart( element, element.dataset.restFulfillment, 'PUT', {
+		fulfillment,
+		delivery_zone_id: deliveryZoneId,
+	} );
+};
+
+const duplicatePizzaLine = ( element, lineId ) => {
+	const item = currentCart?.items.find(
+		( candidate ) => candidate.line_id === lineId
+	);
+	if ( ! item || item.type !== 'pizza' ) {
+		return;
+	}
+	return mutateCart( element, element.dataset.restCartItems, 'POST', {
+		item: cartItemPayload( item, 1 ),
+	} );
 };
 
 const saveSession = ( key, value ) => {
@@ -560,12 +711,9 @@ const { actions } = store( 'vicunav/restaurante-commerce', {
 			}
 			const element = root();
 			if ( form.dataset.commerceForm === 'discount' ) {
-				const code = new FormData( form ).get( 'code' );
-				void mutateCart(
+				void applyDiscount(
 					element,
-					element.dataset.restCartDiscount,
-					'PUT',
-					{ code }
+					new FormData( form ).get( 'code' )
 				);
 			} else if ( form.dataset.commerceForm === 'checkout' ) {
 				void checkout( element, form );
@@ -605,27 +753,23 @@ const { actions } = store( 'vicunav/restaurante-commerce', {
 					'DELETE'
 				);
 			}
+			if ( action === 'set-fulfillment' ) {
+				void setFulfillment( element, control.dataset.fulfillment );
+			}
+			if ( action === 'set-tip' ) {
+				void mutateCart( element, element.dataset.restTip, 'PUT', {
+					tip_rate_bps: Number( control.dataset.tipRate ),
+				} );
+			}
+			if ( action === 'duplicate-pizza-line' ) {
+				void duplicatePizzaLine( element, control.dataset.lineId );
+			}
 			if ( action === 'refresh-order' && currentOrder ) {
 				void loadOrder( element, currentOrder.public_id );
 			}
 		},
 		handleChange( event ) {
 			const element = root();
-			if ( event.target.matches( '[data-cart-fulfillment]' ) ) {
-				const fulfillment = event.target.value;
-				const deliveryZoneId =
-					fulfillment === 'delivery'
-						? currentCart.delivery_zone_id ||
-						  deliveryZones[ 0 ]?.public_id ||
-						  ''
-						: null;
-				void mutateCart(
-					element,
-					element.dataset.restFulfillment,
-					'PUT',
-					{ fulfillment, delivery_zone_id: deliveryZoneId }
-				);
-			}
 			if ( event.target.matches( '[data-cart-zone]' ) ) {
 				void mutateCart(
 					element,
@@ -636,11 +780,6 @@ const { actions } = store( 'vicunav/restaurante-commerce', {
 						delivery_zone_id: event.target.value,
 					}
 				);
-			}
-			if ( event.target.matches( '[data-cart-tip]' ) ) {
-				void mutateCart( element, element.dataset.restTip, 'PUT', {
-					tip_rate_bps: Number( event.target.value ),
-				} );
 			}
 		},
 	},

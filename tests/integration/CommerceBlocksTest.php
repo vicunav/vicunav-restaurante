@@ -5,6 +5,8 @@
  * @package Vicunav_Restaurante
  */
 
+use Vicu\Restaurante\Settings\RestaurantSettings;
+
 /** Verifica metadata, SSR privado y carga compartida de assets. */
 final class CommerceBlocksTest extends WP_UnitTestCase {
 	/** Aísla la cola compartida antes de cada comprobación. */
@@ -47,6 +49,37 @@ final class CommerceBlocksTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'customer_phone', $output );
 		$this->assertStringNotContainsString( '<h1', $output );
 		$this->assertContains( 'vicu-restaurante-commerce', vicu_restaurante_test_script_module_queue() );
+	}
+
+	/** El carrito reproduce jerarquía, acciones y estados de la fuente (#49): vacío con CTA,
+	 * tipo de pedido como toggle accesible, propina dinámica desde ajustes y descuento
+	 * condicional, sin exponer datos privados en el SSR. */
+	public function test_cart_reproduces_source_structure(): void {
+		update_option(
+			RestaurantSettings::OPTION_NAME,
+			array(
+				'currency'                    => 'USD',
+				'tax_rate_bps'                => 800,
+				'tip_rates_bps'               => array( 0, 1000, 1500 ),
+				'cart_lifetime_hours'         => 72,
+				'payment_lifetime_minutes'    => 30,
+				'manual_payment_instructions' => '',
+			),
+			false
+		);
+
+		$output = do_blocks( '<!-- wp:vicunav/restaurante-cart {"menuUrl":"https://example.test/menu/","checkoutUrl":"https://example.test/checkout/"} /-->' );
+
+		$this->assertStringContainsString( 'data-cart-empty', $output );
+		$this->assertStringContainsString( 'https://example.test/menu/', $output );
+		$this->assertStringContainsString( 'data-cart-layout', $output );
+		$this->assertStringContainsString( 'data-commerce-action="set-fulfillment"', $output );
+		$this->assertStringContainsString( 'role="radiogroup"', $output );
+		$this->assertStringContainsString( 'data-commerce-action="set-tip"', $output );
+		$this->assertStringContainsString( 'data-tip-rate="1500"', $output );
+		$this->assertStringContainsString( 'data-cart-discount-applied', $output );
+		$this->assertStringContainsString( 'https://example.test/checkout/', $output );
+		$this->assertStringNotContainsString( '<h1', $output );
 	}
 
 	/** Los assets compartidos solo se cargan cuando aparece una superficie de comercio. */
