@@ -132,6 +132,7 @@ final class CommerceBlocks {
 			</form>
 			<p data-commerce-status role="status" aria-live="polite" aria-atomic="true"></p>
 			<p data-commerce-error role="alert" hidden></p>
+			<ol class="vicu-restaurante-order-status__timeline" data-order-timeline aria-label="<?php esc_attr_e( 'Línea de tiempo del pedido', 'vicunav-restaurante' ); ?>" hidden></ol>
 			<div data-order-detail hidden></div>
 			<div class="vicu-restaurante-order-status__actions" data-order-actions hidden>
 				<button type="button" data-commerce-action="refresh-order"><?php esc_html_e( 'Actualizar estado', 'vicunav-restaurante' ); ?></button>

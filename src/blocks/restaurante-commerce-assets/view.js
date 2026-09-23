@@ -557,12 +557,31 @@ const checkout = async ( element, form ) => {
 	}
 };
 
+const ORDER_BADGE_TONES = {
+	pendiente_pago: 'is-pending',
+	pago_en_revision: 'is-pending',
+	confirmado: 'is-progress',
+	en_preparacion: 'is-progress',
+	listo: 'is-progress',
+	en_reparto: 'is-progress',
+	completado: 'is-positive',
+	cancelado: 'is-danger',
+	expirado: 'is-danger',
+};
+
 const renderOrderSummary = ( target, order, locale ) => {
 	target.replaceChildren();
-	target.append( node( 'p', `Pedido ${ order.order_number }` ) );
-	target.append(
-		node( 'p', `Estado: ${ order.status.replaceAll( '_', ' ' ) }` )
+	const heading = node( 'div', '', 'vicu-restaurante-order-status__heading' );
+	heading.append( node( 'p', `Pedido ${ order.order_number }` ) );
+	const badge = node(
+		'span',
+		ORDER_STEP_LABELS[ order.status ] || order.status,
+		`vicu-restaurante-order-status__badge ${
+			ORDER_BADGE_TONES[ order.status ] || 'is-pending'
+		}`
 	);
+	heading.append( badge );
+	target.append( heading );
 	target.append(
 		node(
 			'p',
@@ -611,6 +630,87 @@ const loadOrder = async ( element, publicId ) => {
 	}
 };
 
+// Secuencia feliz real del dominio (OrderStateMachine::allows), no la
+// simulación de 4 etapas del prototipo legacy: el estado avanza por eventos
+// reales del backend (pago confirmado, cocina, entrega), nunca por un botón
+// de "avanzar etapa" del cliente.
+const ORDER_STEPS_PICKUP = [
+	'pendiente_pago',
+	'pago_en_revision',
+	'confirmado',
+	'en_preparacion',
+	'listo',
+	'completado',
+];
+const ORDER_STEPS_DELIVERY = [
+	'pendiente_pago',
+	'pago_en_revision',
+	'confirmado',
+	'en_preparacion',
+	'listo',
+	'en_reparto',
+	'completado',
+];
+const ORDER_STOPPED_STATUSES = [ 'cancelado', 'expirado' ];
+const ORDER_STEP_LABELS = {
+	pendiente_pago: 'Pago pendiente',
+	pago_en_revision: 'Pago en revisión',
+	confirmado: 'Confirmado',
+	en_preparacion: 'En preparación',
+	listo: 'Listo',
+	en_reparto: 'En camino',
+	completado: 'Completado',
+	cancelado: 'Cancelado',
+	expirado: 'Expirado',
+};
+
+const renderOrderTimeline = ( element, order ) => {
+	const timeline = element.querySelector( '[data-order-timeline]' );
+	if ( ! timeline ) {
+		return;
+	}
+	timeline.replaceChildren();
+
+	if ( ORDER_STOPPED_STATUSES.includes( order.status ) ) {
+		timeline.hidden = false;
+		const stopped = node(
+			'li',
+			ORDER_STEP_LABELS[ order.status ] || order.status,
+			'vicu-restaurante-order-status__step is-stopped'
+		);
+		stopped.setAttribute( 'aria-current', 'step' );
+		timeline.append( stopped );
+		return;
+	}
+
+	const steps =
+		order.fulfillment === 'delivery'
+			? ORDER_STEPS_DELIVERY
+			: ORDER_STEPS_PICKUP;
+	const currentIndex = steps.indexOf( order.status );
+	timeline.hidden = false;
+
+	steps.forEach( ( status, index ) => {
+		let modifier = '';
+		if ( currentIndex !== -1 ) {
+			if ( index < currentIndex ) {
+				modifier = ' is-done';
+			} else if ( index === currentIndex ) {
+				modifier = ' is-current';
+			}
+		}
+		const step = node(
+			'li',
+			ORDER_STEP_LABELS[ status ] || status,
+			`vicu-restaurante-order-status__step${ modifier }`
+		);
+		if ( modifier === ' is-current' ) {
+			step.setAttribute( 'aria-current', 'step' );
+		}
+		timeline.append( step );
+	} );
+};
+
 const renderOrder = ( element, order ) => {
 	const detail = element.querySelector( '[data-order-detail]' );
 	const actions = element.querySelector( '[data-order-actions]' );
@@ -619,6 +719,7 @@ const renderOrder = ( element, order ) => {
 	);
 	detail.hidden = false;
 	actions.hidden = false;
+	renderOrderTimeline( element, order );
 	renderOrderSummary( detail, order, element.dataset.locale );
 	detail.append(
 		node(

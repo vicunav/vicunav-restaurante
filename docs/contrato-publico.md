@@ -44,6 +44,7 @@ internas de otro paquete.
 | Acciones compactas de cabecera (carrito y cuenta) | #46 | Implementado |
 | Reproducción 1:1 de carrito y checkout | #49 | Implementado |
 | Reproducción 1:1 de reservas y pizzas guardadas | #50 | Implementado |
+| Línea de tiempo real de consulta de pedido | #51 | Implementado |
 
 Una superficie planificada no es una API disponible. Cada issue actualiza esta matriz,
 implementa el contrato correspondiente y añade pruebas antes de cambiar su estado.
@@ -1089,6 +1090,45 @@ El build reproducible mide:
 | Reservas `style-index.css` | 10.984 | 2.026 |
 | Pizzas guardadas `view.js` | 6.798 | 2.659 |
 | Pizzas guardadas `style-index.css` | 8.283 | 1.697 |
+
+### Línea de tiempo real de consulta de pedido (#51)
+
+`vicunav/restaurante-order-status` no tiene contraparte 1:1 en la fuente congelada: el
+prototipo real (`src/screens/`) nunca implementó esta pantalla — sus propios
+documentos de auditoría (`docs/CODEX_HANDOFF.md` §17, `docs/PROTOTYPE_AUDIT.md` §8)
+descartan explícitamente el timeline de 4 etapas del prototipo *legacy* anterior
+(`legacy/Restaurante Guasábara.dc.html`) como "teatro" sin backend real: avanzaba con
+un botón de simulación (`advanceStage`) y un interruptor de "pago rechazado", sin
+ningún trigger de producción. Esta es una superficie de dominio real, sin equivalente
+directo que reproducir.
+
+Se auditó igual el archivo legacy (commit congelado, `screen: 'estado'`, líneas
+796-888 y 2343-2358) como referencia de **composición**, no de mecánica: encabezado
+con número de pedido + badge de estado, timeline con círculos e indicador de paso
+actual, resumen del pedido. Esa composición se adoptó — badge de estado (`Pago
+pendiente`, `Confirmado`, etc., con tono por grupo de estado) y línea de tiempo de
+pasos — pero conectada a la máquina de estados real del plugin
+(`OrderStateMachine::STATES`/`::allows()`), no a una simulación. El timeline
+distingue pickup (6 pasos) de delivery (7 pasos, agrega "En camino") y usa
+`pendiente_pago`/`pago_en_revision`/`confirmado`/`en_preparacion`/`listo`/
+`en_reparto`/`completado`, con `cancelado`/`expirado` como paso terminal detenido
+fuera de la secuencia normal. El avance real solo ocurre por transiciones legítimas
+del backend (evidencia de pago, panel administrativo) — nunca por una acción del
+cliente. La sección "calificar el pedido" (`showRating`) del legacy no se reprodujo:
+no existe un campo de calificación en el dominio del plugin y agregarlo excede el
+alcance de #51.
+
+Sigue el mismo ancho angosto y centrado (30rem) que checkout, por consistencia visual
+con el resto del vertical. El encabezado y el badge de estado ahora los comparte
+`renderOrderSummary` con el panel de confirmación de checkout.
+
+El build reproducible mide (módulo y estilos compartidos con cart/checkout/
+header-actions):
+
+| Asset | Bytes minificados | Bytes gzip |
+| --- | ---: | ---: |
+| Módulo compartido `view.js` | 12.749 | 4.392 |
+| Estilos compartidos `style-index.css` | 28.994 | 3.222 |
 
 ## Gestión de cambios
 

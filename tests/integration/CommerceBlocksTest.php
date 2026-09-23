@@ -82,6 +82,19 @@ final class CommerceBlocksTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( '<h1', $output );
 	}
 
+	/** El estado del pedido publica la línea de tiempo y el badge vacíos, sin datos privados;
+	 * la superficie no tiene contraparte en la fuente (issue #51: es un feature de dominio
+	 * real que el prototipo descarta explícitamente como "teatro" sin backend). */
+	public function test_order_status_publishes_empty_timeline_shell(): void {
+		$output = do_blocks( '<!-- wp:vicunav/restaurante-order-status /-->' );
+
+		$this->assertStringContainsString( 'data-order-timeline', $output );
+		$this->assertStringContainsString( 'Identificador del pedido', $output );
+		$this->assertStringNotContainsString( 'pendiente_pago', $output );
+		$this->assertStringNotContainsString( 'order_number', $output );
+		$this->assertStringNotContainsString( '<h1', $output );
+	}
+
 	/** Los assets compartidos solo se cargan cuando aparece una superficie de comercio. */
 	public function test_shared_frontend_assets_are_conditional(): void {
 		do_blocks( '<!-- wp:paragraph --><p>Sin comercio.</p><!-- /wp:paragraph -->' );
