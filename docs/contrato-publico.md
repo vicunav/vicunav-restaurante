@@ -43,6 +43,7 @@ internas de otro paquete.
 | Contrato visual neutral de los siete bloques | REST-02S | Implementado |
 | Acciones compactas de cabecera (carrito y cuenta) | #46 | Implementado |
 | Reproducción 1:1 de carrito y checkout | #49 | Implementado |
+| Reproducción 1:1 de reservas y pizzas guardadas | #50 | Implementado |
 
 Una superficie planificada no es una API disponible. Cada issue actualiza esta matriz,
 implementa el contrato correspondiente y añade pruebas antes de cambiar su estado.
@@ -1029,6 +1030,65 @@ reproducible mide:
 | Estilos compartidos `style-index.css` (con las acciones de cabecera) | 17.637 | 2.393 |
 | Editor `index.js` | 1.771 | 796 |
 | Editor `index.css` | 66 | 92 |
+
+### Reproducción 1:1 de reservas y pizzas guardadas (#50)
+
+`vicunav/restaurante-reservations` reproduce la jerarquía de la fuente congelada
+(`ReservationForm.js`/`TimeSlot.js`): fecha y personas en una fila (`field-row`), el
+selector de personas pasa de `<input type="number">` a un stepper circular de 44 px
+(reutiliza el mixin `stepper` de #49) manteniendo el `<input>` nativo para que
+`FormData` lo recoja sin JS adicional. Los horarios usan una grilla angosta
+(`minmax(84px, 1fr)`, igual que la fuente) de radios nativos estilizados como
+botones — más robusto que los botones `aria-pressed` de la fuente porque conserva
+`required`, teclado y validación nativos del navegador sin lógica adicional — con
+tres estados visuales: disponible, `limited` (borde/texto en el token de
+advertencia, no el de peligro que reutiliza la fuente) y `unavailable` (borde
+discontinuo, `disabled`, ahora **visible** en vez de omitido: antes el bloque
+filtraba los horarios agotados del DOM, ocultando que un día estaba lleno en vez de
+mostrarlo). El panel de confirmación quedó centrado, con el mismo lenguaje visual
+que el resultado de checkout (#49).
+
+Se confirmó por inspección de `reservationEngine.js` que `.reservation-layout` (un
+layout de 2 columnas con su propio breakpoint en 768px) es CSS muerto en la fuente
+— ningún componente real lo usa — así que no se reprodujo: Reservas es una sola
+columna angosta (640px) en cualquier viewport, igual que el componente real
+`ReservationScreen.js`. El campo "Preferencia de zona" no tiene control de UI en la
+fuente (es un valor fijo nunca editable) pero sí es un campo real y persistido del
+dominio del plugin; se conserva editable como superconjunto funcional, igual que
+los campos adicionales de checkout en #49.
+
+`vicunav/restaurante-saved-pizzas` reproduce `SavedPizzasScreen.js`/`SavedPizzaCard.js`:
+grid responsivo idéntico al `.menu-grid` de la fuente (auto-fill 260px, 2/3/4
+columnas en 480/1024/1440px), tarjeta plana sin borde ni sombra (antes tenía borde y
+radio de tarjeta genéricos), fila superior nombre + — sin precio: a diferencia de la
+fuente, que calcula el precio en el cliente con su motor local, el dominio del
+plugin nunca persiste ni calcula precio de una pizza guardada fuera de
+`PizzaPricingService` (recotización autoritativa), así que no hay un precio que
+mostrar sin inventar un cálculo cliente que el resto del contrato prohíbe
+explícitamente — omisión deliberada, no un olvido. El resumen de tamaño/masa/salsa/
+queso ahora se separa de los toppings, que se agrupan por zona (Entera/Izquierda/
+Derecha) igual que `summarizePizzaConfiguration`.
+
+Tres decisiones de la fuente se corrigieron a propósito en vez de copiarse: **Eliminar**
+pide confirmación en dos pasos (la fuente borra sin preguntar); **Renombrar** usa un
+formulario inline con `<label>` real (la fuente usa `window.prompt()` nativo, sin
+estilo ni foco gestionable); **Compartir** muestra el enlace generado en pantalla
+además del toast de "copiado" (la fuente solo copia al portapapeles sin mostrar el
+enlace, sin manejar el caso en que `clipboard.writeText` falla silenciosamente). La
+acción **Editar** (reabrir el constructor con la configuración guardada precargada)
+no se implementó: exige que `restaurante-pizza-builder` soporte un modo de edición
+vía parámetro de URL, cruzando el ownership de otro bloque — la misma razón por la
+que "Editar pizza desde el carrito" quedó fuera de #49. Ambas son la misma pieza de
+trabajo pendiente si se decide abordarla.
+
+El build reproducible mide:
+
+| Asset | Bytes minificados | Bytes gzip |
+| --- | ---: | ---: |
+| Reservas `view.js` | 6.110 | 2.336 |
+| Reservas `style-index.css` | 10.984 | 2.026 |
+| Pizzas guardadas `view.js` | 6.798 | 2.659 |
+| Pizzas guardadas `style-index.css` | 8.283 | 1.697 |
 
 ## Gestión de cambios
 

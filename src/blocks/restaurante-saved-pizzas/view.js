@@ -5,6 +5,7 @@ import {
 	configurationSummary,
 	currentConfiguration,
 	responseMessage,
+	zoneToppingNames,
 } from './model';
 
 const initialized = new WeakSet();
@@ -76,16 +77,42 @@ const render = ( element ) => {
 	current.items.forEach( ( item ) => {
 		const row = node( 'li', '', 'vicu-restaurante-saved-pizzas__item' );
 		row.dataset.publicId = item.public_id;
-		const title = node( 'h3', item.name );
+
+		const topRow = node(
+			'div',
+			'',
+			'vicu-restaurante-saved-pizzas__top-row'
+		);
+		topRow.append(
+			node( 'h3', item.name, 'vicu-restaurante-saved-pizzas__name' )
+		);
+
 		const summary = node(
 			'p',
-			configurationSummary( item.configuration, index )
+			configurationSummary( item.configuration, index ),
+			'vicu-restaurante-saved-pizzas__summary'
 		);
+
+		const zones = node( 'div', '', 'vicu-restaurante-saved-pizzas__zones' );
+		const zoneNames = zoneToppingNames( item.configuration, index );
+		[
+			[ 'Entera', zoneNames.whole ],
+			[ 'Izquierda', zoneNames.left ],
+			[ 'Derecha', zoneNames.right ],
+		].forEach( ( [ label, names ] ) => {
+			if ( names.length ) {
+				zones.append(
+					node( 'p', `${ label }: ${ names.join( ', ' ) }` )
+				);
+			}
+		} );
+
 		const updated = node(
 			'p',
 			`Actualizada: ${ new Intl.DateTimeFormat( element.dataset.locale, {
 				dateStyle: 'medium',
-			} ).format( new Date( item.updated_at ) ) }`
+			} ).format( new Date( item.updated_at ) ) }`,
+			'vicu-restaurante-saved-pizzas__updated'
 		);
 		const rename = document.createElement( 'form' );
 		rename.dataset.savedPizzaForm = 'rename';
@@ -120,7 +147,7 @@ const render = ( element ) => {
 		}
 		const share = node( 'div', '', 'vicu-restaurante-saved-pizzas__share' );
 		share.dataset.savedPizzaShare = '';
-		row.append( title, summary, updated, rename, actions, share );
+		row.append( topRow, summary, zones, updated, rename, actions, share );
 		list.append( row );
 	} );
 	setStatus( element );

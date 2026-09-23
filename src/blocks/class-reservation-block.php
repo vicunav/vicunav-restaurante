@@ -43,11 +43,19 @@ final class ReservationBlock {
 			<p data-reservation-error role="alert" tabindex="-1" hidden></p>
 
 			<form class="vicu-restaurante-reservations__availability" data-reservation-form="availability">
-				<div class="vicu-restaurante-reservations__fields">
-					<label for="<?php echo esc_attr( $root_id ); ?>-date"><?php esc_html_e( 'Fecha', 'vicunav-restaurante' ); ?></label>
-					<input id="<?php echo esc_attr( $root_id ); ?>-date" name="date" type="date" min="<?php echo esc_attr( wp_date( 'Y-m-d' ) ); ?>" required>
-					<label for="<?php echo esc_attr( $root_id ); ?>-party-size"><?php esc_html_e( 'Personas', 'vicunav-restaurante' ); ?></label>
-					<input id="<?php echo esc_attr( $root_id ); ?>-party-size" name="party_size" type="number" min="1" step="1" inputmode="numeric" value="2" required>
+				<div class="vicu-restaurante-reservations__field-row">
+					<div class="vicu-restaurante-reservations__field">
+						<label for="<?php echo esc_attr( $root_id ); ?>-date"><?php esc_html_e( 'Fecha', 'vicunav-restaurante' ); ?></label>
+						<input id="<?php echo esc_attr( $root_id ); ?>-date" name="date" type="date" min="<?php echo esc_attr( wp_date( 'Y-m-d' ) ); ?>" required>
+					</div>
+					<div class="vicu-restaurante-reservations__field">
+						<span class="vicu-restaurante-reservations__field-label" id="<?php echo esc_attr( $root_id ); ?>-party-label"><?php esc_html_e( 'Personas', 'vicunav-restaurante' ); ?></span>
+						<div class="vicu-restaurante-reservations__party-stepper" role="group" aria-labelledby="<?php echo esc_attr( $root_id ); ?>-party-label">
+							<button type="button" data-reservation-action="party-decr" aria-label="<?php esc_attr_e( 'Menos personas', 'vicunav-restaurante' ); ?>">&minus;</button>
+							<input id="<?php echo esc_attr( $root_id ); ?>-party-size" name="party_size" type="number" min="1" step="1" inputmode="numeric" value="2" aria-live="polite" required>
+							<button type="button" data-reservation-action="party-incr" aria-label="<?php esc_attr_e( 'Más personas', 'vicunav-restaurante' ); ?>">+</button>
+						</div>
+					</div>
 				</div>
 				<button type="submit"><?php esc_html_e( 'Ver horarios disponibles', 'vicunav-restaurante' ); ?></button>
 			</form>
