@@ -39,24 +39,29 @@
 
 	.vicu-restaurante-saved-pizzas__list {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
-		gap: var(--vicu-rest-space-sm);
+		grid-template-columns: repeat(auto-fill, minmax(16.25rem, 1fr));
+		gap: var(--vicu-rest-space-md);
 		margin: 0;
 		padding: 0;
 		list-style: none;
 	}
 
-	.vicu-restaurante-saved-pizzas__item,
 	.vicu-restaurante-saved-pizzas__item form,
 	.vicu-restaurante-saved-pizzas__item label,
-	.vicu-restaurante-saved-pizzas__actions,
 	.vicu-restaurante-saved-pizzas__share,
 	.vicu-restaurante-saved-pizzas__authentication {
 		display: grid;
 		gap: 0.75rem;
 	}
 
-	.vicu-restaurante-saved-pizzas__item,
+	.vicu-restaurante-saved-pizzas__item {
+		display: flex;
+		flex-direction: column;
+		gap: 0.625rem;
+		padding: var(--vicu-rest-space-sm);
+		background: var(--vicu-rest-color-surface-muted);
+	}
+
 	.vicu-restaurante-saved-pizzas__authentication {
 		padding: var(--vicu-rest-space-sm);
 		border: 1px solid var(--vicu-rest-color-border);
@@ -64,10 +69,48 @@
 		background: var(--vicu-rest-color-surface-muted);
 	}
 
-	.vicu-restaurante-saved-pizzas__item h3 {
+	.vicu-restaurante-saved-pizzas__top-row {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: var(--vicu-rest-space-xs);
+	}
+
+	.vicu-restaurante-saved-pizzas__name {
 		margin: 0;
-		font-family: var(--wp--preset--font-family--vicunav-heading, inherit);
-		font-size: var(--wp--preset--font-size--vicunav-lg, 1.25rem);
+		font-family: var(--vicu-rest-font-body);
+		font-size: var(--vicu-rest-text-md);
+		font-weight: 700;
+		text-transform: none;
+		letter-spacing: normal;
+	}
+
+	.vicu-restaurante-saved-pizzas__summary,
+	.vicu-restaurante-saved-pizzas__zones,
+	.vicu-restaurante-saved-pizzas__updated {
+		margin: 0;
+		color: var(--vicu-rest-color-muted);
+		font-size: var(--vicu-rest-text-sm);
+	}
+
+	.vicu-restaurante-saved-pizzas__zones {
+		display: grid;
+		gap: 0.125rem;
+	}
+
+	.vicu-restaurante-saved-pizzas__zones p {
+		margin: 0;
+	}
+
+	.vicu-restaurante-saved-pizzas__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-block-start: auto;
+	}
+
+	.vicu-restaurante-saved-pizzas__actions button {
+		flex: 0 1 auto;
 	}
 
 	button[data-saved-pizzas-action="delete"] {
@@ -82,13 +125,6 @@
 	[data-saved-pizzas-error]:focus-visible {
 
 		@include visual.focus-ring;
-	}
-}
-
-@media (min-width: 48rem) {
-
-	.wp-block-vicunav-restaurante-saved-pizzas .vicu-restaurante-saved-pizzas__actions {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
 

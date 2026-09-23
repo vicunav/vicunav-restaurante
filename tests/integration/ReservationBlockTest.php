@@ -37,6 +37,9 @@ final class ReservationBlockTest extends WP_UnitTestCase {
 		$this->assertStringContainsString( 'Cancelar reserva', $output );
 		$this->assertStringContainsString( 'aria-live="polite"', $output );
 		$this->assertStringContainsString( '<label for=', $output );
+		$this->assertStringContainsString( 'vicu-restaurante-reservations__field-row', $output );
+		$this->assertStringContainsString( 'data-reservation-action="party-incr"', $output );
+		$this->assertStringContainsString( 'data-reservation-action="party-decr"', $output );
 		$this->assertStringNotContainsString( 'access_token', $output );
 		$this->assertStringNotContainsString( 'confirmation_code', $output );
 		$this->assertStringNotContainsString( 'guest_phone', $output );

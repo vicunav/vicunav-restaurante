@@ -19,11 +19,36 @@
 
 	form,
 	.vicu-restaurante-reservations__confirmation {
-		max-width: 52rem;
+		max-width: 40rem;
 		padding: var(--vicu-rest-space-sm);
 		border: 1px solid var(--vicu-rest-color-border);
 		border-radius: var(--vicu-rest-radius-card);
 		background: var(--vicu-rest-color-surface-muted);
+	}
+
+	.vicu-restaurante-reservations__confirmation {
+		padding-block: var(--vicu-rest-space-xl);
+		text-align: center;
+	}
+
+	.vicu-restaurante-reservations__field-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--vicu-rest-space-sm);
+	}
+
+	.vicu-restaurante-reservations__field-row > * {
+		flex: 1 1 12rem;
+		min-width: 0;
+	}
+
+	.vicu-restaurante-reservations__field {
+		display: grid;
+		gap: 0.375rem;
+	}
+
+	.vicu-restaurante-reservations__field-label {
+		font-weight: 600;
 	}
 
 	label {
@@ -43,6 +68,33 @@
 	button {
 
 		@include visual.button;
+	}
+
+	.vicu-restaurante-reservations__party-stepper {
+
+		@include visual.stepper;
+
+		justify-content: space-between;
+
+		input {
+			min-width: 0;
+			flex: 1;
+			border: 0;
+			padding: 0;
+			background: none;
+			text-align: center;
+			font-weight: 700;
+		}
+
+		input::-webkit-outer-spin-button,
+		input::-webkit-inner-spin-button {
+			appearance: none;
+			margin: 0;
+		}
+
+		input[type="number"] {
+			appearance: textfield;
+		}
 	}
 
 	fieldset {
@@ -68,7 +120,7 @@
 
 	.vicu-restaurante-reservations__slots {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(5.25rem, 1fr));
 		gap: var(--vicu-rest-space-xs);
 	}
 
@@ -76,11 +128,12 @@
 		position: relative;
 		display: grid;
 		min-height: 44px;
-		gap: 0.25rem;
-		padding: 0.75rem;
-		border: 1px solid var(--vicu-rest-color-border);
-		border-radius: var(--vicu-rest-radius-control);
-		background: var(--vicu-rest-color-surface);
+		gap: 0.125rem;
+		padding: 0.625rem 0.375rem;
+		border: 1.5px solid var(--vicu-rest-color-border);
+		border-radius: var(--vicu-rest-radius-sharp);
+		background: transparent;
+		text-align: center;
 	}
 
 	.vicu-restaurante-reservations__slot input {
@@ -97,10 +150,36 @@
 		pointer-events: none;
 	}
 
+	.vicu-restaurante-reservations__slot small {
+		color: var(--vicu-rest-color-muted);
+		font-size: var(--vicu-rest-text-xs);
+	}
+
+	.vicu-restaurante-reservations__slot.is-limited {
+		border-color: var(--vicu-rest-color-warning);
+	}
+
+	.vicu-restaurante-reservations__slot.is-limited small {
+		color: var(--vicu-rest-color-warning);
+	}
+
+	.vicu-restaurante-reservations__slot.is-unavailable {
+		border-style: dashed;
+		opacity: 0.5;
+	}
+
+	.vicu-restaurante-reservations__slot.is-unavailable input {
+		cursor: not-allowed;
+	}
+
 	.vicu-restaurante-reservations__slot:has(input:checked) {
-		border-color: var(--vicu-rest-color-accent);
+		border-color: var(--vicu-rest-color-inverse);
 		background: var(--vicu-rest-color-inverse);
 		color: var(--vicu-rest-color-on-inverse);
+	}
+
+	.vicu-restaurante-reservations__slot:has(input:checked) small {
+		color: inherit;
 	}
 
 	button[data-reservation-action="cancel"] {

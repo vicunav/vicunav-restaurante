@@ -35,7 +35,8 @@ export const catalogIndex = ( catalog ) => {
 };
 
 /**
- * Resume selecciones por nombre sin validar ni calcular la configuración.
+ * Resume tamaño, masa, salsa y queso por nombre, sin toppings (los toppings
+ * se presentan aparte, agrupados por zona).
  *
  * @param {Object} configuration Configuración guardada.
  * @param {Map}    index         Catálogo indexado.
@@ -47,12 +48,34 @@ export const configurationSummary = ( configuration, index ) => {
 		configuration.crust_id,
 		configuration.sauce_id,
 		configuration.cheese_ingredient_id,
-		...Object.keys( configuration.toppings || {} ),
 	];
 	const names = ids.map(
 		( id ) => index.get( id )?.name || 'Selección no disponible'
 	);
 	return names.join( ' · ' );
+};
+
+/**
+ * Agrupa los toppings guardados por zona (whole/left/right) con su nombre.
+ *
+ * @param {Object} configuration Configuración guardada.
+ * @param {Map}    index         Catálogo indexado.
+ * @return {{whole: string[], left: string[], right: string[]}} Nombres por zona.
+ */
+export const zoneToppingNames = ( configuration, index ) => {
+	const toppings = configuration.toppings || {};
+	const namesInZone = ( zone ) =>
+		Object.keys( toppings )
+			.filter( ( id ) => toppings[ id ] === zone )
+			.map(
+				( id ) => index.get( id )?.name || 'Selección no disponible'
+			);
+
+	return {
+		whole: namesInZone( 'whole' ),
+		left: namesInZone( 'left' ),
+		right: namesInZone( 'right' ),
+	};
 };
 
 /**

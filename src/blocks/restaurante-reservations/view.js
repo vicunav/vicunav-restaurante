@@ -111,29 +111,48 @@ const node = ( tag, text = '', className = '' ) => {
 	return result;
 };
 
+const SLOT_MODIFIERS = {
+	unavailable: 'is-unavailable',
+	limited: 'is-limited',
+};
+
+const SLOT_LABELS = {
+	unavailable: 'Sin cupo',
+	limited: 'Pocos cupos',
+	available: 'Disponible',
+};
+
 const renderSlots = ( element, slots, selected = '' ) => {
 	const list = element.querySelector( '[data-reservation-slot-list]' );
 	list.replaceChildren();
 	const bookable = slots.filter( ( slot ) => slot.status !== 'unavailable' );
-	bookable.forEach( ( slot, index ) => {
+	const firstBookableIndex = slots.findIndex(
+		( slot ) => slot.status !== 'unavailable'
+	);
+	slots.forEach( ( slot, index ) => {
+		const unavailable = slot.status === 'unavailable';
+		const modifier = SLOT_MODIFIERS[ slot.status ] || '';
 		const label = node(
 			'label',
 			'',
-			'vicu-restaurante-reservations__slot'
+			`vicu-restaurante-reservations__slot${
+				modifier ? ` ${ modifier }` : ''
+			}`
 		);
 		const input = document.createElement( 'input' );
 		input.type = 'radio';
 		input.name = 'time';
 		input.value = slot.time;
+		input.disabled = unavailable;
 		input.required = true;
-		input.checked = slot.time === selected || ( ! selected && index === 0 );
+		input.checked =
+			! unavailable &&
+			( slot.time === selected ||
+				( ! selected && index === firstBookableIndex ) );
 		label.append(
 			input,
 			node( 'span', slot.time ),
-			node(
-				'small',
-				slot.status === 'limited' ? 'Pocos cupos' : 'Disponible'
-			)
+			node( 'small', SLOT_LABELS[ slot.status ] || SLOT_LABELS.available )
 		);
 		list.append( label );
 	} );
@@ -170,10 +189,11 @@ const lookupAvailability = async ( element, form ) => {
 		const booking = element.querySelector(
 			'[data-reservation-form="booking"]'
 		);
-		const count =
-			result.status === 'ok' ? renderSlots( element, result.slots ) : 0;
-		booking.hidden = count === 0;
-		form.hidden = count > 0;
+		const slots = result.status === 'ok' ? result.slots : [];
+		const count = renderSlots( element, slots );
+		const hasSlots = slots.length > 0;
+		booking.hidden = ! hasSlots;
+		form.hidden = hasSlots;
 		setStatus(
 			element,
 			count > 0
@@ -338,6 +358,10 @@ store( 'vicunav/restaurante-reservations', {
 				void cancelReservation( element );
 			} else if ( control.dataset.reservationAction === 'change-date' ) {
 				resetToAvailability( element );
+			} else if ( control.dataset.reservationAction === 'party-incr' ) {
+				element.querySelector( '[name="party_size"]' ).stepUp();
+			} else if ( control.dataset.reservationAction === 'party-decr' ) {
+				element.querySelector( '[name="party_size"]' ).stepDown();
 			} else if ( control.dataset.reservationAction === 'new' ) {
 				removeSession( 'vicu_restaurante_last_reservation' );
 				currentState( element ).reservation = null;

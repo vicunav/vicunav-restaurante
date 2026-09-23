@@ -3,6 +3,7 @@ import {
 	configurationSummary,
 	currentConfiguration,
 	responseMessage,
+	zoneToppingNames,
 } from '../../src/blocks/restaurante-saved-pizzas/model';
 
 const configuration = {
@@ -33,7 +34,7 @@ describe( 'modelo cliente de pizzas guardadas', () => {
 		expect( current ).not.toHaveProperty( 'total_minor' );
 	} );
 
-	test( 'indexa el catálogo agrupado y resume únicamente nombres', () => {
+	test( 'indexa el catálogo agrupado y resume tamaño, masa, salsa y queso sin toppings', () => {
 		const index = catalogIndex( {
 			sizes: [ { public_id: 'size-id', name: 'Mediana' } ],
 			crusts: [ { public_id: 'crust-id', name: 'Clásica' } ],
@@ -42,7 +43,7 @@ describe( 'modelo cliente de pizzas guardadas', () => {
 			toppings: [ { public_id: 'topping-id', name: 'Albahaca' } ],
 		} );
 		expect( configurationSummary( configuration, index ) ).toBe(
-			'Mediana · Clásica · Tomate · Mozzarella · Albahaca'
+			'Mediana · Clásica · Tomate · Mozzarella'
 		);
 	} );
 
@@ -50,6 +51,17 @@ describe( 'modelo cliente de pizzas guardadas', () => {
 		expect( configurationSummary( configuration, new Map() ) ).toContain(
 			'Selección no disponible'
 		);
+	} );
+
+	test( 'agrupa los toppings guardados por zona', () => {
+		const index = catalogIndex( {
+			toppings: [ { public_id: 'topping-id', name: 'Albahaca' } ],
+		} );
+		expect( zoneToppingNames( configuration, index ) ).toEqual( {
+			whole: [],
+			left: [ 'Albahaca' ],
+			right: [],
+		} );
 	} );
 
 	test( 'presenta mensajes REST como texto y conserva fallback', () => {
