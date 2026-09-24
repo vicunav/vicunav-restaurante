@@ -6,7 +6,7 @@
  * Version:           1.0.0
  * Requires at least: 6.6
  * Requires PHP:      8.1
- * Requires Plugins:  vicunav-plugin-core, vicunav-pagos
+ * Requires Plugins:  vicunav-pagos
  * Author:            Vicunav
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html

@@ -10,7 +10,7 @@ REST-02L. No añadas constructor, carrito, checkout, reservas, cuenta, contenido
 Bonasera ni otros bloques antes de su issue propietario definido en el plan del hub.
 
 El plugin será propietario del namespace `Vicu\Restaurante`. Depende de
-`vicunav-plugin-core` para capacidades compartidas y de `vicunav-pagos` para
+`vicunav-pagos` (que incluye las capacidades base `Vicu\Core`) para
 solicitudes de pago. Nunca lee persistencia interna de otro paquete.
 
 El contrato público vive en [`docs/contrato-publico.md`](docs/contrato-publico.md).

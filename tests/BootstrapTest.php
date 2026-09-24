@@ -196,7 +196,7 @@ final class BootstrapTest extends TestCase {
 		$authorized_output = ob_get_clean();
 
 		$this->assertStringContainsString( 'notice notice-error', $authorized_output );
-		$this->assertStringContainsString( 'Vicunav Plugin Core', $authorized_output );
+		$this->assertStringContainsString( 'Vicunav Pagos', $authorized_output );
 	}
 
 	/**
@@ -216,7 +216,7 @@ final class BootstrapTest extends TestCase {
 		$this->assertStringContainsString( 'Requires at least: 6.6', $contents );
 		$this->assertStringContainsString( 'Requires PHP:      8.1', $contents );
 		$this->assertStringContainsString(
-			'Requires Plugins:  vicunav-plugin-core, vicunav-pagos',
+			'Requires Plugins:  vicunav-pagos',
 			$contents
 		);
 		$this->assertStringContainsString( 'Text Domain:       vicunav-restaurante', $contents );

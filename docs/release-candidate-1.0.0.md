@@ -14,7 +14,7 @@ Dependencias reales usadas en el gate:
 
 - WordPress 6.9 en español y MySQL 8.4, dentro de una instalación desechable separada de
   LocalWP.
-- `vicunav-plugin-core` en `12870b0d5e297d715c985037e76898067a749909`.
+- Capacidades base `Vicu\Core` (entonces distribuidas por separado; hoy incluidas en `vicunav-pagos`).
 - `vicunav-pagos` 0.3.1 en `16280c3bd74977ac025f0085ccdf22ae5b995277`.
 - Proveedor manual real de `vicunav-pagos`, sin dobles teatrales en el navegador.
 
@@ -123,8 +123,8 @@ WP_TESTS_TABLE_PREFIX=wptests_vicu_restaurante_ \
 composer check
 ```
 
-Para repetir el E2E se crea un WordPress desechable, se enlazan copias limpias de core,
-pagos y restaurante, se activan esos tres plugins y se ejecuta:
+Para repetir el E2E se crea un WordPress desechable, se enlazan copias limpias de
+pagos y restaurante, se activan esos dos plugins y se ejecuta:
 
 ```bash
 wp eval-file tests/e2e/seed.php
