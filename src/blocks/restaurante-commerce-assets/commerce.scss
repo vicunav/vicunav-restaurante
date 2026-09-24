@@ -68,6 +68,46 @@
 
 		@include visual.state-notice("danger");
 	}
+
+	// Encabezado de resumen de pedido (checkout confirmado y consulta de
+	// estado comparten renderOrderSummary): número de pedido + badge.
+	.vicu-restaurante-order-status__heading {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--vicu-rest-space-xs);
+	}
+
+	.vicu-restaurante-order-status__heading p {
+		margin: 0;
+		font-weight: 700;
+	}
+
+	.vicu-restaurante-order-status__badge {
+		padding: 0.375rem 0.875rem;
+		border: 1px solid var(--vicu-rest-color-border);
+		border-radius: var(--vicu-rest-radius-pill);
+		background: var(--vicu-rest-color-surface);
+		color: var(--vicu-rest-color-muted);
+		font-size: var(--vicu-rest-text-xs);
+		font-weight: 700;
+		white-space: nowrap;
+	}
+
+	.vicu-restaurante-order-status__badge.is-progress {
+		border-color: var(--vicu-rest-color-info);
+		color: var(--vicu-rest-color-info);
+	}
+
+	.vicu-restaurante-order-status__badge.is-positive {
+		border-color: var(--vicu-rest-color-positive);
+		color: var(--vicu-rest-color-positive);
+	}
+
+	.vicu-restaurante-order-status__badge.is-danger {
+		border-color: var(--vicu-rest-color-danger);
+		color: var(--vicu-rest-color-danger);
+	}
 }
 
 .wp-block-vicunav-restaurante-cart {
@@ -246,11 +286,80 @@
 	}
 }
 
+// La fuente congelada no reproduce esta pantalla (su prototipo la descarta
+// explícitamente como "teatro" sin backend real — ver docs/CODEX_HANDOFF.md
+// §17 y docs/PROTOTYPE_AUDIT.md §8 del repo fuente). Es una superficie de
+// dominio real sin contraparte 1:1; sigue el mismo ancho angosto y centrado
+// que checkout para mantener consistencia visual con el resto del vertical.
 .wp-block-vicunav-restaurante-order-status {
 
 	.vicu-restaurante-order-status__lookup,
+	[data-order-detail],
 	.vicu-restaurante-order-status__actions {
-		max-width: 48rem;
+		max-width: 30rem;
+		margin-inline: auto;
+	}
+
+	.vicu-restaurante-order-status__timeline {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0 0.5rem;
+		max-width: 30rem;
+		margin: 0 auto;
+		padding: 0;
+		list-style: none;
+	}
+
+	.vicu-restaurante-order-status__step {
+		position: relative;
+		padding-inline-start: 1.25rem;
+		color: var(--vicu-rest-color-muted);
+		font-size: var(--vicu-rest-text-xs);
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+		white-space: nowrap;
+	}
+
+	.vicu-restaurante-order-status__step::before {
+		content: "";
+		position: absolute;
+		inset-inline-start: 0;
+		top: 50%;
+		width: 0.625rem;
+		height: 0.625rem;
+		transform: translateY(-50%);
+		border: 1.5px solid var(--vicu-rest-color-border);
+		border-radius: var(--vicu-rest-radius-round);
+		background: var(--vicu-rest-color-surface);
+	}
+
+	.vicu-restaurante-order-status__step.is-done {
+		color: var(--vicu-rest-color-text);
+	}
+
+	.vicu-restaurante-order-status__step.is-done::before {
+		border-color: var(--vicu-rest-color-inverse);
+		background: var(--vicu-rest-color-inverse);
+	}
+
+	.vicu-restaurante-order-status__step.is-current {
+		color: var(--vicu-rest-color-text);
+	}
+
+	.vicu-restaurante-order-status__step.is-current::before {
+		border-color: var(--vicu-rest-color-accent);
+		background: var(--vicu-rest-color-accent);
+	}
+
+	.vicu-restaurante-order-status__step.is-stopped {
+		color: var(--vicu-rest-color-danger);
+	}
+
+	.vicu-restaurante-order-status__step.is-stopped::before {
+		border-color: var(--vicu-rest-color-danger);
+		background: var(--vicu-rest-color-danger);
 	}
 }
 
