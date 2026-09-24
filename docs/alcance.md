@@ -4,7 +4,7 @@
 
 El plugin será propietario del dominio restaurante: menú estructurado, ingredientes,
 disponibilidad, constructor de pizzas, carrito, pedidos, totales, delivery y reservas.
-Consumirá contratos públicos de `vicunav-plugin-core` y `vicunav-pagos` sin leer su
+Consumirá contratos públicos de `vicunav-pagos` y de las capacidades base `Vicu\Core` que incluye sin leer su
 persistencia interna.
 
 La decisión coordinadora y el spec durable viven en `vicunav-hub`. El

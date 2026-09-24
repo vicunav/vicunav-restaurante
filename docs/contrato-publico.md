@@ -69,14 +69,13 @@ retienen hasta completar su ciclo y la herramienta informa el motivo al administ
 - Namespace PHP raíz: `Vicu\Restaurante`.
 - Versión del plugin: constante `VICU_RESTAURANTE_VERSION`.
 - Versión del contrato: constante `VICU_RESTAURANTE_CONTRACT_VERSION`.
-- `vicunav-plugin-core` con contrato `>= 1.0.0` y `< 2.0.0`.
-- `vicunav-pagos` con contrato `>= 0.3.0` y `< 1.0.0`.
+- `vicunav-pagos` con contrato `>= 0.3.0` y `< 1.0.0`, que incluye las capacidades base
+  `Vicu\Core` con contrato `>= 1.0.0` y `< 2.0.0`.
 
-El header `Requires Plugins` declara `vicunav-plugin-core` y `vicunav-pagos` mediante
-sus slugs. Como WordPress no admite restricciones de versión en ese header, el
+El header `Requires Plugins` declara `vicunav-pagos` mediante su slug. Como WordPress no admite restricciones de versión en ese header, el
 bootstrap valida además las constantes contractuales y las clases públicas requeridas.
 
-De core requiere `Vicu\Core\PostType`, `Vicu\Core\Rest`, `Vicu\Core\Security` y
+De `Vicu\Core` (incluido en pagos) requiere `Vicu\Core\PostType`, `Vicu\Core\Rest`, `Vicu\Core\Security` y
 `Vicu\Core\Settings`. De pagos requiere `Vicu\Pagos\PaymentRequests`,
 `Vicu\Pagos\PaymentRequestState` y `Vicu\Pagos\ManualPaymentProvider`.
 

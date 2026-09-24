@@ -27,10 +27,8 @@ The v1 architecture is owned by the Vicunav hub and does not use WooCommerce.
 `vicunav-restaurante` will own restaurant business data and behavior. It will consume
 public APIs from the following plugins without reading their internal storage:
 
-- [`vicunav-plugin-core`](https://github.com/vicunav/vicunav-plugin-core) for shared
-  WordPress infrastructure.
-- [`vicunav-pagos`](https://github.com/vicunav/vicunav-pagos) for payment requests and
-  payment lifecycle events.
+- [`vicunav-pagos`](https://github.com/vicunav/vicunav-pagos) for payment requests,
+  payment lifecycle events and the shared base capabilities (`Vicu\Core`) it ships.
 
 Presentation shared across sites belongs in `vicunav-theme-core`. Bonasera content and
 Full Site Editing composition belong in the future `vicunav-demo-restaurante` project.
@@ -39,8 +37,7 @@ Full Site Editing composition belong in the future `vicunav-demo-restaurante` pr
 
 - WordPress 6.6 or later.
 - PHP 8.1 or later.
-- `vicunav-plugin-core` contract 1.x.
-- `vicunav-pagos` contract 0.3.0 or later, before contract 1.0.0.
+- `vicunav-pagos` (which ships the `Vicu\Core` contract 1.x) contract 0.3.0 or later, before contract 1.0.0.
 
 Install and activate the two dependency plugins before activating **Vicunav
 Restaurante**.

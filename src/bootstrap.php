@@ -237,8 +237,8 @@ function render_dependency_notice( string $error_code ): void {
 	}
 
 	$messages = array(
-		DependencyRequirements::ERROR_CORE_UNAVAILABLE   => esc_html__( 'Vicunav Restaurante requiere Vicunav Plugin Core activo y con sus APIs públicas disponibles.', 'vicunav-restaurante' ),
-		DependencyRequirements::ERROR_CORE_INCOMPATIBLE  => esc_html__( 'Vicunav Restaurante requiere el contrato mayor 1 de Vicunav Plugin Core.', 'vicunav-restaurante' ),
+		DependencyRequirements::ERROR_CORE_UNAVAILABLE   => esc_html__( 'Vicunav Restaurante requiere Vicunav Pagos activo, con las capacidades base Vicunav Core que incluye y sus APIs públicas disponibles.', 'vicunav-restaurante' ),
+		DependencyRequirements::ERROR_CORE_INCOMPATIBLE  => esc_html__( 'Vicunav Restaurante requiere el contrato mayor 1 de las capacidades base Vicunav Core incluidas en Vicunav Pagos.', 'vicunav-restaurante' ),
 		DependencyRequirements::ERROR_PAGOS_UNAVAILABLE  => esc_html__( 'Vicunav Restaurante requiere Vicunav Pagos activo y con sus APIs públicas disponibles.', 'vicunav-restaurante' ),
 		DependencyRequirements::ERROR_PAGOS_INCOMPATIBLE => esc_html__( 'Vicunav Restaurante requiere el contrato de Vicunav Pagos desde 0.3.0 y anterior a 1.0.0.', 'vicunav-restaurante' ),
 		Installer::ERROR_INSTALLATION                    => esc_html__( 'Vicunav Restaurante no pudo actualizar su schema. Revisa la salud del sitio antes de continuar.', 'vicunav-restaurante' ),
