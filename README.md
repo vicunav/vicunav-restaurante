@@ -1,73 +1,65 @@
 # Vicunav Restaurante
 
-Native WordPress domain plugin for restaurant menus, carts, orders, delivery, custom
-pizzas, and reservations.
+Self-contained reference project for a restaurant site built on WordPress without
+WooCommerce: the fictional trattoria **Bonasera**. It ships a native restaurant plugin,
+a block theme, audited demo content and licensed media in a single repository.
 
-## Status
+## What is in the repository
 
-REST-02R prepares plugin version 1.0.0 over public contract 1.0.0. The current
-runtime includes dynamic menu, pizza builder, cart, manual checkout, order status,
-reservations, and authenticated saved-pizza surfaces. Accounts can save the current
-builder configuration, list, rename, delete, share, and revalidate a saved pizza before
-adding it to the cart. REST-02S gives all seven public blocks a neutral visual contract
-that consumes public `vicunav-*` presets with safe fallbacks and no Bonasera identity.
-Server contracts remain authoritative for ownership, capacity,
-prices, totals, checkout, and state. The plugin does not contain demo content or depend
-on WooCommerce. The release gate and its reproducible evidence are documented in
-[`docs/release-candidate-1.0.0.md`](docs/release-candidate-1.0.0.md).
+| Path | Contents |
+| --- | --- |
+| `plugin/` | The `vicunav-restaurante` plugin: menu, pizza builder, cart, orders, manual payments, delivery, reservations, saved pizzas, nine dynamic blocks and the `vicu/v1` REST API. Includes tests, block build, Composer and npm. |
+| `theme/` | The `vicunav-bonasera` block theme (no parent theme): design tokens, restaurant header/footer parts, editorial patterns and self-hosted fonts. Includes its own tests. |
+| `content/bonasera.json` | Audited demo content (copy, menu, FAQ, testimonials, operations data). |
+| `assets/` | Licensed local media referenced by `config/media.json`. |
+| `config/` | `site.json` (install manifest), `media.json` (media and license inventory), `qa.json` (visual QA contract). |
+| `bin/` | `install-local.sh` and `wpcli.sh`. |
+| `tests/` | Content and QA validators, runtime QA script and the entry point `run.sh`. |
+| `docs/` | Project documentation; `docs/standards` is a Git submodule with the shared engineering standards. |
 
-Further domain persistence, REST endpoints, admin screens, and blocks are introduced
-only through their separate atomic issues. A planned surface is not available until
-its implementation matrix marks it as complete.
-
-The v1 architecture is owned by the Vicunav hub and does not use WooCommerce.
-
-## Boundaries
-
-`vicunav-restaurante` will own restaurant business data and behavior. It will consume
-public APIs from the following plugins without reading their internal storage:
-
-- [`vicunav-pagos`](https://github.com/vicunav/vicunav-pagos) for payment requests,
-  payment lifecycle events and the shared base capabilities (`Vicu\Core`) it ships.
-
-Presentation shared across sites belongs in `vicunav-theme-core`. Bonasera content and
-Full Site Editing composition belong in the future `vicunav-demo-restaurante` project.
+The plugin has three internal modules: the restaurant domain (`Vicu\Restaurante\*`),
+payments (`Vicu\Restaurante\Payments\*`) and shared capabilities such as FAQ,
+testimonials, settings and REST base (`Vicu\Restaurante\Shared\*`).
 
 ## Requirements
 
-- WordPress 6.6 or later.
-- PHP 8.1 or later.
-- `vicunav-pagos` (which ships the `Vicu\Core` contract 1.x) contract 0.3.0 or later, before contract 1.0.0.
+- WordPress 6.6 or later and PHP 8.1 or later.
+- A [LocalWP](https://localwp.com/) site (or any local WordPress whose URL host ends in `.local`) for the installer.
+- Node.js, Composer and WP-CLI for development.
 
-Install and activate the two dependency plugins before activating **Vicunav
-Restaurante**.
-
-## Development
-
-Initialize the shared standards and install development dependencies:
+## Local installation
 
 ```bash
 git submodule update --init --recursive
-composer install
-npm ci
+bash bin/install-local.sh --wp-path=/path/to/app/public --site-url=https://bonasera.local
 ```
 
-Run the complete validation:
+The installer symlinks `plugin/` and `theme/` into the target WordPress and activates
+both. It refuses non-`.local` sites and never copies files. Use `--dry-run` to preview
+the actions.
+
+## Validation
 
 ```bash
-npm run check
-composer check
+bash tests/run.sh          # theme, content and installer checks
+
+cd plugin
+composer install && npm ci
+composer check             # lint, coding standards, PHPUnit (unit + integration)
+npm run check              # audit, JS/CSS lint, Jest, visual contract, build
 ```
 
-Contributions follow one issue, branch, pull request, and squash-merge per change. See
-[`CONTRIBUTING.md`](CONTRIBUTING.md).
+## Documentation
 
-The versioned integration surface and implementation matrix are documented in
-[`docs/contrato-publico.md`](docs/contrato-publico.md). Managing the pizza
-builder's dynamic catalog (sizes, crusts, sauces, cheeses, toppings) from
-wp-admin is documented in
-[`docs/panel-administrativo.md`](docs/panel-administrativo.md).
+- [`docs/arquitectura.md`](docs/arquitectura.md): structure, modules, installation, limits.
+- [`docs/plugin.md`](docs/plugin.md): blocks, REST API, capabilities, settings, payments, privacy.
+- [`docs/theme.md`](docs/theme.md): tokens, header/footer parts, patterns, page composition.
+- [`docs/contenido-y-media.md`](docs/contenido-y-media.md): content and media audit.
+- [`docs/visual/`](docs/visual/): visual baseline and asset contract.
+- [`docs/estado.md`](docs/estado.md): current status and pending work.
+
+Contributions follow [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## License
 
-This project is licensed under the [GPL-2.0-or-later](LICENSE) license.
+Licensed under [GPL-2.0-or-later](LICENSE).

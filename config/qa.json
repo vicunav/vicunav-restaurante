@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "baseline": {
+    "prototype_commit": "1e1f62787e088c0ca9701500e764802499d1b253",
+    "demo_composition_commit": "bdc0a1536c8cd7f80a85a1084dfa6c7194c57580"
+  },
+  "viewports": [
+    { "width": 1440, "height": 1000 },
+    { "width": 1024, "height": 900 },
+    { "width": 768, "height": 1024 },
+    { "width": 390, "height": 844 },
+    { "width": 375, "height": 812 }
+  ],
+  "routes": [
+    "/",
+    "/menu/",
+    "/pizzas/",
+    "/carrito/",
+    "/checkout/",
+    "/pedido/",
+    "/reservas/",
+    "/mis-pizzas/",
+    "/privacidad/"
+  ],
+  "budgets": {
+    "horizontal_overflow_px": 0,
+    "minimum_touch_target_px": 44,
+    "maximum_local_image_bytes": 200000,
+    "maximum_console_errors": 0,
+    "maximum_missing_blocks": 0,
+    "h1_per_route": 1
+  }
+}

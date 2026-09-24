@@ -1,0 +1,304 @@
+.vicunav-restaurant-header,
+.vicunav-restaurant-footer {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.vicunav-restaurant-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.vicunav-restaurant-header--home {
+  min-height: 5.125rem;
+}
+
+.vicunav-restaurant-header--inner {
+  min-height: 4rem;
+  padding-block: 0.625rem !important;
+}
+
+.vicunav-restaurant-header__inner,
+.vicunav-restaurant-footer__inner,
+.vicunav-restaurant-footer__minimal-inner {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+}
+
+.vicunav-restaurant-header__brand {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.vicunav-restaurant-header__brand-copy {
+  align-items: flex-start;
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0;
+  min-height: 44px;
+  min-width: 0;
+}
+
+.vicunav-restaurant-header__brand-copy .wp-block-site-title a {
+  min-height: 0 !important;
+}
+
+.vicunav-restaurant-header__brand-copy .wp-block-site-tagline {
+  line-height: 1.15;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vicunav-restaurant-header__brand .wp-block-site-logo,
+.vicunav-restaurant-header__brand .wp-block-site-title {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.vicunav-restaurant-header__brand .wp-block-site-title {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vicunav-restaurant-header__brand .wp-block-site-logo a,
+.vicunav-restaurant-header__brand .wp-block-site-title a,
+.vicunav-restaurant-header .wp-block-navigation-item__content,
+.vicunav-restaurant-header .wp-block-navigation__responsive-container-open,
+.vicunav-restaurant-header .wp-block-navigation__responsive-container-close,
+.vicunav-restaurant-header .wp-element-button,
+.vicunav-restaurant-footer a {
+  align-items: center;
+  box-sizing: border-box;
+  display: inline-flex;
+  min-height: 44px;
+}
+
+.vicunav-restaurant-header__brand .wp-block-site-logo a,
+.vicunav-restaurant-header .wp-block-navigation__responsive-container-open,
+.vicunav-restaurant-header .wp-block-navigation__responsive-container-close {
+  justify-content: center;
+  min-width: 44px;
+}
+
+.vicunav-restaurant-header__navigation {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.vicunav-restaurant-header__navigation .wp-block-navigation__container {
+  column-gap: clamp(0.75rem, 2vw, 1.75rem);
+}
+
+.vicunav-restaurant-header__navigation .wp-block-navigation-item__content,
+.vicunav-restaurant-footer__navigation .wp-block-navigation-item__content {
+  justify-content: center;
+  min-width: 44px;
+}
+
+.vicunav-restaurant-header .vicunav-restaurant-header__cta {
+  display: none;
+  flex: 0 0 auto;
+}
+
+.vicunav-restaurant-header a:focus-visible,
+.vicunav-restaurant-header button:focus-visible,
+.vicunav-restaurant-footer a:focus-visible {
+  border-radius: 2px;
+  box-shadow:
+    0 0 0 2px var(--wp--preset--color--vicunav-neutral-900, #0d0d0d),
+    0 0 0 5px var(--wp--preset--color--vicunav-neutral-100, #faebd7);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.vicunav-restaurant-header--inner a:focus-visible,
+.vicunav-restaurant-header--inner button:focus-visible,
+.vicunav-restaurant-footer a:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--wp--preset--color--vicunav-neutral-100, #faebd7),
+    0 0 0 5px var(--wp--preset--color--vicunav-neutral-900, #0d0d0d);
+}
+
+.vicunav-restaurant-footer__columns > .wp-block-column,
+.vicunav-restaurant-footer__legal,
+.vicunav-restaurant-footer__minimal-inner {
+  min-width: 0;
+}
+
+.vicunav-restaurant-footer__navigation .wp-block-navigation__container {
+  align-items: flex-start;
+  row-gap: 0;
+}
+
+.vicunav-restaurant-footer__navigation .wp-block-navigation-item__content {
+  padding-inline: 0.25rem;
+}
+
+.vicunav-restaurant-footer__legal > * {
+  margin-block: 0;
+}
+
+.vicunav-restaurant-footer--full {
+  padding-block: var(--wp--preset--spacing--vicunav-space-xl, 3rem)
+    var(--wp--preset--spacing--vicunav-space-lg, 2rem);
+  padding-inline: var(
+    --wp--custom--vicunav--section-spacing--inline,
+    var(--wp--preset--spacing--vicunav-space-md, 1.5rem)
+  );
+}
+
+.vicunav-restaurant-footer--full .vicunav-restaurant-footer__inner > * + * {
+  margin-block-start: var(--wp--preset--spacing--vicunav-space-lg, 2rem);
+}
+
+.vicunav-restaurant-footer__columns {
+  align-items: center;
+  display: grid;
+  gap: var(--wp--preset--spacing--vicunav-space-xl, 3rem);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.vicunav-restaurant-footer__media {
+  min-height: 12.5rem;
+}
+
+.vicunav-restaurant-footer__info {
+  margin: 0;
+  min-width: 0;
+}
+
+.vicunav-restaurant-footer__social .wp-social-link a {
+  justify-content: center;
+  min-width: 44px;
+}
+
+.vicunav-restaurant-footer__legal {
+  border-top: 1px solid
+    var(
+      --wp--custom--vicunav--border--hairline-inverse,
+      var(--wp--preset--color--vicunav-neutral-700)
+    );
+  padding-block-start: var(--wp--preset--spacing--vicunav-space-md, 1.5rem);
+}
+
+@media (max-width: 63.99rem) {
+  .vicunav-restaurant-header
+    .wp-block-navigation__responsive-container-open:not(.always-shown) {
+    display: flex;
+  }
+
+  .vicunav-restaurant-header
+    .wp-block-navigation__responsive-container:not(.hidden-by-default):not(
+      .is-menu-open
+    ) {
+    display: none;
+  }
+
+  .vicunav-restaurant-header
+    .wp-block-navigation__responsive-container.is-menu-open {
+    box-sizing: border-box;
+    padding: clamp(1.5rem, 5vw, 3rem);
+  }
+
+  .vicunav-restaurant-header--home
+    .wp-block-navigation__responsive-container.is-menu-open {
+    background: var(--wp--preset--color--vicunav-neutral-100, #faebd7);
+    color: var(--wp--preset--color--vicunav-neutral-900, #0d0d0d);
+  }
+
+  .vicunav-restaurant-header--inner
+    .wp-block-navigation__responsive-container.is-menu-open {
+    background: var(--wp--preset--color--vicunav-neutral-900, #0d0d0d);
+    color: var(--wp--preset--color--vicunav-neutral-100, #faebd7);
+  }
+
+  .vicunav-restaurant-header
+    .wp-block-navigation__responsive-container.is-menu-open
+    .wp-block-navigation__responsive-container-content,
+  .vicunav-restaurant-header
+    .wp-block-navigation__responsive-container.is-menu-open
+    .wp-block-navigation__container {
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+}
+
+@media (min-width: 48rem) {
+  .vicunav-restaurant-header .vicunav-restaurant-header__cta {
+    display: flex;
+  }
+
+  .vicunav-restaurant-footer__columns {
+    grid-template-columns: minmax(16.25rem, 1fr) minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 64rem) {
+  .vicunav-restaurant-header__navigation
+    .wp-block-navigation__responsive-container-open:not(.always-shown) {
+    display: none;
+  }
+
+  .vicunav-restaurant-header__navigation
+    .wp-block-navigation__responsive-container:not(.hidden-by-default):not(
+      .is-menu-open
+    ) {
+    display: block;
+    position: relative;
+    width: 100%;
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .vicunav-restaurant-footer__columns > .wp-block-column {
+    flex-basis: 100% !important;
+  }
+
+  .vicunav-restaurant-footer__legal,
+  .vicunav-restaurant-footer__minimal-inner {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .vicunav-restaurant-footer__navigation .wp-block-navigation__container {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 29.99rem) {
+  .vicunav-restaurant-header {
+    padding-inline: var(
+      --wp--preset--spacing--vicunav-space-sm,
+      1rem
+    ) !important;
+  }
+
+  .vicunav-restaurant-header__brand .wp-block-site-logo {
+    display: none;
+  }
+
+  .vicunav-restaurant-header__brand-copy .wp-block-site-tagline {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vicunav-restaurant-header *,
+  .vicunav-restaurant-footer * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+.editor-styles-wrapper .vicunav-restaurant-header {
+  position: relative;
+}
