@@ -1,4 +1,6 @@
-/vendor/
-/node_modules/
-/.phpunit.result.cache
+/plugin/vendor/
+/plugin/node_modules/
+/plugin/.phpunit.result.cache
 /.unlazy/
+/*.zip
+.DS_Store

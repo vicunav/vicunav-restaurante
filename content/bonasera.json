@@ -1,0 +1,1675 @@
+{
+  "schema_version": 1,
+  "source": {
+    "repository": "vicunav-design-to-claude-demo-restaurante",
+    "commit": "1e1f62787e088c0ca9701500e764802499d1b253"
+  },
+  "classification": {
+    "brand": "fictitious-demo",
+    "people_and_testimonials": "fictitious-demo",
+    "contact_details": "non-routable-demo",
+    "operational_values": "seed-data-not-production"
+  },
+  "adjustments": [
+    "Reemplaza los cuatro métodos teatrales por el proveedor manual real de pagos del plugin.",
+    "Retira retratos de testimonios para no sugerir respaldo de personas reales.",
+    "Reemplaza teléfono, correo y dirección exacta no verificados por datos demostrativos.",
+    "Ajusta las preguntas frecuentes para no prometer mapas, WhatsApp ni atención operativa ausentes.",
+    "Normaliza la raya tipográfica larga según los estándares del repositorio."
+  ],
+  "brand": {
+    "name": "Bonasera",
+    "descriptor": "Trattoria italiana familiar",
+    "location_label": "Maracaibo, Zulia",
+    "address": "Ubicación demostrativa en Maracaibo, Zulia",
+    "phone": "+58 000-0000000",
+    "email": "hola@example.invalid"
+  },
+  "navigation": [
+    {
+      "label": "Inicio",
+      "path": "/"
+    },
+    {
+      "label": "Menú",
+      "path": "/menu/"
+    },
+    {
+      "label": "Crea tu pizza",
+      "path": "/pizzas/"
+    },
+    {
+      "label": "Reservar",
+      "path": "/reservas/"
+    },
+    {
+      "label": "Mis pizzas",
+      "path": "/mis-pizzas/"
+    }
+  ],
+  "pages": [
+    {
+      "id": "inicio",
+      "path": "/",
+      "h1": "Cucina italiana, tradición viva.",
+      "ghostHeading": "Cucina italiana",
+      "lead": "Trattoria familiar en Maracaibo: pastas, pizzas al horno de piedra y recetas de la Nonna, listas para pedir en segundos desde tu teléfono y recibir calientitas en tu puerta, o retirar tú mismo en el local.",
+      "sections": [
+        "Platillos destacados",
+        "Nuestro menú",
+        "Nuestra historia",
+        "Dónde estamos ubicados",
+        "Lo que dicen nuestros clientes",
+        "Preguntas frecuentes",
+        "Contáctanos"
+      ]
+    },
+    {
+      "id": "menu",
+      "path": "/menu/",
+      "h1": "Nuestro menú",
+      "lead": "Antipasti, pizze al horno de piedra, pasta fresca y postres caseros  -  el menú completo de nuestra trattoria italiana en Maracaibo."
+    },
+    {
+      "id": "pizzas",
+      "path": "/pizzas/",
+      "h1": "Nuestras pizzas",
+      "lead": "Pizzas napolitanas al horno de piedra en Maracaibo, o armadas a tu gusto con nuestro creador de pizzas.",
+      "sections": [
+        "Directo del horno de piedra, listas para pedir.",
+        "Crea tu pizza"
+      ]
+    },
+    {
+      "id": "carrito",
+      "path": "/carrito/",
+      "h1": "Tu pedido",
+      "lead": "Revisa tu pedido de comida italiana antes de pagar o retirar en nuestra trattoria en Maracaibo."
+    },
+    {
+      "id": "checkout",
+      "path": "/checkout/",
+      "h1": "Confirmar pedido",
+      "lead": "Últimos datos antes de enviar tu pedido."
+    },
+    {
+      "id": "pedido",
+      "path": "/pedido/",
+      "h1": "Estado del pedido",
+      "lead": "Consulta el estado real del pedido y de su solicitud de pago."
+    },
+    {
+      "id": "reservas",
+      "path": "/reservas/",
+      "h1": "Reservar mesa",
+      "lead": "Reserva tu mesa en Bonasera, trattoria italiana familiar en el corazón de Maracaibo."
+    },
+    {
+      "id": "mis-pizzas",
+      "path": "/mis-pizzas/",
+      "h1": "Mis pizzas",
+      "lead": "Tus creaciones guardadas, listas para pedir de nuevo en un toque."
+    },
+    {
+      "id": "privacidad",
+      "path": "/privacidad/",
+      "h1": "Privacidad",
+      "lead": "Cómo tratamos los datos que nos compartes al pedir, reservar o pagar en esta demostración."
+    }
+  ],
+  "editorial": {
+    "story": [
+      "Bonasera nació en la cocina de la familia Ferraro, italianos que llegaron a Maracaibo en los años 60 y nunca dejaron de cocinar como en Nápoles. Los domingos, toda la cuadra se enteraba de que había lasagna en el horno.",
+      "El nombre viene de \"buonasera\", el saludo con el que el abuelo Vittorio recibía a cada cliente en la puerta, sin excepción. Seguimos recibiendo así: sin apuro, con la mesa lista y la masa recién amasada.",
+      "Hoy seguimos siendo una trattoria familiar, con recetas que pasan de generación en generación. Lo único que cambió es que ahora puedes pedirlo desde tu teléfono."
+    ],
+    "contact_heading": "Contáctanos",
+    "contact_copy": "Para pedidos y reservas utiliza los flujos del sitio. Los datos de contacto visibles son demostrativos y no reciben mensajes reales."
+  },
+  "faqs": [
+    {
+      "question": "¿Hacen delivery en Maracaibo y el resto del Zulia?",
+      "answer": "Sí, cubrimos las zonas publicadas en el sitio. Selecciona tu zona en el carrito para confirmar disponibilidad, tarifa y tiempo estimado."
+    },
+    {
+      "question": "¿Cuáles son las zonas de entrega?",
+      "answer": "Entregamos en Maracaibo (Casco Central), La Lago / Bella Vista, San Francisco, Cabimas, Ciudad Ojeda y Santa Bárbara del Zulia. El carrito confirma si el pedido está dentro de cobertura."
+    },
+    {
+      "question": "¿Cuánto cuesta y cuánto tarda el delivery?",
+      "answer": "El costo y el tiempo estimado varían según tu zona. El carrito muestra ambos valores antes del checkout; el tiempo estimado está entre 20 y 65 minutos."
+    },
+    {
+      "question": "¿Cómo funciona el pago?",
+      "answer": "El checkout crea una solicitud en el proveedor manual de pagos. Sigue las instrucciones y adjunta la evidencia cuando corresponda; el pedido refleja después el estado público del pago."
+    },
+    {
+      "question": "¿Puedo armar mi propia pizza?",
+      "answer": "Sí, en la página \"Pizzas\" puedes elegir tamaño, masa, salsa, toppings y queso extra, y ver el precio actualizarse al momento."
+    },
+    {
+      "question": "¿Tienen opciones vegetarianas?",
+      "answer": "Sí: la mayoría de nuestras entradas, ensaladas, pastas, contorni y postres tienen versión vegetariana  -  están marcadas en el menú."
+    },
+    {
+      "question": "¿Manejan información de alérgenos?",
+      "answer": "Sí, cada platillo del menú indica sus alérgenos principales (gluten, lácteos, huevo, pescado, frutos secos) y sus calorías aproximadas. Dínoslo al pedir si tienes una alergia puntual."
+    },
+    {
+      "question": "¿Puedo cancelar o cambiar una reserva?",
+      "answer": "Las reservas se gestionan desde el flujo del sitio. Esta demostración no publica un canal real para cambios o cancelaciones posteriores."
+    }
+  ],
+  "testimonials": {
+    "disclaimer": "Nombres, contextos y testimonios ficticios creados para esta demostración.",
+    "items": [
+      {
+        "name": "María González",
+        "type": "Pedido delivery",
+        "stars": "★★★★★",
+        "quote": "Pedí la pizza Diavola desde la web y en 30 minutos ya estaba en mi puerta. El envío del comprobante fue muy fácil.",
+        "id": "t1"
+      },
+      {
+        "name": "Luis Fernández",
+        "type": "Reserva de mesa",
+        "stars": "★★★★★",
+        "quote": "Reservamos una mesa para el cumpleaños de mi papá y nos tenían todo listo, hasta el vino que pedimos con anticipación.",
+        "id": "t2"
+      },
+      {
+        "name": "Yajaira Montes",
+        "type": "Evento privado",
+        "stars": "★★★★★",
+        "quote": "Nos hicieron el catering completo para el bautizo de mi hija  -  la lasagna fue el plato más comentado de la noche.",
+        "id": "t3"
+      }
+    ]
+  },
+  "menu": {
+    "categories": [
+      {
+        "id": "antipasti",
+        "label": "Antipasti"
+      },
+      {
+        "id": "insalate",
+        "label": "Insalate"
+      },
+      {
+        "id": "pizze",
+        "label": "Pizze"
+      },
+      {
+        "id": "pasta",
+        "label": "Pasta"
+      },
+      {
+        "id": "secondi",
+        "label": "Secondi"
+      },
+      {
+        "id": "contorni",
+        "label": "Contorni"
+      },
+      {
+        "id": "dolci",
+        "label": "Dolci"
+      },
+      {
+        "id": "bevande",
+        "label": "Bevande"
+      }
+    ],
+    "items": [
+      {
+        "id": "ant1",
+        "categoryId": "antipasti",
+        "name": "Bruschette al Pomodoro",
+        "description": "Pan tostado, tomate fresco, ajo y albahaca.",
+        "priceUsd": 3,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": null,
+        "story": "La receta que Nonna Isabella traía desde Nápoles: pan del día, tomate bien maduro y aceite de oliva sin escatimar.",
+        "kcal": 220,
+        "allergens": [
+          "gluten"
+        ],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "ant2",
+        "categoryId": "antipasti",
+        "name": "Caprese di Bufala",
+        "description": "Mozzarella di bufala, tomate maduro y albahaca.",
+        "priceUsd": 5.5,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": "mas-pedido",
+        "story": "Mozzarella di bufala que llega fresca cada semana  -  el bocado con el que probamos si un cliente nuevo se queda para siempre.",
+        "kcal": 340,
+        "allergens": [
+          "lácteos"
+        ],
+        "removableIngredients": [
+          "Albahaca",
+          "Aceite de oliva extra"
+        ],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "ant3",
+        "categoryId": "antipasti",
+        "name": "Carpaccio di Manzo",
+        "description": "Láminas finas de res, rúcula, parmesano y limón.",
+        "priceUsd": 7,
+        "vegetarian": false,
+        "spicy": false,
+        "tag": null,
+        "story": "Carpaccio cortado a mano, como lo servía el abuelo Vittorio en su primera trattoria en Maracaibo, en los años 60.",
+        "kcal": 260,
+        "allergens": [
+          "lácteos"
+        ],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "ant4",
+        "categoryId": "antipasti",
+        "name": "Arancini di Riso",
+        "description": "Bolitas de risotto rellenas de queso, fritas y crujientes.",
+        "priceUsd": 4.5,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": "nuevo",
+        "story": "Sobras de risotto convertidas en bocado crujiente  -  así nació este plato en la cocina de la familia, para no botar nada.",
+        "kcal": 380,
+        "allergens": [
+          "gluten",
+          "lácteos",
+          "huevo"
+        ],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "ins1",
+        "categoryId": "insalate",
+        "name": "Insalata Mista",
+        "description": "Mix de hojas verdes, tomate cherry, zanahoria y vinagreta.",
+        "priceUsd": 4,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": null,
+        "story": "La ensalada que siempre estuvo en la mesa familiar antes del plato principal, simple y fresca.",
+        "kcal": 160,
+        "allergens": [],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "ins2",
+        "categoryId": "insalate",
+        "name": "Insalata César",
+        "description": "Pollo a la plancha, parmesano, crotones y aderezo César.",
+        "priceUsd": 6,
+        "vegetarian": false,
+        "spicy": false,
+        "tag": null,
+        "story": "Nuestra versión más ligera del clásico, con pollo a la plancha y aderezo hecho en casa.",
+        "kcal": 410,
+        "allergens": [
+          "lácteos",
+          "huevo",
+          "gluten"
+        ],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "ins3",
+        "categoryId": "insalate",
+        "name": "Rucola, Pera e Gorgonzola",
+        "description": "Rúcula, pera, nueces y queso gorgonzola.",
+        "priceUsd": 6.5,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": null,
+        "story": "Una combinación que trajo la segunda generación: rúcula amarga, pera dulce y gorgonzola fuerte.",
+        "kcal": 380,
+        "allergens": [
+          "lácteos",
+          "frutos secos"
+        ],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "ins4",
+        "categoryId": "insalate",
+        "name": "Panzanella",
+        "description": "Pan rústico, tomate, pepino, cebolla morada y vinagre.",
+        "priceUsd": 5,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": "nuevo",
+        "story": "Pan del día anterior que no se bota  -  se remoja y se convierte en esta ensalada toscana.",
+        "kcal": 290,
+        "allergens": [
+          "gluten"
+        ],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "piz1",
+        "categoryId": "pizze",
+        "name": "Margherita",
+        "description": "Salsa pomodoro, mozzarella fresca y albahaca.",
+        "priceUsd": 8,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": "mas-pedido",
+        "story": "La primera pizza que se horneó en nuestro local, el día de la inauguración  -  sigue siendo la más pedida.",
+        "kcal": 720,
+        "allergens": [
+          "gluten",
+          "lácteos"
+        ],
+        "removableIngredients": [
+          "Albahaca",
+          "Mozzarella extra"
+        ],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "piz2",
+        "categoryId": "pizze",
+        "name": "Diavola",
+        "description": "Salsa pomodoro, mozzarella y salame picante.",
+        "priceUsd": 9.5,
+        "vegetarian": false,
+        "spicy": true,
+        "tag": null,
+        "story": "Para quien pide \"algo con más carácter\"  -  salame picante sobre la base clásica.",
+        "kcal": 810,
+        "allergens": [
+          "gluten",
+          "lácteos"
+        ],
+        "removableIngredients": [
+          "Salame picante extra"
+        ],
+        "choices": [
+          {
+            "id": "nivelPicante",
+            "label": "Nivel de picante",
+            "options": [
+              "Suave",
+              "Medio",
+              "Picante"
+            ],
+            "defaultOption": "Medio"
+          }
+        ],
+        "available": true
+      },
+      {
+        "id": "piz3",
+        "categoryId": "pizze",
+        "name": "Quattro Formaggi",
+        "description": "Mozzarella, gorgonzola, parmesano y provolone.",
+        "priceUsd": 10,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": null,
+        "story": "Cuatro quesos italianos que se derriten juntos como debe ser: sin prisa, en horno de piedra.",
+        "kcal": 860,
+        "allergens": [
+          "gluten",
+          "lácteos"
+        ],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "piz4",
+        "categoryId": "pizze",
+        "name": "Prosciutto e Funghi",
+        "description": "Jamón, champiñones y mozzarella.",
+        "priceUsd": 9.5,
+        "vegetarian": false,
+        "spicy": false,
+        "tag": null,
+        "story": "Jamón y champiñones, la combinación que pide media familia cuando no se ponen de acuerdo.",
+        "kcal": 780,
+        "allergens": [
+          "gluten",
+          "lácteos"
+        ],
+        "removableIngredients": [
+          "Champiñones",
+          "Jamón extra"
+        ],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "piz5",
+        "categoryId": "pizze",
+        "name": "Marinara",
+        "description": "Salsa pomodoro, ajo, orégano y aceite de oliva.",
+        "priceUsd": 6.5,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": null,
+        "story": "La pizza más antigua de Nápoles, sin queso  -  solo tomate, ajo y buen aceite de oliva.",
+        "kcal": 520,
+        "allergens": [
+          "gluten"
+        ],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "piz6",
+        "categoryId": "pizze",
+        "name": "Capricciosa",
+        "description": "Jamón, champiñones, alcachofa, aceitunas y mozzarella.",
+        "priceUsd": 10.5,
+        "vegetarian": false,
+        "spicy": false,
+        "tag": null,
+        "story": "De todo un poco, como su nombre indica  -  la favorita de quien no se puede decidir.",
+        "kcal": 830,
+        "allergens": [
+          "gluten",
+          "lácteos"
+        ],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "piz7",
+        "categoryId": "pizze",
+        "name": "Pepperoni",
+        "description": "Doble pepperoni, mozzarella y orégano.",
+        "priceUsd": 9,
+        "vegetarian": false,
+        "spicy": true,
+        "tag": null,
+        "story": "Pepperoni crocante en el borde, como sale del horno de piedra bien caliente.",
+        "kcal": 840,
+        "allergens": [
+          "gluten",
+          "lácteos"
+        ],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "piz8",
+        "categoryId": "pizze",
+        "name": "Ortolana",
+        "description": "Zucchini, berenjena, pimentón asado y mozzarella.",
+        "priceUsd": 9.5,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": "nuevo",
+        "story": "Vegetales de temporada asados antes de ir al horno, para la mesa que pide \"algo más liviano\".",
+        "kcal": 690,
+        "allergens": [
+          "gluten",
+          "lácteos"
+        ],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "piz9",
+        "categoryId": "pizze",
+        "name": "Bufalina",
+        "description": "Mozzarella di bufala, tomate cherry y albahaca fresca.",
+        "priceUsd": 11,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": null,
+        "story": "La Margherita elevada con bufala fresca, para quien quiere sentir la diferencia.",
+        "kcal": 750,
+        "allergens": [
+          "gluten",
+          "lácteos"
+        ],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "pas1",
+        "categoryId": "pasta",
+        "name": "Spaghetti alla Carbonara",
+        "description": "Panceta, huevo, pecorino y pimienta negra.",
+        "priceUsd": 8.5,
+        "vegetarian": false,
+        "spicy": false,
+        "tag": "mas-pedido",
+        "story": "Sin crema, como manda la tradición romana: solo huevo, panceta, pecorino y buena pimienta.",
+        "kcal": 690,
+        "allergens": [
+          "gluten",
+          "lácteos",
+          "huevo"
+        ],
+        "removableIngredients": [
+          "Panceta extra",
+          "Pecorino extra"
+        ],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "pas2",
+        "categoryId": "pasta",
+        "name": "Fettuccine al Pomodoro",
+        "description": "Salsa de tomate fresco y albahaca.",
+        "priceUsd": 7,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": null,
+        "story": "La pasta de los domingos en casa de la Nonna: salsa de tomate fresco cocinada despacio.",
+        "kcal": 520,
+        "allergens": [
+          "gluten"
+        ],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "pas3",
+        "categoryId": "pasta",
+        "name": "Penne all'Arrabbiata",
+        "description": "Salsa de tomate picante, ajo y chile.",
+        "priceUsd": 7.5,
+        "vegetarian": true,
+        "spicy": true,
+        "tag": null,
+        "story": "Arrabbiata quiere decir \"enrabietada\"  -  así de picante la pedía el abuelo Vittorio.",
+        "kcal": 540,
+        "allergens": [
+          "gluten"
+        ],
+        "removableIngredients": [],
+        "choices": [
+          {
+            "id": "nivelPicante",
+            "label": "Nivel de picante",
+            "options": [
+              "Suave",
+              "Medio",
+              "Extra picante"
+            ],
+            "defaultOption": "Medio"
+          }
+        ],
+        "available": true
+      },
+      {
+        "id": "pas4",
+        "categoryId": "pasta",
+        "name": "Lasagna della Nonna",
+        "description": "Capas de pasta, ragù de res, bechamel y parmesano.",
+        "priceUsd": 9,
+        "vegetarian": false,
+        "spicy": false,
+        "tag": "nuevo",
+        "story": "La lasagna de la Nonna, con la receta que nadie más en la familia se atreve a cambiar.",
+        "kcal": 780,
+        "allergens": [
+          "gluten",
+          "lácteos",
+          "huevo"
+        ],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "sec1",
+        "categoryId": "secondi",
+        "name": "Pollo alla Parmigiana",
+        "description": "Pechuga empanizada, salsa de tomate y mozzarella gratinada.",
+        "priceUsd": 9.5,
+        "vegetarian": false,
+        "spicy": false,
+        "tag": null,
+        "story": "Pollo empanizado y gratinado como en las trattorias de barrio de Nápoles.",
+        "kcal": 690,
+        "allergens": [
+          "gluten",
+          "lácteos",
+          "huevo"
+        ],
+        "removableIngredients": [
+          "Mozzarella gratinada",
+          "Salsa de tomate"
+        ],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "sec2",
+        "categoryId": "secondi",
+        "name": "Osso Buco",
+        "description": "Jarrete de res braseado a fuego lento con vino y hierbas.",
+        "priceUsd": 12,
+        "vegetarian": false,
+        "spicy": false,
+        "tag": null,
+        "story": "Cocción lenta de horas, la especialidad de los domingos de invierno en la casa familiar.",
+        "kcal": 620,
+        "allergens": [],
+        "removableIngredients": [],
+        "choices": [
+          {
+            "id": "termino",
+            "label": "Término de la carne",
+            "options": [
+              "Medio",
+              "Tres cuartos",
+              "Bien cocida"
+            ],
+            "defaultOption": "Tres cuartos"
+          }
+        ],
+        "available": true
+      },
+      {
+        "id": "sec3",
+        "categoryId": "secondi",
+        "name": "Branzino al Limone",
+        "description": "Pescado del Lago de Maracaibo a la plancha con limón y hierbas.",
+        "priceUsd": 11,
+        "vegetarian": false,
+        "spicy": false,
+        "tag": null,
+        "story": "Pescado fresco del Lago de Maracaibo, con la técnica italiana de cocción simple al limón.",
+        "kcal": 410,
+        "allergens": [
+          "pescado"
+        ],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "sec4",
+        "categoryId": "secondi",
+        "name": "Saltimbocca alla Romana",
+        "description": "Escalopa de res con jamón, salvia y vino blanco.",
+        "priceUsd": 10.5,
+        "vegetarian": false,
+        "spicy": false,
+        "tag": null,
+        "story": "Un plato romano que la familia adoptó rápido  -  jamón, salvia y vino blanco.",
+        "kcal": 540,
+        "allergens": [],
+        "removableIngredients": [],
+        "choices": [
+          {
+            "id": "termino",
+            "label": "Término de la carne",
+            "options": [
+              "Medio",
+              "Tres cuartos",
+              "Bien cocida"
+            ],
+            "defaultOption": "Tres cuartos"
+          }
+        ],
+        "available": true
+      },
+      {
+        "id": "con1",
+        "categoryId": "contorni",
+        "name": "Patate al Rosmarino",
+        "description": "Papas rústicas al horno con romero.",
+        "priceUsd": 3.5,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": null,
+        "story": "Papas al horno con el romero que crece en la maceta de la cocina.",
+        "kcal": 260,
+        "allergens": [],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "con2",
+        "categoryId": "contorni",
+        "name": "Verdure Grigliate",
+        "description": "Vegetales de temporada a la parrilla.",
+        "priceUsd": 4,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": null,
+        "story": "Vegetales de temporada, siempre a la parrilla, nunca hervidos.",
+        "kcal": 140,
+        "allergens": [],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "con3",
+        "categoryId": "contorni",
+        "name": "Spinaci all'Aglio",
+        "description": "Espinaca salteada con ajo y aceite de oliva.",
+        "priceUsd": 3.5,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": null,
+        "story": "La espinaca salteada que acompaña casi cualquier plato fuerte de la carta.",
+        "kcal": 120,
+        "allergens": [],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "con4",
+        "categoryId": "contorni",
+        "name": "Pane all'Aglio",
+        "description": "Pan tostado con ajo, hierbas y mantequilla.",
+        "priceUsd": 2.5,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": null,
+        "story": "El pan de ajo que se termina antes de que llegue el plato principal.",
+        "kcal": 220,
+        "allergens": [
+          "gluten",
+          "lácteos"
+        ],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "dol1",
+        "categoryId": "dolci",
+        "name": "Tiramisù",
+        "description": "Bizcocho al café bañado en mascarpone y cacao.",
+        "priceUsd": 4.5,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": "mas-pedido",
+        "story": "El postre insignia de la casa  -  receta que se guarda con más celo que ninguna otra.",
+        "kcal": 420,
+        "allergens": [
+          "gluten",
+          "lácteos",
+          "huevo"
+        ],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "dol2",
+        "categoryId": "dolci",
+        "name": "Panna Cotta",
+        "description": "Crema cocida con salsa de frutos rojos.",
+        "priceUsd": 4,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": null,
+        "story": "Postre ligero, para cerrar la comida sin quedar lleno.",
+        "kcal": 350,
+        "allergens": [
+          "lácteos"
+        ],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "dol3",
+        "categoryId": "dolci",
+        "name": "Cannoli Siciliani",
+        "description": "Barquillos crujientes rellenos de ricotta dulce.",
+        "priceUsd": 4.5,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": "nuevo",
+        "story": "Barquillos crujientes que se rellenan justo antes de servir, para que no se humedezcan.",
+        "kcal": 390,
+        "allergens": [
+          "gluten",
+          "lácteos"
+        ],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "dol4",
+        "categoryId": "dolci",
+        "name": "Torta Caprese",
+        "description": "Torta de chocolate y almendras, sin harina.",
+        "priceUsd": 4,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": null,
+        "story": "Una torta sin harina que trajo la generación más reciente de la familia, para los que evitan el gluten.",
+        "kcal": 400,
+        "allergens": [
+          "lácteos",
+          "huevo",
+          "frutos secos"
+        ],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "bev1",
+        "categoryId": "bevande",
+        "name": "Limonata della Casa",
+        "description": "Limonada casera con menta fresca.",
+        "priceUsd": 2,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": null,
+        "story": "Limonada casera con menta de la huerta de la trattoria.",
+        "kcal": 110,
+        "allergens": [],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "bev2",
+        "categoryId": "bevande",
+        "name": "Copa de Vino de la Casa",
+        "description": "Tinto o blanco, copa de 150 ml.",
+        "priceUsd": 4,
+        "vegetarian": false,
+        "spicy": false,
+        "tag": null,
+        "story": "Vino de la casa, elegido para acompañar tanto la pasta como la pizza.",
+        "kcal": 125,
+        "allergens": [],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "bev3",
+        "categoryId": "bevande",
+        "name": "Espresso",
+        "description": "Café espresso italiano.",
+        "priceUsd": 1.5,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": null,
+        "story": "Espresso servido como se debe: corto, fuerte y rápido.",
+        "kcal": 5,
+        "allergens": [],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      },
+      {
+        "id": "bev4",
+        "categoryId": "bevande",
+        "name": "Acqua Frizzante",
+        "description": "Agua con gas, 500 ml.",
+        "priceUsd": 1.5,
+        "vegetarian": true,
+        "spicy": false,
+        "tag": null,
+        "story": "Agua con gas bien fría, para limpiar el paladar entre platos.",
+        "kcal": 0,
+        "allergens": [],
+        "removableIngredients": [],
+        "choices": [],
+        "available": true
+      }
+    ],
+    "featured_item_ids": [
+      "ant2",
+      "piz1",
+      "pas1",
+      "dol1"
+    ]
+  },
+  "pizza": {
+    "max_toppings": 6,
+    "default_size_id": "mediana",
+    "default_crust_id": "napolitana",
+    "default_sauce_id": "sanmarzano",
+    "default_cheese_id": "mozzarella",
+    "sizes": [
+      {
+        "id": "personal",
+        "label": "Personal (22 cm)",
+        "priceUsd": 6,
+        "scale": 0.78
+      },
+      {
+        "id": "mediana",
+        "label": "Mediana (30 cm)",
+        "priceUsd": 8.5,
+        "scale": 0.9
+      },
+      {
+        "id": "grande",
+        "label": "Grande (35 cm)",
+        "priceUsd": 11.5,
+        "scale": 1
+      }
+    ],
+    "crusts": [
+      {
+        "id": "napolitana",
+        "label": "Napolitana",
+        "glutenFree": false,
+        "priceModUsd": 0
+      },
+      {
+        "id": "fina",
+        "label": "Fina y crujiente",
+        "glutenFree": false,
+        "priceModUsd": 0
+      },
+      {
+        "id": "singluten",
+        "label": "Sin gluten",
+        "glutenFree": true,
+        "priceModUsd": 1.5
+      }
+    ],
+    "sauces": [
+      {
+        "id": "sanmarzano",
+        "label": "San Marzano"
+      },
+      {
+        "id": "blanca",
+        "label": "Blanca al ajo"
+      },
+      {
+        "id": "pesto",
+        "label": "Pesto"
+      },
+      {
+        "id": "sin-salsa",
+        "label": "Sin salsa"
+      }
+    ],
+    "cheeses": [
+      {
+        "id": "mozzarella",
+        "name": "Mozzarella",
+        "category": "cheese",
+        "priceModUsd": 0,
+        "dietaryTags": [
+          "vegetariano"
+        ],
+        "allergens": [
+          "lácteos"
+        ],
+        "available": true
+      },
+      {
+        "id": "fiordilatte",
+        "name": "Fior di latte",
+        "category": "cheese",
+        "priceModUsd": 0.75,
+        "dietaryTags": [
+          "vegetariano"
+        ],
+        "allergens": [
+          "lácteos"
+        ],
+        "available": true
+      },
+      {
+        "id": "burrata",
+        "name": "Burrata",
+        "category": "cheese",
+        "priceModUsd": 2.5,
+        "dietaryTags": [
+          "vegetariano"
+        ],
+        "allergens": [
+          "lácteos"
+        ],
+        "available": false
+      },
+      {
+        "id": "vegano-queso",
+        "name": "Queso vegano",
+        "category": "cheese",
+        "priceModUsd": 1.25,
+        "dietaryTags": [
+          "vegano"
+        ],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "queso-extra",
+        "name": "Extra mozzarella (doble)",
+        "category": "cheese",
+        "priceModUsd": 1.5,
+        "dietaryTags": [
+          "vegetariano"
+        ],
+        "allergens": [
+          "lácteos"
+        ],
+        "available": true
+      },
+      {
+        "id": "sin-queso",
+        "name": "Sin queso",
+        "category": "cheese",
+        "priceModUsd": 0,
+        "dietaryTags": [
+          "vegano"
+        ],
+        "allergens": [],
+        "available": true
+      }
+    ],
+    "toppings": [
+      {
+        "id": "pepperoni",
+        "name": "Pepperoni",
+        "category": "meat",
+        "priceModUsd": 1,
+        "dietaryTags": [],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "jamon",
+        "name": "Jamón",
+        "category": "meat",
+        "priceModUsd": 1,
+        "dietaryTags": [],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "tocineta",
+        "name": "Tocineta",
+        "category": "meat",
+        "priceModUsd": 1,
+        "dietaryTags": [],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "prosciutto",
+        "name": "Prosciutto",
+        "category": "meat",
+        "priceModUsd": 2,
+        "dietaryTags": [],
+        "allergens": [],
+        "available": false,
+        "premium": true
+      },
+      {
+        "id": "champinones",
+        "name": "Champiñones",
+        "category": "vegetable",
+        "priceModUsd": 0.75,
+        "dietaryTags": [
+          "vegano",
+          "sin gluten"
+        ],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "aceitunas",
+        "name": "Aceitunas negras",
+        "category": "vegetable",
+        "priceModUsd": 0.75,
+        "dietaryTags": [
+          "vegano",
+          "sin gluten"
+        ],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "pimenton",
+        "name": "Pimentón",
+        "category": "vegetable",
+        "priceModUsd": 0.5,
+        "dietaryTags": [
+          "vegano",
+          "sin gluten"
+        ],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "cebolla",
+        "name": "Cebolla morada",
+        "category": "vegetable",
+        "priceModUsd": 0.5,
+        "dietaryTags": [
+          "vegano",
+          "sin gluten"
+        ],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "rucula",
+        "name": "Rúcula fresca",
+        "category": "finishing",
+        "priceModUsd": 0.75,
+        "dietaryTags": [
+          "vegano",
+          "sin gluten"
+        ],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "albahaca",
+        "name": "Albahaca fresca",
+        "category": "finishing",
+        "priceModUsd": 0.5,
+        "dietaryTags": [
+          "vegano",
+          "sin gluten"
+        ],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "trufa",
+        "name": "Aceite de trufa",
+        "category": "finishing",
+        "priceModUsd": 2.5,
+        "dietaryTags": [
+          "vegano",
+          "sin gluten"
+        ],
+        "allergens": [],
+        "available": true,
+        "premium": true
+      }
+    ],
+    "ingredients": [
+      {
+        "id": "sanmarzano",
+        "name": "San Marzano",
+        "category": "sauce",
+        "priceModUsd": 0,
+        "dietaryTags": [
+          "vegano",
+          "sin gluten"
+        ],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "blanca",
+        "name": "Blanca al ajo",
+        "category": "sauce",
+        "priceModUsd": 0,
+        "dietaryTags": [
+          "vegetariano"
+        ],
+        "allergens": [
+          "lácteos"
+        ],
+        "available": true
+      },
+      {
+        "id": "pesto",
+        "name": "Pesto",
+        "category": "sauce",
+        "priceModUsd": 0,
+        "dietaryTags": [
+          "vegetariano"
+        ],
+        "allergens": [
+          "frutos secos"
+        ],
+        "available": true
+      },
+      {
+        "id": "mozzarella",
+        "name": "Mozzarella",
+        "category": "cheese",
+        "priceModUsd": 0,
+        "dietaryTags": [
+          "vegetariano"
+        ],
+        "allergens": [
+          "lácteos"
+        ],
+        "available": true
+      },
+      {
+        "id": "fiordilatte",
+        "name": "Fior di latte",
+        "category": "cheese",
+        "priceModUsd": 0.75,
+        "dietaryTags": [
+          "vegetariano"
+        ],
+        "allergens": [
+          "lácteos"
+        ],
+        "available": true
+      },
+      {
+        "id": "burrata",
+        "name": "Burrata",
+        "category": "cheese",
+        "priceModUsd": 2.5,
+        "dietaryTags": [
+          "vegetariano"
+        ],
+        "allergens": [
+          "lácteos"
+        ],
+        "available": false
+      },
+      {
+        "id": "vegano-queso",
+        "name": "Queso vegano",
+        "category": "cheese",
+        "priceModUsd": 1.25,
+        "dietaryTags": [
+          "vegano"
+        ],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "queso-extra",
+        "name": "Extra mozzarella (doble)",
+        "category": "cheese",
+        "priceModUsd": 1.5,
+        "dietaryTags": [
+          "vegetariano"
+        ],
+        "allergens": [
+          "lácteos"
+        ],
+        "available": true
+      },
+      {
+        "id": "sin-queso",
+        "name": "Sin queso",
+        "category": "cheese",
+        "priceModUsd": 0,
+        "dietaryTags": [
+          "vegano"
+        ],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "pepperoni",
+        "name": "Pepperoni",
+        "category": "meat",
+        "priceModUsd": 1,
+        "dietaryTags": [],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "jamon",
+        "name": "Jamón",
+        "category": "meat",
+        "priceModUsd": 1,
+        "dietaryTags": [],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "tocineta",
+        "name": "Tocineta",
+        "category": "meat",
+        "priceModUsd": 1,
+        "dietaryTags": [],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "prosciutto",
+        "name": "Prosciutto",
+        "category": "meat",
+        "priceModUsd": 2,
+        "dietaryTags": [],
+        "allergens": [],
+        "available": false,
+        "premium": true
+      },
+      {
+        "id": "champinones",
+        "name": "Champiñones",
+        "category": "vegetable",
+        "priceModUsd": 0.75,
+        "dietaryTags": [
+          "vegano",
+          "sin gluten"
+        ],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "aceitunas",
+        "name": "Aceitunas negras",
+        "category": "vegetable",
+        "priceModUsd": 0.75,
+        "dietaryTags": [
+          "vegano",
+          "sin gluten"
+        ],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "pimenton",
+        "name": "Pimentón",
+        "category": "vegetable",
+        "priceModUsd": 0.5,
+        "dietaryTags": [
+          "vegano",
+          "sin gluten"
+        ],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "cebolla",
+        "name": "Cebolla morada",
+        "category": "vegetable",
+        "priceModUsd": 0.5,
+        "dietaryTags": [
+          "vegano",
+          "sin gluten"
+        ],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "rucula",
+        "name": "Rúcula fresca",
+        "category": "finishing",
+        "priceModUsd": 0.75,
+        "dietaryTags": [
+          "vegano",
+          "sin gluten"
+        ],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "albahaca",
+        "name": "Albahaca fresca",
+        "category": "finishing",
+        "priceModUsd": 0.5,
+        "dietaryTags": [
+          "vegano",
+          "sin gluten"
+        ],
+        "allergens": [],
+        "available": true
+      },
+      {
+        "id": "trufa",
+        "name": "Aceite de trufa",
+        "category": "finishing",
+        "priceModUsd": 2.5,
+        "dietaryTags": [
+          "vegano",
+          "sin gluten"
+        ],
+        "allergens": [],
+        "available": true,
+        "premium": true
+      }
+    ]
+  },
+  "operations": {
+    "timezone": "America/Caracas",
+    "opening_hours": [
+      {
+        "dayOfWeek": 0,
+        "closed": false,
+        "periods": [
+          {
+            "opensAt": "12:00",
+            "closesAt": "14:30",
+            "label": "almuerzo"
+          },
+          {
+            "opensAt": "18:00",
+            "closesAt": "21:00",
+            "label": "cena"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": 1,
+        "closed": true,
+        "periods": []
+      },
+      {
+        "dayOfWeek": 2,
+        "closed": false,
+        "periods": [
+          {
+            "opensAt": "12:00",
+            "closesAt": "14:30",
+            "label": "almuerzo"
+          },
+          {
+            "opensAt": "18:00",
+            "closesAt": "22:00",
+            "label": "cena"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": 3,
+        "closed": false,
+        "periods": [
+          {
+            "opensAt": "12:00",
+            "closesAt": "14:30",
+            "label": "almuerzo"
+          },
+          {
+            "opensAt": "18:00",
+            "closesAt": "22:00",
+            "label": "cena"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": 4,
+        "closed": false,
+        "periods": [
+          {
+            "opensAt": "12:00",
+            "closesAt": "14:30",
+            "label": "almuerzo"
+          },
+          {
+            "opensAt": "18:00",
+            "closesAt": "22:00",
+            "label": "cena"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": 5,
+        "closed": false,
+        "periods": [
+          {
+            "opensAt": "12:00",
+            "closesAt": "14:30",
+            "label": "almuerzo"
+          },
+          {
+            "opensAt": "18:00",
+            "closesAt": "23:00",
+            "label": "cena"
+          }
+        ]
+      },
+      {
+        "dayOfWeek": 6,
+        "closed": false,
+        "periods": [
+          {
+            "opensAt": "12:00",
+            "closesAt": "14:30",
+            "label": "almuerzo"
+          },
+          {
+            "opensAt": "18:00",
+            "closesAt": "23:00",
+            "label": "cena"
+          }
+        ]
+      }
+    ],
+    "special_hours": [
+      {
+        "date": "--12-24",
+        "closed": false,
+        "opensAt": "12:00",
+        "closesAt": "18:00",
+        "note": "Cierre anticipado  -  6:00 p.m."
+      },
+      {
+        "date": "--12-31",
+        "closed": false,
+        "opensAt": "12:00",
+        "closesAt": "23:59",
+        "note": "Horario extendido  -  hasta 1:00 a.m. (cierre representado como 23:59; cruce de medianoche no modelado)"
+      }
+    ],
+    "blocked_dates": [
+      "--12-25",
+      "--01-01"
+    ],
+    "capacity_per_slot": 40,
+    "max_party_size": 12,
+    "min_party_size": 1,
+    "reservation_duration_minutes": 90,
+    "slot_interval_minutes": 30,
+    "min_booking_notice_hours": 2,
+    "delivery_zones": [
+      {
+        "id": "maracaibo",
+        "label": "Maracaibo (Casco Central)",
+        "feeUsd": 1.5,
+        "etaLabel": "25-35 min",
+        "x": 34,
+        "y": 34
+      },
+      {
+        "id": "la-lago",
+        "label": "La Lago / Bella Vista",
+        "feeUsd": 1.5,
+        "etaLabel": "20-30 min",
+        "x": 42,
+        "y": 24
+      },
+      {
+        "id": "san-francisco",
+        "label": "San Francisco",
+        "feeUsd": 2,
+        "etaLabel": "35-45 min",
+        "x": 46,
+        "y": 46
+      },
+      {
+        "id": "cabimas",
+        "label": "Cabimas",
+        "feeUsd": 2.75,
+        "etaLabel": "45-55 min",
+        "x": 60,
+        "y": 14
+      },
+      {
+        "id": "ciudad-ojeda",
+        "label": "Ciudad Ojeda",
+        "feeUsd": 2.5,
+        "etaLabel": "40-50 min",
+        "x": 54,
+        "y": 28
+      },
+      {
+        "id": "santa-barbara",
+        "label": "Santa Bárbara del Zulia",
+        "feeUsd": 3.25,
+        "etaLabel": "55-65 min",
+        "x": 26,
+        "y": 76
+      }
+    ],
+    "tax_rate": 0.08,
+    "tip_options_percent": [
+      0,
+      10,
+      15,
+      20
+    ],
+    "promo_codes": {
+      "BONASERA10": {
+        "code": "BONASERA10",
+        "type": "percent",
+        "value": 10,
+        "label": "BONASERA10 · 10% de descuento"
+      },
+      "BENVENUTO": {
+        "code": "BENVENUTO",
+        "type": "fixed",
+        "value": 1,
+        "label": "BENVENUTO · $1 de descuento"
+      }
+    }
+  },
+  "payment": {
+    "provider": "manual",
+    "owner": "vicunav-restaurante",
+    "external_type": "vicu_order",
+    "copy": "El pago se gestiona mediante una solicitud manual vinculada al pedido. El total siempre lo calcula Vicunav Restaurante en el servidor."
+  }
+}

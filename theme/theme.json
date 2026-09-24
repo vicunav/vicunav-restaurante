@@ -1,0 +1,439 @@
+{
+  "$schema": "https://schemas.wp.org/wp/6.6/theme.json",
+  "version": 3,
+  "settings": {
+    "color": {
+      "palette": [
+        {
+          "color": "#0D0D0D",
+          "name": "Tinta",
+          "slug": "vicunav-primary"
+        },
+        {
+          "color": "#4A3B33",
+          "name": "Marrón malta",
+          "slug": "vicunav-secondary"
+        },
+        {
+          "color": "#9DAAAA",
+          "name": "Salvia",
+          "slug": "vicunav-accent"
+        },
+        {
+          "color": "#4D673B",
+          "name": "Positivo",
+          "slug": "vicunav-positive"
+        },
+        {
+          "color": "#9F4527",
+          "name": "Advertencia",
+          "slug": "vicunav-warning"
+        },
+        {
+          "color": "#A8432B",
+          "name": "Peligro",
+          "slug": "vicunav-danger"
+        },
+        {
+          "color": "#557259",
+          "name": "Información",
+          "slug": "vicunav-info"
+        },
+        {
+          "color": "#FAEBD7",
+          "name": "Crema",
+          "slug": "vicunav-neutral-100"
+        },
+        {
+          "color": "#F0DFC4",
+          "name": "Crema tenue",
+          "slug": "vicunav-neutral-200"
+        },
+        {
+          "color": "#FFFDF8",
+          "name": "Papel",
+          "slug": "vicunav-neutral-300"
+        },
+        {
+          "color": "rgba(13, 13, 13, 0.12)",
+          "name": "Tinta 12%",
+          "slug": "vicunav-neutral-400"
+        },
+        {
+          "color": "rgba(13, 13, 13, 0.5)",
+          "name": "Tinta 50%",
+          "slug": "vicunav-neutral-500"
+        },
+        {
+          "color": "rgba(13, 13, 13, 0.62)",
+          "name": "Tinta 62%",
+          "slug": "vicunav-neutral-600"
+        },
+        {
+          "color": "rgba(13, 13, 13, 0.75)",
+          "name": "Tinta 75%",
+          "slug": "vicunav-neutral-700"
+        },
+        {
+          "color": "#4A3B33",
+          "name": "Marrón malta oscuro",
+          "slug": "vicunav-neutral-800"
+        },
+        {
+          "color": "#0D0D0D",
+          "name": "Tinta oscura",
+          "slug": "vicunav-neutral-900"
+        },
+        {
+          "color": "#181410",
+          "name": "Tinta suave Bonasera",
+          "slug": "bonasera-ink-soft"
+        },
+        {
+          "color": "#D99B93",
+          "name": "Rosa polvo Bonasera",
+          "slug": "bonasera-dusty-rose"
+        }
+      ],
+      "defaultGradients": false,
+      "defaultPalette": false,
+      "gradients": [
+        {
+          "gradient": "linear-gradient(180deg, rgba(13, 13, 13, 0.15) 0%, rgba(13, 13, 13, 0.45) 55%, rgba(13, 13, 13, 0.92) 100%)",
+          "name": "Scrim del hero",
+          "slug": "vicunav-bonasera-hero-scrim"
+        }
+      ]
+    },
+    "spacing": {
+      "spacingSizes": [
+        {
+          "name": "Espacio XXS",
+          "size": "0.25rem",
+          "slug": "vicunav-space-xxs"
+        },
+        {
+          "name": "Espacio XS",
+          "size": "0.5rem",
+          "slug": "vicunav-space-xs"
+        },
+        {
+          "name": "Espacio SM",
+          "size": "0.75rem",
+          "slug": "vicunav-space-sm"
+        },
+        {
+          "name": "Espacio MD",
+          "size": "1rem",
+          "slug": "vicunav-space-md"
+        },
+        {
+          "name": "Espacio LG",
+          "size": "1.5rem",
+          "slug": "vicunav-space-lg"
+        },
+        {
+          "name": "Espacio XL",
+          "size": "2rem",
+          "slug": "vicunav-space-xl"
+        },
+        {
+          "name": "Espacio XXL",
+          "size": "3rem",
+          "slug": "vicunav-space-xxl"
+        },
+        {
+          "name": "Espacio de sección SM",
+          "size": "4rem",
+          "slug": "vicunav-space-section-sm"
+        },
+        {
+          "name": "Espacio de sección MD",
+          "size": "6rem",
+          "slug": "vicunav-space-section-md"
+        },
+        {
+          "name": "Espacio de sección LG",
+          "size": "8.75rem",
+          "slug": "vicunav-space-section-lg"
+        }
+      ]
+    },
+    "typography": {
+      "fontFamilies": [
+        {
+          "fontFamily": "'Big Shoulders Display', sans-serif",
+          "name": "Encabezados Bonasera",
+          "slug": "vicunav-heading",
+          "fontFace": [
+            {
+              "fontFamily": "Big Shoulders Display",
+              "fontWeight": "700 900",
+              "fontStyle": "normal",
+              "fontStretch": "normal",
+              "src": [
+                "file:./assets/fonts/big-shoulders-display-latin.woff2"
+              ]
+            }
+          ]
+        },
+        {
+          "fontFamily": "Jost, sans-serif",
+          "name": "Cuerpo Bonasera",
+          "slug": "vicunav-body",
+          "fontFace": [
+            {
+              "fontFamily": "Jost",
+              "fontWeight": "400 700",
+              "fontStyle": "normal",
+              "fontStretch": "normal",
+              "src": [
+                "file:./assets/fonts/jost-latin.woff2"
+              ]
+            }
+          ]
+        }
+      ],
+      "fontSizes": [
+        {
+          "name": "XXS",
+          "size": "0.8125rem",
+          "slug": "vicunav-xxs"
+        },
+        {
+          "name": "Pequeño",
+          "size": "0.875rem",
+          "slug": "vicunav-sm"
+        },
+        {
+          "name": "Mediano",
+          "size": "1.0625rem",
+          "slug": "vicunav-md"
+        },
+        {
+          "name": "Grande",
+          "size": "1.25rem",
+          "slug": "vicunav-lg"
+        },
+        {
+          "name": "Extra grande",
+          "size": "clamp(2rem, 4vw, 3rem)",
+          "slug": "vicunav-xl"
+        },
+        {
+          "name": "XXL",
+          "size": "clamp(2.75rem, 6vw, 5rem)",
+          "slug": "vicunav-xxl"
+        },
+        {
+          "name": "Display pequeño",
+          "size": "clamp(3.5rem, 9vw, 7.5rem)",
+          "slug": "vicunav-display-sm"
+        },
+        {
+          "name": "Display grande",
+          "size": "clamp(3.5rem, 9vw, 7.5rem)",
+          "slug": "vicunav-display-lg"
+        }
+      ]
+    },
+    "shadow": {
+      "presets": [
+        {
+          "name": "Tarjeta",
+          "shadow": "0 2px 6px rgba(13, 13, 13, 0.14)",
+          "slug": "vicunav-shadow-card"
+        },
+        {
+          "name": "Tarjeta elevada",
+          "shadow": "0 8px 20px rgba(13, 13, 13, 0.18)",
+          "slug": "vicunav-shadow-card-hover"
+        },
+        {
+          "name": "Panel",
+          "shadow": "0 12px 28px rgba(13, 13, 13, 0.22)",
+          "slug": "vicunav-shadow-panel"
+        },
+        {
+          "name": "Modal",
+          "shadow": "0 20px 48px rgba(13, 13, 13, 0.28)",
+          "slug": "vicunav-shadow-modal"
+        },
+        {
+          "name": "Aviso",
+          "shadow": "0 8px 20px rgba(13, 13, 13, 0.24)",
+          "slug": "vicunav-shadow-toast"
+        }
+      ],
+      "defaultPresets": false
+    },
+    "layout": {
+      "contentSize": "42rem",
+      "wideSize": "77.5rem"
+    },
+    "custom": {
+      "vicunav": {
+        "border": {
+          "width": {
+            "thin": "1px",
+            "regular": "2px"
+          }
+        },
+        "breakpoint": {
+          "small": "480px",
+          "medium": "768px",
+          "large": "1024px",
+          "wide": "1440px"
+        },
+        "container": {
+          "max": "1240px"
+        },
+        "motion": {
+          "duration": {
+            "fast": "120ms",
+            "base": "200ms",
+            "slow": "320ms"
+          }
+        },
+        "opacity": {
+          "subtle": "0.12",
+          "muted": "0.5",
+          "strong": "0.75"
+        },
+        "radius": {
+          "none": "0px",
+          "sm": "4px",
+          "md": "8px",
+          "lg": "16px",
+          "pill": "999px"
+        },
+        "surface": {
+          "overlayLight": "rgba(250, 235, 215, 0.72)",
+          "overlayDark": "rgba(13, 13, 13, 0.62)"
+        },
+        "text": {
+          "mutedOpacity": "0.62"
+        },
+        "section": {
+          "paddingBlock": "clamp(64px, 10vw, 140px)",
+          "paddingInline": "clamp(24px, 5vw, 96px)"
+        }
+      }
+    },
+    "appearanceTools": true
+  },
+  "styles": {
+    "spacing": {
+      "blockGap": "var(--wp--preset--spacing--vicunav-space-lg)"
+    },
+    "color": {
+      "background": "var(--wp--preset--color--vicunav-neutral-100)",
+      "text": "var(--wp--preset--color--vicunav-primary)"
+    },
+    "typography": {
+      "fontFamily": "var(--wp--preset--font-family--vicunav-body)"
+    },
+    "elements": {
+      "link": {
+        "color": {
+          "text": "var(--wp--preset--color--vicunav-primary)"
+        },
+        ":hover": {
+          "color": {
+            "text": "var(--wp--preset--color--vicunav-secondary)"
+          }
+        }
+      },
+      "button": {
+        "color": {
+          "background": "var(--wp--preset--color--vicunav-primary)",
+          "text": "var(--wp--preset--color--vicunav-neutral-100)"
+        },
+        "border": {
+          "radius": "var(--wp--custom--vicunav--radius--pill)"
+        },
+        "css": "&:hover { opacity: 0.72; }"
+      },
+      "h1": {
+        "typography": {
+          "fontFamily": "var(--wp--preset--font-family--vicunav-heading)",
+          "fontWeight": "800",
+          "textTransform": "uppercase"
+        },
+        "css": "transform: scaleY(1.22); transform-origin: bottom;"
+      },
+      "h2": {
+        "typography": {
+          "fontFamily": "var(--wp--preset--font-family--vicunav-heading)",
+          "fontWeight": "800",
+          "textTransform": "uppercase"
+        },
+        "css": "transform: scaleY(1.22); transform-origin: bottom;"
+      },
+      "h3": {
+        "typography": {
+          "fontFamily": "var(--wp--preset--font-family--vicunav-heading)",
+          "fontWeight": "800",
+          "textTransform": "uppercase"
+        },
+        "css": "transform: scaleY(1.22); transform-origin: bottom;"
+      },
+      "h4": {
+        "typography": {
+          "fontFamily": "var(--wp--preset--font-family--vicunav-heading)",
+          "fontWeight": "800",
+          "textTransform": "uppercase"
+        },
+        "css": "transform: scaleY(1.22); transform-origin: bottom;"
+      },
+      "h5": {
+        "typography": {
+          "fontFamily": "var(--wp--preset--font-family--vicunav-heading)",
+          "fontWeight": "800",
+          "textTransform": "uppercase"
+        },
+        "css": "transform: scaleY(1.22); transform-origin: bottom;"
+      },
+      "h6": {
+        "typography": {
+          "fontFamily": "var(--wp--preset--font-family--vicunav-heading)",
+          "fontWeight": "800",
+          "textTransform": "uppercase"
+        },
+        "css": "transform: scaleY(1.22); transform-origin: bottom;"
+      }
+    }
+  },
+  "templateParts": [
+    {
+      "name": "header-default",
+      "title": "Encabezado genérico",
+      "area": "header"
+    },
+    {
+      "name": "header-restaurant-home",
+      "title": "Encabezado de portada",
+      "area": "header"
+    },
+    {
+      "name": "header-restaurant-inner",
+      "title": "Encabezado interior",
+      "area": "header"
+    },
+    {
+      "name": "footer-minimal",
+      "title": "Pie genérico mínimo",
+      "area": "footer"
+    },
+    {
+      "name": "footer-restaurant-full",
+      "title": "Pie completo",
+      "area": "footer"
+    },
+    {
+      "name": "footer-restaurant-minimal",
+      "title": "Pie mínimo",
+      "area": "footer"
+    }
+  ]
+}

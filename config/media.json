@@ -1,0 +1,311 @@
+{
+  "schema_version": 2,
+  "license_checked_at": "2026-08-26",
+  "licenses": {
+    "unsplash": {
+      "name": "Unsplash License",
+      "url": "https://unsplash.com/license"
+    },
+    "pexels": {
+      "name": "Pexels License",
+      "url": "https://www.pexels.com/legal-pages/license/"
+    },
+    "openstreetmap": {
+      "name": "Open Database License (ODbL) — OpenStreetMap contributors",
+      "url": "https://www.openstreetmap.org/copyright"
+    }
+  },
+  "visual_contract": {
+    "source_repository": "vicunav-design-to-claude-demo-restaurante",
+    "source_commit": "1e1f62787e088c0ca9701500e764802499d1b253",
+    "final_gate": "approved-with-differences",
+    "allowed_statuses": [
+      "exact-source-recovered",
+      "approved-substitute",
+      "approved-omission",
+      "approved-missing-with-placeholder"
+    ],
+    "human_approval_reference": "DEMO-REST-02E issue #19: continuar con similitud y placeholders autorizados, 2026-08-29"
+  },
+  "assets": [
+    {
+      "id": "antipasti",
+      "path": "assets/images/antipasti.webp",
+      "source_ref": "src/data/media.js:CATEGORY_IMG.antipasti",
+      "visual_status": "exact-source-recovered",
+      "blocks_final_parity": false,
+      "uses": ["category-antipasti"],
+      "alt": "Bruschette con tomate, aceitunas y hojas verdes sobre una tabla",
+      "creator": "Margarita Zueva",
+      "creator_url": "https://unsplash.com/@margzu",
+      "source_url": "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f",
+      "license": "unsplash",
+      "width": 1200,
+      "height": 800,
+      "bytes": 58856,
+      "sha256": "09a9406323e5abf782e4af1b5a8f5b306126ce5c63a0eb40520e5d9cde9a98ad"
+    },
+    {
+      "id": "insalate",
+      "path": "assets/images/insalate.webp",
+      "source_ref": "src/data/media.js:CATEGORY_IMG.insalate",
+      "visual_status": "exact-source-recovered",
+      "blocks_final_parity": false,
+      "uses": ["category-insalate"],
+      "alt": "Ensalada verde con crotones y aderezo cremoso",
+      "creator": "Chris Tweten",
+      "creator_url": "https://unsplash.com/@ctwtn",
+      "source_url": "https://images.unsplash.com/photo-1550304943-4f24f54ddde9",
+      "license": "unsplash",
+      "width": 1200,
+      "height": 800,
+      "bytes": 95066,
+      "sha256": "5619d1c3edf25a2ed13fae6c2bf90aec2f1a5d9ffa5af2975b1651250dfe43f7"
+    },
+    {
+      "id": "pizze",
+      "path": "assets/images/pizze.webp",
+      "source_ref": "src/data/media.js:CATEGORY_IMG.pizze",
+      "visual_status": "exact-source-recovered",
+      "blocks_final_parity": false,
+      "uses": ["hero", "category-pizze", "page-pizzas", "page-saved-pizzas"],
+      "alt": "Pizza Margherita recién horneada con albahaca fresca",
+      "creator": "Aurélien Lemasson-Théobald",
+      "creator_url": "https://unsplash.com/@aurel__lens",
+      "source_url": "https://images.unsplash.com/photo-1574071318508-1cdbab80d002",
+      "license": "unsplash",
+      "width": 1200,
+      "height": 801,
+      "bytes": 133098,
+      "sha256": "e3b25ded5705646ce40bb124f4fac6db2e8d9f5f2928dbbd8c33bc23ff8ffd49"
+    },
+    {
+      "id": "pasta",
+      "path": "assets/images/pasta.webp",
+      "source_ref": "src/data/media.js:CATEGORY_IMG.pasta",
+      "visual_status": "exact-source-recovered",
+      "blocks_final_parity": false,
+      "uses": ["category-pasta", "editorial-story", "page-cart", "page-checkout"],
+      "alt": "Plato de pasta larga con salsa cremosa y panceta",
+      "creator": "Raphael Nogueira",
+      "creator_url": "https://unsplash.com/@phaelnogueira",
+      "source_url": "https://images.unsplash.com/photo-1574969903809-3f7a1668ceb0",
+      "license": "unsplash",
+      "width": 1200,
+      "height": 800,
+      "bytes": 93860,
+      "sha256": "ca00be10854d7378055de18cfbd831c89ce88fa7193d672429115eac836ce1f5"
+    },
+    {
+      "id": "secondi",
+      "path": "assets/images/secondi.webp",
+      "source_ref": "src/data/media.js:CATEGORY_IMG.secondi",
+      "visual_status": "exact-source-recovered",
+      "blocks_final_parity": false,
+      "uses": ["category-secondi"],
+      "alt": "Pechuga de pollo a la parrilla con arroz y vegetales",
+      "creator": "Joe Boshra",
+      "creator_url": "https://unsplash.com/@joestudios",
+      "source_url": "https://images.unsplash.com/photo-1762631934518-f75e233413ca",
+      "license": "unsplash",
+      "width": 1200,
+      "height": 900,
+      "bytes": 83636,
+      "sha256": "6b70073aaaa6a97abdae3933938f51d2473ba1fdf8cfd9a9101056f6c725aabf"
+    },
+    {
+      "id": "contorni",
+      "path": "assets/images/contorni.webp",
+      "source_ref": "src/data/media.js:CATEGORY_IMG.contorni",
+      "visual_status": "exact-source-recovered",
+      "blocks_final_parity": false,
+      "uses": ["category-contorni"],
+      "alt": "Papas asadas con ajo y perejil sobre un plato blanco",
+      "creator": "Markus Winkler",
+      "creator_url": "https://unsplash.com/@markuswinkler",
+      "source_url": "https://images.unsplash.com/photo-1633959639799-6d3f66e05710",
+      "license": "unsplash",
+      "width": 1200,
+      "height": 900,
+      "bytes": 169986,
+      "sha256": "85af1e81de08d9b2a9fcad5b0adf5e3da3806fbf16d7eefbf8e4adf372dcbe45"
+    },
+    {
+      "id": "dolci",
+      "path": "assets/images/dolci.webp",
+      "source_ref": "sustituto-seguro-de:src/data/media.js:CATEGORY_IMG.dolci",
+      "visual_status": "approved-substitute",
+      "blocks_final_parity": false,
+      "approval": {
+        "authority": "usuario",
+        "reference": "DEMO-REST-02E issue #19, 2026-08-29"
+      },
+      "source_original_url": "https://images.unsplash.com/photo-1746888151121-1002113ed286",
+      "uses": ["category-dolci"],
+      "alt": "Porciones de tiramisú espolvoreadas con cacao sobre platos blancos",
+      "creator": "K Zoltan",
+      "creator_url": "https://www.pexels.com/@zozz/",
+      "source_url": "https://www.pexels.com/photo/close-up-shot-of-a-delicious-tiramisu-on-a-plate-12035685/",
+      "license": "pexels",
+      "width": 1200,
+      "height": 800,
+      "bytes": 66334,
+      "sha256": "7c39866658e44ad5a4ea99f233bb5e8b09ef824fc2aebb4fe83f1c63ea0040c6"
+    },
+    {
+      "id": "bevande",
+      "path": "assets/images/bevande.webp",
+      "source_ref": "src/data/media.js:CATEGORY_IMG.bevande",
+      "visual_status": "exact-source-recovered",
+      "blocks_final_parity": false,
+      "uses": ["category-bevande"],
+      "alt": "Copa de vino tinto sobre una mesa con fondo cálido",
+      "creator": "Thomas Franke",
+      "creator_url": "https://unsplash.com/@thomas094",
+      "source_url": "https://images.unsplash.com/photo-1610458034932-dc165f29499e",
+      "license": "unsplash",
+      "width": 1200,
+      "height": 1800,
+      "bytes": 147822,
+      "sha256": "fa591c61acbfe429446f3050a64f917c99f61f23f21813848d54dd5f2159fd20"
+    },
+    {
+      "id": "reservas",
+      "path": "assets/images/reservas.webp",
+      "source_ref": "src/data/media.js:RESERVA_IMG",
+      "visual_status": "exact-source-recovered",
+      "blocks_final_parity": false,
+      "uses": ["page-reservations"],
+      "alt": "Mesas preparadas con copas y velas en un restaurante",
+      "creator": "Chan Walrus",
+      "creator_url": "https://www.pexels.com/@chanwalrus/",
+      "source_url": "https://www.pexels.com/photo/wine-glasses-on-table-tops-941861/",
+      "license": "pexels",
+      "width": 1200,
+      "height": 675,
+      "bytes": 67792,
+      "sha256": "a0ec8366b052eaa5d2748af86ca5de2aeb5738d18533c95efd94606c478f4676"
+    },
+    {
+      "id": "map-zulia",
+      "path": "assets/images/mapa-zulia.webp",
+      "source_ref": "src/data/media.js:MAP_ZULIA_IMG",
+      "visual_status": "exact-source-recovered",
+      "blocks_final_parity": false,
+      "uses": ["page-home-location"],
+      "alt": "Mapa de zonas de entrega en el Zulia",
+      "creator": "OpenStreetMap contributors",
+      "creator_url": "https://www.openstreetmap.org/copyright",
+      "source_url": "https://www.openstreetmap.org/copyright",
+      "license": "openstreetmap",
+      "width": 1000,
+      "height": 460,
+      "bytes": 54198,
+      "sha256": "c0073415c39e65399269a78cea811c5a03edf1e1188060b2500287d3f87057e8"
+    },
+    {
+      "id": "map-maracaibo",
+      "path": "assets/images/mapa-maracaibo.webp",
+      "source_ref": "src/data/media.js:MAP_MARACAIBO_IMG",
+      "visual_status": "exact-source-recovered",
+      "blocks_final_parity": false,
+      "uses": ["footer"],
+      "alt": "Mapa de Maracaibo",
+      "creator": "OpenStreetMap contributors",
+      "creator_url": "https://www.openstreetmap.org/copyright",
+      "source_url": "https://www.openstreetmap.org/copyright",
+      "license": "openstreetmap",
+      "width": 1000,
+      "height": 320,
+      "bytes": 75960,
+      "sha256": "690291fd6bc7254975df8858103c064034ade07fc50066def43a7980a06c6bf6"
+    }
+  ],
+  "excluded": [
+    {
+      "id": "historia-original",
+      "source": "src/data/media.js:HISTORIA_IMG",
+      "source_url": "https://images.pexels.com/photos/2696064/pexels-photo-2696064.jpeg",
+      "license": "pexels",
+      "visual_status": "approved-omission",
+      "blocks_final_parity": false,
+      "approval": {
+        "authority": "usuario",
+        "reference": "DEMO-REST-02E issue #19, 2026-08-29"
+      },
+      "reason": "Muestra personas identificables y el prototipo las presenta como una familia ficticia."
+    },
+    {
+      "id": "testimonial-avatar-t1",
+      "source": "src/data/media.js:AVATAR_MAP.t1",
+      "source_url": "https://images.pexels.com/photos/1024311/pexels-photo-1024311.jpeg",
+      "license": "pexels",
+      "visual_status": "approved-omission",
+      "blocks_final_parity": false,
+      "approval": {
+        "authority": "usuario",
+        "reference": "DEMO-REST-02E issue #19, 2026-08-29"
+      },
+      "reason": "Los retratos de stock podrían sugerir respaldo de personas reales a testimonios ficticios."
+    },
+    {
+      "id": "testimonial-avatar-t2",
+      "source": "src/data/media.js:AVATAR_MAP.t2",
+      "source_url": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg",
+      "license": "pexels",
+      "visual_status": "approved-omission",
+      "blocks_final_parity": false,
+      "approval": {
+        "authority": "usuario",
+        "reference": "DEMO-REST-02E issue #19, 2026-08-29"
+      },
+      "reason": "Los retratos de stock podrían sugerir respaldo de personas reales a testimonios ficticios."
+    },
+    {
+      "id": "testimonial-avatar-t3",
+      "source": "src/data/media.js:AVATAR_MAP.t3",
+      "source_url": "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg",
+      "license": "pexels",
+      "visual_status": "approved-omission",
+      "blocks_final_parity": false,
+      "approval": {
+        "authority": "usuario",
+        "reference": "DEMO-REST-02E issue #19, 2026-08-29"
+      },
+      "reason": "Los retratos de stock podrían sugerir respaldo de personas reales a testimonios ficticios."
+    },
+    {
+      "id": "dolci-original",
+      "source": "src/data/media.js:CATEGORY_IMG.dolci",
+      "source_url": "https://images.unsplash.com/photo-1746888151121-1002113ed286",
+      "license": "unsplash",
+      "visual_status": "approved-substitute",
+      "replacement_asset_id": "dolci",
+      "blocks_final_parity": false,
+      "approval": {
+        "authority": "usuario",
+        "reference": "DEMO-REST-02E issue #19, 2026-08-29"
+      },
+      "reason": "La foto contiene una marca visible; se sustituyó por tiramisú sin marca bajo licencia Pexels."
+    }
+  ],
+  "missing": [],
+  "videos": [
+    {
+      "id": "hero-video",
+      "path": "assets/hero-bg.mp4",
+      "source_ref": "src/data/media.js:HERO_VIDEO_SRC",
+      "visual_status": "provided-by-owner",
+      "blocks_final_parity": false,
+      "uses": ["page-home-hero"],
+      "alt": "Video de fondo del hero de Inicio: preparación de platillos e interior de la trattoria",
+      "mime": "video/mp4",
+      "bytes": 15951783,
+      "sha256": "7783f3b3805d42890dc57f2725c97dd8914cab893dbc9d1c7788c81948815181",
+      "approval": {
+        "authority": "usuario",
+        "reference": "Confirmado directamente por el propietario del sitio en conversación, 2026-09-23: archivo propio, autorizado para usarse en el proyecto."
+      }
+    }
+  ]
+}

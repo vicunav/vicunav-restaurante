@@ -36,6 +36,10 @@ jobs:
           --health-timeout=5s
           --health-retries=5
 
+    defaults:
+      run:
+        working-directory: plugin
+
     env:
       WP_TESTS_DB_NAME: wordpress_test
       WP_TESTS_DB_USER: root
@@ -76,6 +80,10 @@ jobs:
     name: Node.js, bloques y build versionado
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: plugin
+
     steps:
       - name: Descargar el repositorio
         uses: actions/checkout@v7
@@ -87,6 +95,7 @@ jobs:
         with:
           node-version: "22"
           cache: npm
+          cache-dependency-path: plugin/package-lock.json
 
       - name: Instalar dependencias de bloques
         run: npm ci
@@ -95,7 +104,31 @@ jobs:
         run: npm run check
 
       - name: Comprobar build versionado
-        run: git diff --exit-code -- build
+        run: git diff --exit-code -- plugin/build
+
+  proyecto:
+    name: Theme, contenido e instalador
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - name: Configurar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          coverage: none
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Validar theme, contenido e instalador
+        run: bash tests/run.sh
 
   gate-requerido:
     name: Composer, PHP, WPCS y PHPUnit
@@ -103,6 +136,7 @@ jobs:
     needs:
       - estandares-php
       - bloques
+      - proyecto
     runs-on: ubuntu-latest
 
     steps:
@@ -110,4 +144,5 @@ jobs:
         env:
           PHP_RESULT: ${{ needs.estandares-php.result }}
           BLOCKS_RESULT: ${{ needs.bloques.result }}
-        run: test "$PHP_RESULT" = "success" && test "$BLOCKS_RESULT" = "success"
+          PROJECT_RESULT: ${{ needs.proyecto.result }}
+        run: test "$PHP_RESULT" = "success" && test "$BLOCKS_RESULT" = "success" && test "$PROJECT_RESULT" = "success"

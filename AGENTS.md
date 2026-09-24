@@ -1,38 +1,49 @@
 # vicunav-restaurante
 
-Propósito: Dominio WordPress del vertical restaurante para menú, carrito, pedidos,
-delivery, pizzas y reservas.
+Propósito: proyecto autocontenido de referencia para un sitio de restaurante en
+WordPress sin WooCommerce (la trattoria ficticia Bonasera). Un único repositorio
+contiene el plugin `vicunav-restaurante`, el theme de bloques `vicunav-bonasera`, el
+contenido demostrativo, la media licenciada y las validaciones.
 
-## Estado y límites
+## Estructura y límites
 
-REST-02M incorpora el primer bloque dinámico sobre el dominio ya implementado hasta
-REST-02L. No añadas constructor, carrito, checkout, reservas, cuenta, contenido
-Bonasera ni otros bloques antes de su issue propietario definido en el plan del hub.
+- `plugin/`: plugin con tres módulos internos (`Vicu\Restaurante\*` para el dominio,
+  `Vicu\Restaurante\Payments\*` para pagos y `Vicu\Restaurante\Shared\*` para FAQ,
+  testimonios, ajustes y REST base). El servidor es la única autoridad de precios,
+  disponibilidad, capacidad y estados.
+- `theme/`: theme de bloques sin theme padre. Solo presentación: no consulta carrito,
+  pedidos, pagos ni disponibilidad.
+- `content/`, `assets/`, `config/`: contenido, media y manifiestos. No son contrato de
+  runtime; toda imagen nueva exige procedencia y licencia en `config/media.json`.
+- `bin/` y `tests/`: instalador local y validaciones.
 
-El plugin será propietario del namespace `Vicu\Restaurante`. Depende de
-`vicunav-pagos` (que incluye las capacidades base `Vicu\Core`) para
-solicitudes de pago. Nunca lee persistencia interna de otro paquete.
-
-El contrato público vive en [`docs/contrato-publico.md`](docs/contrato-publico.md).
-Una superficie marcada como planificada no está disponible y solo puede implementarse
-en su issue propietario.
+Detalle en [`docs/arquitectura.md`](docs/arquitectura.md), [`docs/plugin.md`](docs/plugin.md)
+y [`docs/theme.md`](docs/theme.md). El trabajo pendiente está en
+[`docs/estado.md`](docs/estado.md).
 
 ## Reglas aplicables
 
 Las reglas transversales del repositorio están en
-[`docs/standards/`](docs/standards/). Consúltalas antes de realizar cambios.
+[`docs/standards/`](docs/standards/). Consúltalas antes de realizar cambios y no las
+repitas aquí; este archivo solo contiene el contexto específico del proyecto.
 
-No repitas esas reglas aquí; este archivo solo contiene el contexto específico del
-repositorio.
+Reglas propias:
+
+- No añadas dependencias de plugins o themes externos ni WooCommerce.
+- El markup de negocio no se serializa en `post_content`; los bloques del plugin son
+  dinámicos.
+- Ningún secreto, token, cookie, contacto ni evidencia de pago aparece en URLs, logs,
+  HTML cacheable ni respuestas públicas.
+- No declares fidelidad visual 1:1 sin evidencia (ver
+  [`docs/visual/baseline-bonasera.md`](docs/visual/baseline-bonasera.md)).
 
 ## Validación
 
 ```sh
-npm run check &&
-composer check &&
+bash tests/run.sh &&
+(cd plugin && composer check && npm run check) &&
 git diff --check &&
-git submodule status &&
-! rg -n '\{\{|\}\}' --glob '*.php' --glob '*.md' --glob '!docs/standards/**' .
+git submodule status
 ```
 
 Revisa además la estructura, los enlaces y el formato Markdown de los documentos
@@ -40,7 +51,8 @@ modificados.
 
 ## Publicación
 
-- No modificar manualmente `composer.lock`, `CHANGELOG.md` ni archivos generados.
+- No editar a mano `composer.lock`, `package-lock.json`, `CHANGELOG.md` ni el build
+  versionado (`plugin/build`): se regenera con `npm run build`.
 - No crear tags, releases o despliegues sin instrucción explícita.
 - Todo cambio técnico usa un issue, una rama, un PR y squash-merge.
 - El README público se escribe en inglés. La documentación interna y los comentarios

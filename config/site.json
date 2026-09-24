@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "wordpress": {
+    "minimum": "6.6",
+    "php_minimum": "8.1"
+  },
+  "plugin": {
+    "path": "plugin",
+    "slug": "vicunav-restaurante"
+  },
+  "theme": {
+    "path": "theme",
+    "slug": "vicunav-bonasera"
+  }
+}

@@ -1,0 +1,71 @@
+/*
+ * Motivos decorativos propios de Bonasera (encabezado fantasma, tarjeta estilo
+ * ticket, tratamiento visual del doble header) que theme.json no puede expresar por
+ * sí solo.
+ *
+ * Se registra y carga en frontend y Editor del sitio con wp_enqueue_block_style() (ver
+ * functions.php). Cada motivo se compara contra el prototipo de referencia, no se
+ * reconstruye de memoria.
+ *
+ * Convención: cada regla se ancla a una clase propia de este theme
+ * (`vicunav-bonasera-*`) y nunca sobrescribe un selector genérico.
+ */
+
+/*
+ * Encabezado fantasma del hero de portada: duplicado del H1, atenuado y
+ * agrandado, sangrando detrás del título real. Valores (posición, opacidad,
+ * escala) copiados literales de `.hero__ghost-text` en
+ * vicunav-design-to-claude-demo-restaurante/src/styles/components.css, la
+ * única fuente que sí implementa el motivo (Claude Design no expone CSS
+ * calculado, solo el resultado visual).
+ */
+.vicunav-bonasera-hero__title-wrap {
+	position: relative;
+	overflow: visible;
+	max-width: 37.5rem;
+}
+
+.vicunav-bonasera-hero__ghost-text {
+	position: absolute;
+	top: -16%;
+	left: -2%;
+	width: 120%;
+	margin: 0;
+	font-family: var(--wp--preset--font-family--vicunav-heading, inherit);
+	font-weight: 800;
+	font-size: clamp(2.6rem, 7vw, 5.2rem);
+	line-height: 0.82;
+	color: rgba(250, 235, 215, 0.1);
+	text-transform: uppercase;
+	transform: scaleY(1.15);
+	white-space: nowrap;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+.vicunav-bonasera-hero__title {
+	position: relative;
+	z-index: 1;
+}
+
+/*
+ * Por debajo de 1024px (el mismo corte al que ya colapsa el nav del header,
+ * ver docs/chrome-restaurante.md) el H1 fijo de 44px envuelve a dos líneas
+ * dentro del ancho de 600px de title-wrap. El fantasma, anclado arriba del
+ * wrap con `top:-16%`, queda entonces pegado sobre la primera línea del
+ * título real en vez de sangrar detrás de él como en escritorio. La fuente
+ * (components.css) no define una variante móvil de este motivo; ocultarlo
+ * aquí es la opción legible frente a un solapamiento que rompe el H1 real.
+ */
+@media (max-width: 63.9375rem) {
+	.vicunav-bonasera-hero__ghost-text {
+		display: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.vicunav-bonasera-motif {
+		animation: none !important;
+		transition: none !important;
+	}
+}

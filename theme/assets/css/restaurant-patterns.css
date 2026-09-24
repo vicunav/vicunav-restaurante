@@ -1,0 +1,572 @@
+/*
+ * Full-bleed autocontenido: no depende de que el padre (`.is-layout-constrained`
+ * de `wp:post-content`) traiga una regla `> .alignfull` que lo libere del ancho
+ * de contenido — confirmado con verify_editor_frontend_parity.mjs que
+ * WordPress 7.1 no genera esa regla para core/post-content aquí (sí genera
+ * `.is-layout-constrained > .alignwide`, pero no su equivalente para
+ * `.alignfull`). `margin-inline: calc(50% - 50vw)` funciona sin importar el
+ * ancho del contenedor padre porque `vw` siempre es relativo al viewport, no
+ * al padre; evita el desborde horizontal de `width: 100vw` (que sí incluye el
+ * ancho del scrollbar) porque no fija un `width` explícito, solo empuja los
+ * márgenes hasta el borde del viewport. Ver translation-map.md, "Un bloque
+ * alignfull no escapa un padre is-layout-constrained en el frontend".
+ */
+.vicunav-pattern-hero,
+.vicunav-pattern-page-hero,
+.vicunav-pattern-section,
+.vicunav-pattern-cta {
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+  width: auto;
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
+}
+
+.vicunav-pattern-section {
+  padding-block: var(
+    --wp--custom--vicunav--section-spacing--vertical,
+    var(--wp--preset--spacing--vicunav-space-xl, 3rem)
+  );
+  padding-inline: var(
+    --wp--custom--vicunav--section-spacing--inline,
+    var(--wp--preset--spacing--vicunav-space-md, 1.5rem)
+  );
+}
+
+/*
+ * Selector de clase duplicada a propósito: sube la especificidad a (0,2,0)
+ * para ganar de forma determinista contra la regla que WordPress inyecta en
+ * un <style> inline por cada bloque con layout.type "constrained"
+ * (`.is-layout-constrained > :where(...)`, especificidad (0,1,0) porque
+ * :where() no suma nada). Con especificidad empatada, gana quien aparezca
+ * después en el documento — y ese <style> inline de WordPress vive en el
+ * body, después de esta hoja enlazada en el head, así que sin este empate
+ * roto la regla de WordPress ganaba silenciosamente: el contenido de cada
+ * sección (incluido el constructor de pizzas) quedaba angosto en
+ * --wp--style--global--content-size (672px) en vez del ancho real del
+ * diseño (1240px), aunque el fondo de la sección sí se veía a ancho
+ * completo. Confirmado inspeccionando document.styleSheets en el navegador,
+ * no adivinado.
+ */
+.vicunav-pattern-section.vicunav-pattern-section > * {
+  box-sizing: border-box;
+  margin-inline: auto;
+  max-width: var(--wp--custom--vicunav--container--max, 77.5rem);
+}
+
+.vicunav-pattern-section > * + * {
+  margin-block-start: var(--wp--preset--spacing--vicunav-space-lg, 2rem);
+}
+
+.vicunav-pattern-section .vicunav-section-heading {
+  font-size: var(
+    --wp--preset--font-size--vicunav-xl,
+    clamp(2.25rem, 5vw, 3.375rem)
+  );
+  line-height: 0.95;
+  margin-block: 0 var(--wp--preset--spacing--vicunav-space-xl, 3rem);
+  position: relative;
+  text-shadow: 0 -0.28em 0
+    var(--wp--preset--color--vicunav-neutral-400, transparent);
+}
+
+.vicunav-pattern-hero {
+  min-height: 36.25rem;
+  overflow: hidden;
+}
+
+.vicunav-pattern-hero .wp-block-cover__background {
+  background: linear-gradient(
+    180deg,
+    rgba(13, 13, 13, 0.15) 0%,
+    rgba(13, 13, 13, 0.45) 55%,
+    rgba(13, 13, 13, 0.92) 100%
+  ) !important;
+  opacity: 1 !important;
+}
+
+.vicunav-pattern-hero .wp-block-cover__inner-container {
+  align-self: stretch;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-inline: auto;
+  max-width: var(--wp--custom--vicunav--container--max, 77.5rem);
+  min-height: inherit;
+  padding-block-end: var(--wp--preset--spacing--vicunav-space-xl, 3rem);
+  padding-inline: var(
+    --wp--custom--vicunav--section-spacing--inline,
+    var(--wp--preset--spacing--vicunav-space-md, 1.5rem)
+  );
+  width: 100%;
+}
+
+.vicunav-pattern-hero__content {
+  margin: 0;
+  max-width: 37.5rem;
+}
+
+.vicunav-pattern-hero .wp-block-button__link,
+.vicunav-pattern-page-hero .wp-block-button__link,
+.vicunav-pattern-section .wp-block-button__link,
+.vicunav-pattern-section button,
+.vicunav-pattern-cta .wp-block-button__link {
+  align-items: center;
+  box-sizing: border-box;
+  display: inline-flex;
+  justify-content: center;
+  min-height: 44px;
+}
+
+.vicunav-pattern-hero__title {
+  font-size: var(
+    --wp--preset--font-size--vicunav-xl,
+    clamp(2.25rem, 5vw, 3.375rem)
+  );
+  line-height: 0.9;
+  margin-block-end: var(--wp--preset--spacing--vicunav-space-sm, 1rem);
+  text-shadow: 0 -0.25em 0 rgba(250, 235, 215, 0.1);
+}
+
+.vicunav-pattern-hero__lead {
+  line-height: 1.55;
+  margin-block: 0 var(--wp--preset--spacing--vicunav-space-md, 1.5rem);
+  max-width: 28.75rem;
+}
+
+.vicunav-pattern-hero .wp-block-buttons {
+  gap: var(--wp--preset--spacing--vicunav-space-sm, 0.75rem);
+}
+
+.vicunav-pattern-page-hero {
+  min-height: 13.125rem;
+  overflow: hidden;
+}
+
+.vicunav-pattern-page-hero .wp-block-cover__background {
+  background: linear-gradient(
+    180deg,
+    rgba(13, 13, 13, 0.35) 0%,
+    rgba(13, 13, 13, 0.55) 55%,
+    rgba(13, 13, 13, 0.88) 100%
+  ) !important;
+  opacity: 1 !important;
+}
+
+.vicunav-pattern-page-hero .wp-block-cover__inner-container {
+  box-sizing: border-box;
+  margin-inline: auto;
+  max-width: var(--wp--custom--vicunav--container--max, 77.5rem);
+  padding-inline: var(
+    --wp--custom--vicunav--section-spacing--inline,
+    var(--wp--preset--spacing--vicunav-space-md, 1.5rem)
+  );
+  width: 100%;
+}
+
+.vicunav-pattern-page-hero__content {
+  margin: 0;
+  max-width: 45rem;
+}
+
+.vicunav-pattern-page-hero__title {
+  font-size: var(
+    --wp--preset--font-size--vicunav-xl,
+    clamp(2.25rem, 5vw, 3.375rem)
+  );
+  line-height: 1;
+  margin-block-end: var(--wp--preset--spacing--vicunav-space-xs, 0.5rem);
+}
+
+.vicunav-pattern-split-hero__columns {
+  align-items: center;
+  display: grid;
+  gap: var(--wp--preset--spacing--vicunav-space-lg, 2rem);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.vicunav-pattern-split-hero__copy {
+  margin: 0;
+  max-width: 35rem;
+  min-width: 0;
+}
+
+.vicunav-pattern-split-hero__media {
+  min-height: 28.75rem;
+  min-width: 0;
+}
+
+.vicunav-linked-cards-grid__intro {
+  margin-inline: 0;
+  max-width: 40rem;
+}
+
+.vicunav-linked-cards-grid__columns {
+  display: grid;
+  gap: var(--wp--preset--spacing--vicunav-space-sm, 1rem);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.vicunav-linked-cards-grid__columns > .wp-block-column {
+  margin: 0;
+  min-width: 0;
+}
+
+.vicunav-linked-card {
+  aspect-ratio: 4 / 5;
+  min-height: 0 !important;
+  overflow: hidden;
+}
+
+/*
+ * Tarjeta de plato destacado con insignia de precio circular sobre la foto.
+ * position:relative se aplica aquí (no como atributo style del bloque) porque
+ * el soporte "position" de core/group solo reconoce sticky/fixed; guardar
+ * "relative" como atributo produce un bloque inválido en el editor al
+ * comparar el HTML regenerado contra el guardado.
+ */
+.vicu-home-destacado {
+  position: relative;
+}
+
+.vicu-home-destacado__price {
+  position: absolute;
+  inset-block-start: var(--wp--preset--spacing--vicunav-space-sm, 1rem);
+  inset-inline-end: var(--wp--preset--spacing--vicunav-space-sm, 1rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.5625rem;
+  min-height: 3.5625rem;
+  padding: var(--wp--preset--spacing--vicunav-space-xxs, 0.25rem);
+  border-radius: 50%;
+  background: var(--wp--preset--color--vicunav-primary);
+  color: var(--wp--preset--color--vicunav-neutral-100);
+  font-weight: 700;
+  font-size: var(--wp--preset--font-size--vicunav-sm, 0.875rem);
+  text-align: center;
+}
+
+.vicunav-linked-card .wp-block-cover__background {
+  background: linear-gradient(
+    180deg,
+    transparent 38%,
+    rgba(13, 13, 13, 0.88) 100%
+  ) !important;
+  opacity: 1 !important;
+}
+
+.vicunav-linked-card .wp-block-cover__inner-container {
+  align-self: flex-end;
+  box-sizing: border-box;
+  padding: var(--wp--preset--spacing--vicunav-space-sm, 1rem);
+  width: 100%;
+}
+
+.vicunav-linked-card .wp-block-heading {
+  margin-block-end: var(--wp--preset--spacing--vicunav-space-xxs, 0.25rem);
+}
+
+.vicunav-linked-card .wp-block-button__link {
+  min-height: 44px;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.vicunav-editorial-story__columns,
+.vicunav-editorial-location__columns {
+  align-items: center;
+  display: grid;
+  gap: var(--wp--preset--spacing--vicunav-space-md, 1.5rem);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.vicunav-editorial-story__copy,
+.vicunav-editorial-location__copy {
+  margin: 0;
+  max-width: 35rem;
+  min-width: 0;
+}
+
+.vicunav-editorial-story__media,
+.vicunav-editorial-location__media {
+  min-height: 23.75rem;
+  min-width: 0;
+}
+
+.vicunav-editorial-story__copy p,
+.vicunav-editorial-location__copy p {
+  line-height: 1.65;
+}
+
+.vicunav-editorial-location__facts {
+  display: grid;
+  gap: var(--wp--preset--spacing--vicunav-space-md, 1.5rem);
+}
+
+.vicunav-editorial-location__label {
+  letter-spacing: 0.04em;
+  margin-block-end: var(--wp--preset--spacing--vicunav-space-xxs, 0.25rem);
+  text-transform: uppercase;
+}
+
+.vicunav-testimonials-grid .wp-block-post-template {
+  display: grid;
+  gap: var(--wp--preset--spacing--vicunav-space-md, 1.5rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17.5rem), 1fr));
+}
+
+.vicunav-testimonials-grid__card {
+  border: 1px solid
+    var(
+      --wp--custom--vicunav--border--hairline,
+      var(--wp--preset--color--vicunav-neutral-400, transparent)
+    );
+  box-shadow: 0 0.375rem 1rem rgba(13, 13, 13, 0.08);
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.vicunav-testimonials-grid__card::before {
+  color: var(--wp--preset--color--vicunav-secondary);
+  content: "★★★★★";
+  display: block;
+  letter-spacing: 0.125rem;
+  margin-block-end: var(--wp--preset--spacing--vicunav-space-xs, 0.5rem);
+}
+
+.vicunav-testimonials-grid__card .wp-block-post-content {
+  font-style: italic;
+  line-height: 1.55;
+}
+
+.vicunav-testimonials-grid__card .wp-block-post-title {
+  margin-block-start: var(--wp--preset--spacing--vicunav-space-sm, 1rem);
+}
+
+.vicunav-faq-accordion > .wp-block-query {
+  margin-inline: auto;
+  max-width: 48rem;
+  width: 100%;
+}
+
+.vicunav-faq-accordion .wp-block-post-template {
+  display: grid;
+  gap: var(--wp--preset--spacing--vicunav-space-sm, 0.75rem);
+}
+
+.vicunav-faq-accordion__item {
+  border: 1px solid
+    var(
+      --wp--custom--vicunav--border--hairline,
+      var(--wp--preset--color--vicunav-neutral-400, transparent)
+    );
+  box-shadow: 0 0.25rem 0.875rem rgba(13, 13, 13, 0.08);
+  overflow: hidden;
+}
+
+.vicunav-faq-accordion__question-row {
+  align-items: center;
+  display: flex;
+  gap: var(--wp--preset--spacing--vicunav-space-sm, 1rem);
+  justify-content: space-between;
+}
+
+.vicunav-faq-accordion__question-row .wp-block-post-title {
+  flex: 1 1 auto;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.vicunav-faq-accordion__toggle {
+  flex: 0 0 auto;
+}
+
+.vicunav-faq-accordion__toggle .wp-block-button__link {
+  min-height: 44px;
+  min-width: 44px;
+  padding-inline: var(--wp--preset--spacing--vicunav-space-sm, 1rem);
+}
+
+.vicunav-faq-accordion__answer {
+  line-height: 1.55;
+  padding-block-start: var(--wp--preset--spacing--vicunav-space-sm, 1rem);
+}
+
+.vicunav-contact-info__columns {
+  display: grid;
+  gap: var(--wp--preset--spacing--vicunav-space-md, 1.5rem);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.vicunav-contact-info__card {
+  border: 1px solid
+    var(
+      --wp--custom--vicunav--border--hairline,
+      var(--wp--preset--color--vicunav-neutral-400, transparent)
+    );
+  box-sizing: border-box;
+  height: 100%;
+}
+
+.vicunav-contact-info__card--primary {
+  box-shadow: 0 1.25rem 3rem rgba(13, 13, 13, 0.2);
+}
+
+.vicunav-contact-info__card .wp-block-heading {
+  margin-block-end: var(--wp--preset--spacing--vicunav-space-xs, 0.5rem);
+}
+
+.vicunav-pattern-cta {
+  padding-block: var(--wp--preset--spacing--vicunav-space-xxl, 4rem);
+  padding-inline: var(
+    --wp--custom--vicunav--section-spacing--inline,
+    var(--wp--preset--spacing--vicunav-space-md, 1.5rem)
+  );
+}
+
+/* Especificidad (0,2,0) a propósito: ver la nota en .vicunav-pattern-section
+   más arriba sobre el empate con la regla inline de WordPress. Aquí ambos
+   valores coinciden hoy (42rem), pero sin este fix el ancho real dependería
+   silenciosamente de --wp--style--global--content-size, no de este valor. */
+.vicunav-pattern-cta.vicunav-pattern-cta > * {
+  margin-inline: auto;
+  max-width: 42rem;
+}
+
+.vicunav-pattern-cta .wp-block-heading {
+  line-height: 0.95;
+}
+
+.vicunav-pattern-cta > * + * {
+  margin-block-start: var(--wp--preset--spacing--vicunav-space-md, 1.5rem);
+}
+
+.vicunav-linked-card,
+.vicunav-testimonials-grid__card,
+.vicunav-faq-accordion__item,
+.vicunav-contact-info__card {
+  transition:
+    box-shadow var(--wp--custom--vicunav--motion--duration-fast, 0.2s)
+      var(--wp--custom--vicunav--motion--ease-standard, ease),
+    transform var(--wp--custom--vicunav--motion--duration-fast, 0.2s)
+      var(--wp--custom--vicunav--motion--ease-standard, ease);
+}
+
+.vicunav-linked-card:focus-within,
+.vicunav-linked-card:hover,
+.vicunav-testimonials-grid__card:focus-within,
+.vicunav-testimonials-grid__card:hover,
+.vicunav-contact-info__card:focus-within,
+.vicunav-contact-info__card:hover {
+  box-shadow: var(
+    --wp--preset--shadow--vicunav-shadow-card-hover,
+    0 1.25rem 2.5rem rgba(13, 13, 13, 0.18)
+  );
+  transform: translateY(-0.125rem);
+}
+
+.vicunav-pattern-hero a:focus-visible,
+.vicunav-pattern-page-hero a:focus-visible,
+.vicunav-pattern-section a:focus-visible,
+.vicunav-pattern-section button:focus-visible,
+.vicunav-pattern-cta a:focus-visible {
+  border-radius: 2px;
+  box-shadow:
+    0 0 0 2px var(--wp--preset--color--vicunav-neutral-900),
+    0 0 0 5px var(--wp--preset--color--vicunav-neutral-100);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+@media (min-width: 30rem) {
+  .vicunav-linked-cards-grid__columns,
+  .vicunav-contact-info__columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 48rem) {
+  .vicunav-pattern-split-hero__columns,
+  .vicunav-editorial-story__columns,
+  .vicunav-editorial-location__columns {
+    grid-template-columns: minmax(0, 1.1fr) minmax(17.5rem, 1fr);
+  }
+
+  .vicunav-editorial-location__columns {
+    grid-template-columns: minmax(17.5rem, 1fr) minmax(0, 1.1fr);
+  }
+
+  .vicunav-contact-info__columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .vicunav-linked-cards-grid__columns {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 29.99rem) {
+  .vicunav-pattern-hero {
+    min-height: 32rem;
+  }
+
+  .vicunav-pattern-hero .wp-block-buttons,
+  .vicunav-pattern-cta .wp-block-buttons {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .vicunav-pattern-hero .wp-block-button,
+  .vicunav-pattern-hero .wp-block-button__link,
+  .vicunav-pattern-cta .wp-block-button,
+  .vicunav-pattern-cta .wp-block-button__link {
+    width: 100%;
+  }
+
+  .vicunav-pattern-section {
+    padding-inline: var(--wp--preset--spacing--vicunav-space-sm, 1rem);
+  }
+
+  .vicunav-editorial-story__media,
+  .vicunav-editorial-location__media,
+  .vicunav-pattern-split-hero__media {
+    min-height: 20rem !important;
+  }
+
+  .vicunav-faq-accordion__question-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .vicunav-faq-accordion__question-row .wp-block-buttons {
+    align-self: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vicunav-pattern-hero *,
+  .vicunav-pattern-page-hero *,
+  .vicunav-pattern-section *,
+  .vicunav-pattern-cta * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .vicunav-linked-card,
+  .vicunav-testimonials-grid__card,
+  .vicunav-contact-info__card {
+    transform: none !important;
+  }
+}
+
+.editor-styles-wrapper .vicunav-pattern-hero,
+.editor-styles-wrapper .vicunav-pattern-page-hero,
+.editor-styles-wrapper .vicunav-pattern-section,
+.editor-styles-wrapper .vicunav-pattern-cta {
+  max-width: none;
+}

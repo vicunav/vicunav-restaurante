@@ -43,8 +43,18 @@ docs/12-documentar-flujo-contribucion
 
 ## 3. Implementa y valida el cambio
 
-Modifica únicamente lo necesario para cumplir el issue. Ejecuta el lint y las
-pruebas definidas por el repositorio antes de publicar la rama.
+Modifica únicamente lo necesario para cumplir el issue. Antes de publicar la rama
+ejecuta la validación completa:
+
+```bash
+bash tests/run.sh
+cd plugin && composer check && npm run check
+```
+
+`tests/run.sh` valida theme, contenido, QA y el instalador local; `composer check`
+ejecuta lint, estándares de código y PHPUnit; `npm run check` audita dependencias de
+producción, lintea JS y estilos, ejecuta Jest, el contrato visual y el build. Si tu
+cambio toca bloques, incluye el `plugin/build` regenerado.
 
 Los commits usan Conventional Commits:
 
