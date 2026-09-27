@@ -61,7 +61,7 @@ visible en la propia imagen.
 - Se excluyeron los tres retratos de testimonios, la foto de dos trabajadores
   presentada como familia y el original de postre con marca. Sus URL sobreviven solo
   como evidencia en el inventario; no hay hotlinks en el contenido que consume WordPress.
-- `assets/hero-bg.mp4` (video del hero, 15,9 MB, SHA-256 en el inventario) figura en la
+- `assets/hero-bg.mp4` (video del hero, 6,7 MB en 720p sin audio, SHA-256 en el inventario) figura en la
   sección `videos` como `provided-by-owner`: archivo propio, autorizado por el
   propietario del sitio. El video de terceros del prototipo no debe recuperarse.
 
