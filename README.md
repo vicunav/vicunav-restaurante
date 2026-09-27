@@ -9,7 +9,7 @@ a block theme, audited demo content and licensed media in a single repository.
 | Path | Contents |
 | --- | --- |
 | `plugin/` | The `vicunav-restaurante` plugin: menu, pizza builder, cart, orders, manual payments, delivery, reservations, saved pizzas, nine dynamic blocks and the `vicu/v1` REST API. Includes tests, block build, Composer and npm. |
-| `theme/` | The `vicunav-bonasera` block theme (no parent theme): design tokens, restaurant header/footer parts, editorial patterns and self-hosted fonts. Includes its own tests. |
+| `theme/` | The `vicunav-bonasera` standalone block theme: design tokens, restaurant header/footer parts, editorial patterns and self-hosted fonts. Includes its own tests. |
 | `content/bonasera.json` | Audited demo content (copy, menu, FAQ, testimonials, operations data). |
 | `assets/` | Licensed local media referenced by `config/media.json`. |
 | `config/` | `site.json` (install manifest), `media.json` (media and license inventory), `qa.json` (visual QA contract). |

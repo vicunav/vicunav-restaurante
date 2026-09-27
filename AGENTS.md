@@ -11,7 +11,7 @@ contenido demostrativo, la media licenciada y las validaciones.
   `Vicu\Restaurante\Payments\*` para pagos y `Vicu\Restaurante\Shared\*` para FAQ,
   testimonios, ajustes y REST base). El servidor es la única autoridad de precios,
   disponibilidad, capacidad y estados.
-- `theme/`: theme de bloques sin theme padre. Solo presentación: no consulta carrito,
+- `theme/`: theme de bloques autocontenido. Solo presentación: no consulta carrito,
   pedidos, pagos ni disponibilidad.
 - `content/`, `assets/`, `config/`: contenido, media y manifiestos. No son contrato de
   runtime; toda imagen nueva exige procedencia y licencia en `config/media.json`.
