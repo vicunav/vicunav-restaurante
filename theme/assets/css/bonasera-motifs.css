@@ -4,7 +4,7 @@
  * sí solo.
  *
  * Se registra y carga en frontend y Editor del sitio con wp_enqueue_block_style() (ver
- * functions.php). Cada motivo se compara contra el prototipo de referencia, no se
+ * functions.php). Cada motivo se compara contra el diseño de referencia aprobado, no se
  * reconstruye de memoria.
  *
  * Convención: cada regla se ancla a una clase propia de este theme
@@ -14,10 +14,8 @@
 /*
  * Encabezado fantasma del hero de portada: duplicado del H1, atenuado y
  * agrandado, sangrando detrás del título real. Valores (posición, opacidad,
- * escala) copiados literales de `.hero__ghost-text` en
- * vicunav-design-to-claude-demo-restaurante/src/styles/components.css, la
- * única fuente que sí implementa el motivo (Claude Design no expone CSS
- * calculado, solo el resultado visual).
+ * escala) tomados del diseño de referencia aprobado, la única fuente
+ * que implementa el motivo.
  */
 .vicunav-bonasera-hero__title-wrap {
 	position: relative;

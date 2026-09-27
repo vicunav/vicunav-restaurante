@@ -16,8 +16,6 @@
     }
   },
   "visual_contract": {
-    "source_repository": "vicunav-design-to-claude-demo-restaurante",
-    "source_commit": "1e1f62787e088c0ca9701500e764802499d1b253",
     "final_gate": "approved-with-differences",
     "allowed_statuses": [
       "exact-source-recovered",
@@ -25,13 +23,12 @@
       "approved-omission",
       "approved-missing-with-placeholder"
     ],
-    "human_approval_reference": "DEMO-REST-02E issue #19: continuar con similitud y placeholders autorizados, 2026-08-29"
+    "human_approval_reference": "Aprobación del propietario: continuar con similitud y placeholders autorizados, 2026-08-29"
   },
   "assets": [
     {
       "id": "antipasti",
       "path": "assets/images/antipasti.webp",
-      "source_ref": "src/data/media.js:CATEGORY_IMG.antipasti",
       "visual_status": "exact-source-recovered",
       "blocks_final_parity": false,
       "uses": ["category-antipasti"],
@@ -48,7 +45,6 @@
     {
       "id": "insalate",
       "path": "assets/images/insalate.webp",
-      "source_ref": "src/data/media.js:CATEGORY_IMG.insalate",
       "visual_status": "exact-source-recovered",
       "blocks_final_parity": false,
       "uses": ["category-insalate"],
@@ -65,7 +61,6 @@
     {
       "id": "pizze",
       "path": "assets/images/pizze.webp",
-      "source_ref": "src/data/media.js:CATEGORY_IMG.pizze",
       "visual_status": "exact-source-recovered",
       "blocks_final_parity": false,
       "uses": ["hero", "category-pizze", "page-pizzas", "page-saved-pizzas"],
@@ -82,7 +77,6 @@
     {
       "id": "pasta",
       "path": "assets/images/pasta.webp",
-      "source_ref": "src/data/media.js:CATEGORY_IMG.pasta",
       "visual_status": "exact-source-recovered",
       "blocks_final_parity": false,
       "uses": ["category-pasta", "editorial-story", "page-cart", "page-checkout"],
@@ -99,7 +93,6 @@
     {
       "id": "secondi",
       "path": "assets/images/secondi.webp",
-      "source_ref": "src/data/media.js:CATEGORY_IMG.secondi",
       "visual_status": "exact-source-recovered",
       "blocks_final_parity": false,
       "uses": ["category-secondi"],
@@ -116,7 +109,6 @@
     {
       "id": "contorni",
       "path": "assets/images/contorni.webp",
-      "source_ref": "src/data/media.js:CATEGORY_IMG.contorni",
       "visual_status": "exact-source-recovered",
       "blocks_final_parity": false,
       "uses": ["category-contorni"],
@@ -133,12 +125,11 @@
     {
       "id": "dolci",
       "path": "assets/images/dolci.webp",
-      "source_ref": "sustituto-seguro-de:src/data/media.js:CATEGORY_IMG.dolci",
       "visual_status": "approved-substitute",
       "blocks_final_parity": false,
       "approval": {
         "authority": "usuario",
-        "reference": "DEMO-REST-02E issue #19, 2026-08-29"
+        "reference": "Aprobación del propietario, 2026-08-29"
       },
       "source_original_url": "https://images.unsplash.com/photo-1746888151121-1002113ed286",
       "uses": ["category-dolci"],
@@ -155,7 +146,6 @@
     {
       "id": "bevande",
       "path": "assets/images/bevande.webp",
-      "source_ref": "src/data/media.js:CATEGORY_IMG.bevande",
       "visual_status": "exact-source-recovered",
       "blocks_final_parity": false,
       "uses": ["category-bevande"],
@@ -172,7 +162,6 @@
     {
       "id": "reservas",
       "path": "assets/images/reservas.webp",
-      "source_ref": "src/data/media.js:RESERVA_IMG",
       "visual_status": "exact-source-recovered",
       "blocks_final_parity": false,
       "uses": ["page-reservations"],
@@ -189,7 +178,6 @@
     {
       "id": "map-zulia",
       "path": "assets/images/mapa-zulia.webp",
-      "source_ref": "src/data/media.js:MAP_ZULIA_IMG",
       "visual_status": "exact-source-recovered",
       "blocks_final_parity": false,
       "uses": ["page-home-location"],
@@ -206,7 +194,6 @@
     {
       "id": "map-maracaibo",
       "path": "assets/images/mapa-maracaibo.webp",
-      "source_ref": "src/data/media.js:MAP_MARACAIBO_IMG",
       "visual_status": "exact-source-recovered",
       "blocks_final_parity": false,
       "uses": ["footer"],
@@ -224,59 +211,54 @@
   "excluded": [
     {
       "id": "historia-original",
-      "source": "src/data/media.js:HISTORIA_IMG",
       "source_url": "https://images.pexels.com/photos/2696064/pexels-photo-2696064.jpeg",
       "license": "pexels",
       "visual_status": "approved-omission",
       "blocks_final_parity": false,
       "approval": {
         "authority": "usuario",
-        "reference": "DEMO-REST-02E issue #19, 2026-08-29"
+        "reference": "Aprobación del propietario, 2026-08-29"
       },
       "reason": "Muestra personas identificables y el prototipo las presenta como una familia ficticia."
     },
     {
       "id": "testimonial-avatar-t1",
-      "source": "src/data/media.js:AVATAR_MAP.t1",
       "source_url": "https://images.pexels.com/photos/1024311/pexels-photo-1024311.jpeg",
       "license": "pexels",
       "visual_status": "approved-omission",
       "blocks_final_parity": false,
       "approval": {
         "authority": "usuario",
-        "reference": "DEMO-REST-02E issue #19, 2026-08-29"
+        "reference": "Aprobación del propietario, 2026-08-29"
       },
       "reason": "Los retratos de stock podrían sugerir respaldo de personas reales a testimonios ficticios."
     },
     {
       "id": "testimonial-avatar-t2",
-      "source": "src/data/media.js:AVATAR_MAP.t2",
       "source_url": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg",
       "license": "pexels",
       "visual_status": "approved-omission",
       "blocks_final_parity": false,
       "approval": {
         "authority": "usuario",
-        "reference": "DEMO-REST-02E issue #19, 2026-08-29"
+        "reference": "Aprobación del propietario, 2026-08-29"
       },
       "reason": "Los retratos de stock podrían sugerir respaldo de personas reales a testimonios ficticios."
     },
     {
       "id": "testimonial-avatar-t3",
-      "source": "src/data/media.js:AVATAR_MAP.t3",
       "source_url": "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg",
       "license": "pexels",
       "visual_status": "approved-omission",
       "blocks_final_parity": false,
       "approval": {
         "authority": "usuario",
-        "reference": "DEMO-REST-02E issue #19, 2026-08-29"
+        "reference": "Aprobación del propietario, 2026-08-29"
       },
       "reason": "Los retratos de stock podrían sugerir respaldo de personas reales a testimonios ficticios."
     },
     {
       "id": "dolci-original",
-      "source": "src/data/media.js:CATEGORY_IMG.dolci",
       "source_url": "https://images.unsplash.com/photo-1746888151121-1002113ed286",
       "license": "unsplash",
       "visual_status": "approved-substitute",
@@ -284,7 +266,7 @@
       "blocks_final_parity": false,
       "approval": {
         "authority": "usuario",
-        "reference": "DEMO-REST-02E issue #19, 2026-08-29"
+        "reference": "Aprobación del propietario, 2026-08-29"
       },
       "reason": "La foto contiene una marca visible; se sustituyó por tiramisú sin marca bajo licencia Pexels."
     }
@@ -294,7 +276,6 @@
     {
       "id": "hero-video",
       "path": "assets/hero-bg.mp4",
-      "source_ref": "src/data/media.js:HERO_VIDEO_SRC",
       "visual_status": "provided-by-owner",
       "blocks_final_parity": false,
       "uses": ["page-home-hero"],

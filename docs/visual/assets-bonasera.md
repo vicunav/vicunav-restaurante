@@ -16,8 +16,7 @@ sustitución en paridad visual ni autoriza a atribuir identidades o respaldo fic
 
 | Campo | Valor |
 | --- | --- |
-| Fuente | Prototipo de diseño de referencia, commit `1e1f62787e088c0ca9701500e764802499d1b253` |
-| Referencias de origen | `src/data/media.js` del prototipo |
+| Fuente | Diseño de referencia aprobado |
 | Inventario local | `config/media.json`, schema 2 |
 | Licencias revisadas | 2026-08-26 |
 

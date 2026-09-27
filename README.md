@@ -14,7 +14,7 @@ a block theme, audited demo content and licensed media in a single repository.
 | `assets/` | Licensed local media referenced by `config/media.json`. |
 | `config/` | `site.json` (install manifest), `media.json` (media and license inventory), `qa.json` (visual QA contract). |
 | `bin/` | `install-local.sh` and `wpcli.sh`. |
-| `tests/` | Content and QA validators, runtime QA script and the entry point `run.sh`. |
+| `tests/` | Content and QA validators and the entry point `run.sh`. |
 | `docs/` | Project documentation; `docs/standards` is a Git submodule with the shared engineering standards. |
 
 The plugin has three internal modules: the restaurant domain (`Vicu\Restaurante\*`),

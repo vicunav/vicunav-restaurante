@@ -2,10 +2,7 @@
 
 ## Fuente
 
-Los tokens provienen del export de diseño del prototipo de referencia (commit
-`1e1f62787e088c0ca9701500e764802499d1b253`): `legacy/Restaurante Guasábara.dc.html` y
-los CSS de `tokens/` de su sistema de diseño. La reimplementación `src/` del prototipo
-no es fuente de tokens. Los valores viven en `theme/theme.json` como presets
+Los tokens provienen del diseño de referencia aprobado. Los valores viven en `theme/theme.json` como presets
 `vicunav-*` (consumidos también por los bloques del plugin) y `bonasera-*` (propios de
 la marca). Composición general en [`../../docs/theme.md`](../../docs/theme.md).
 
@@ -62,6 +59,6 @@ Escala 1:1 con `_ds/tokens/spacing.css` (`--space-1` a `--space-10`: 4, 8, 12, 1
 
 El video del hero y los mapas de zona de entrega se rigen por el contrato de assets
 ([`../../docs/visual/assets-bonasera.md`](../../docs/visual/assets-bonasera.md)). El
-video original del prototipo es un archivo de terceros sin licencia verificable y no
+video original del diseño de referencia es un archivo de terceros sin licencia verificable y no
 debe recuperarse ni sustituirse por él; mientras no exista media propia se usan
 placeholders editables que no alteran la geometría.

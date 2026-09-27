@@ -4,8 +4,7 @@
 
 L## Fuente y naturaleza
 
-La fuente auditada es el prototipo de diseño de referencia en el commit
-`1e1f62787e088c0ca9701500e764802499d1b253`. `content/bonasera.json` conserva el copy
+La fuente auditada es el diseño de referencia aprobado. `content/bonasera.json` conserva el copy
 y los datos demostrativos necesarios para componer WordPress. No es un contrato de
 runtime: los datos se siembran a través de las superficies públicas del plugin (ver
 [`plugin.md`](plugin.md)).

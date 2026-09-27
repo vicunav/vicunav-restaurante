@@ -16,7 +16,7 @@ lo necesario para instalarlo en un sitio local y validarlo.
 | `config/media.json` | Inventario de media: procedencia, licencia, dimensiones, peso y SHA-256. |
 | `config/qa.json` | Contrato de QA visual: rutas, viewports y presupuestos. |
 | `bin/` | `install-local.sh` (instalación en LocalWP) y `wpcli.sh`. |
-| `tests/` | `validate-content.mjs`, `validate-qa.mjs`, `qa-runtime.php` y `run.sh`. |
+| `tests/` | `validate-content.mjs`, `validate-qa.mjs` y `run.sh`. |
 | `docs/` | Documentación; `docs/standards` es un submódulo con los estándares compartidos. |
 
 ## Plugin
