@@ -1,6 +1,6 @@
 # Theme `vicunav-bonasera`
 
-Theme de bloques (Full Site Editing) independiente, sin theme padre: identidad visual
+Theme de bloques (Full Site Editing) autocontenido: identidad visual
 de Bonasera, chrome de restaurante y patterns editoriales. Solo presentación; no
 consulta carrito, pedidos, pagos, reservas ni disponibilidad. Requiere WordPress 6.6+
 y PHP 8.1+.
@@ -12,7 +12,7 @@ y PHP 8.1+.
 | `theme.json` | Presets de color, tipografía y espaciado, gradiente de hero y estilos globales |
 | `templates/` | `index`, `front-page`, `page`, `single`, `archive` |
 | `parts/` | Header y footer (ver más abajo) |
-| `patterns/` | Diez patterns `vicunav-bonasera/*` (categoría Bonasera) |
+| `patterns/` | Diez patterns `vicunav-bonasera/*` (categoría Bonasera) y `footer-map`, pattern interno del footer completo |
 | `assets/css/` | `restaurant-chrome.css`, `restaurant-patterns.css`, `bonasera-motifs.css` |
 | `assets/js/faq-accordion.js` | Acordeón de FAQ, encolado solo si la página usa el pattern |
 | `assets/fonts/` | Big Shoulders Display y Jost autoalojadas (SIL OFL 1.1, licencias incluidas) |
