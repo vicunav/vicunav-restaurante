@@ -1,9 +1,5 @@
 {
   "schema_version": 1,
-  "source": {
-    "repository": "vicunav-design-to-claude-demo-restaurante",
-    "commit": "1e1f62787e088c0ca9701500e764802499d1b253"
-  },
   "classification": {
     "brand": "fictitious-demo",
     "people_and_testimonials": "fictitious-demo",

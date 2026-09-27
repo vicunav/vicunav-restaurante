@@ -15,15 +15,7 @@ con la fuente, y nunca debe leerse como fidelidad 1:1.
 
 | Campo | Valor |
 | --- | --- |
-| Prototipo | SPA de diseño de referencia, rama `main` |
-| Commit | `1e1f62787e088c0ca9701500e764802499d1b253` |
-| Instalación | `npm ci` |
-| Validaciones | `npm run lint`, `npm test`, `npm run build` |
-| Ejecución | `npm run dev -- --host 127.0.0.1 --port 4173` |
-
-En la revisión de la línea base, lint, las 66 pruebas y el build del prototipo pasaron;
-`npm run format` reportaba 56 archivos (hallazgo de la fuente, sin cambios sobre el
-commit auditado).
+| Prototipo | SPA de diseño de referencia |
 
 La fuente es una SPA sin rutas reales. Sus siete pantallas son `inicio`, `menu`,
 `pizzas`, `carrito`, `checkout`, `reserva` y `mispizzas`. Las acciones declaradas en el
